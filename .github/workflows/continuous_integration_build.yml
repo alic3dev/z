@@ -1,0 +1,23 @@
+name: continuous_integration_build
+on:
+  push:
+    branches: ["core"]
+  pull_request:
+    branches: ["core"]
+jobs:
+  continuous_integration_build:
+    runs-on: macos-latest
+    steps:
+      - name: checkout_z
+        uses: actions/checkout@v4
+        with:
+          path: z
+      - name: checkout_cer0
+        uses: actions/checkout@v4
+        with:
+          repository: alic3dev/cer0
+          path: cer0
+      - name: make_cer0
+        run: cd cer0 && make cer0
+      - name: make_z
+        run: cd z && make
