@@ -6,6 +6,8 @@ void io_proc_data_initialize(
   struct io_proc_data* io_proc_data
 ) {
   io_proc_data->frame = 0;
+  
+  io_proc_data->initialized = 0;
 
   io_proc_data->note_table = (void*)0;
   io_proc_data->length_note_table = 0; 
@@ -49,6 +51,8 @@ void io_proc_data_initialize_synthesizer(
       sine
     );
   }
+
+  io_proc_data->initialized = 1;
 }
 
 void io_proc_data_destroy(

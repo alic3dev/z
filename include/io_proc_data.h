@@ -5,6 +5,7 @@
 
 struct io_proc_data {
   unsigned short int frame;
+  unsigned char initialized;
   unsigned int length_note_table;
   float* note_table;
   signed char octave_ending;
