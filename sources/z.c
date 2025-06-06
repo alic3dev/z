@@ -6,25 +6,18 @@
 #include <string.h>
 #include <time.h>
 
-float increment_phase = 0.0f;
-float value_phase = 0.0f;
-
-float increment_phase_high = 0.0f;
-float value_phase_high = 0.0f;
-
-float amplitude = 1.0f;
-
 unsigned short int frame = 0;
 
-float sample_rate = 0.0f;
+float amplitude = 1.0f;
 
 float* note_table = (void*)0;
 unsigned int length_note_table = 0; 
 unsigned char steps_notes = 5;
 
-float high_low_ratio = 0.5f;
-
 unsigned long int z = 0;
+
+unsigned int length_oscillators = 0;
+struct cer0_oscillator* oscillators = (void*)0;
 
 OSStatus io_proc(
   AudioObjectID id_audio_object,
@@ -35,24 +28,35 @@ OSStatus io_proc(
   const AudioTimeStamp* timestamp_audio_out,
   void* data
 ) {
-  unsigned long int count_buffer = buffer_list_audio_out->mNumberBuffers;
-  float value_signal;
-  float value_signal_high;
+  if (length_oscillators > 0) {
+    if (rand() % 128 == 0) {
+      cer0_oscillator_frequency_set(
+        &oscillators[0],
+        note_table[(rand() % steps_notes) + steps_notes]
+      );
 
-  if (rand() % 128 == 0) {
-    increment_phase = cer0_phase_get_increment(
-      sample_rate,
-      note_table[(rand() % steps_notes) + steps_notes]
-    );
-  }
+      cer0_oscillator_frequency_set(
+        &oscillators[1],
+        oscillators[0].phase.frequency
+      );
+    }
 
-  if (frame % 8 == 0) {
-    increment_phase_high = cer0_phase_get_increment(
-      sample_rate,
-      note_table[(z % 2 == 0 ? z % 3 == 0 ? z - 1 : z : z + 1) % (steps_notes) + (length_note_table / 2) + (frame % 31 == 0 ? steps_notes : 0) - 1]
-    );
+    if (frame % 8 == 0) {
+      cer0_oscillator_frequency_set(
+        &oscillators[2],
+        note_table[
+          ((z % 2 == 0 ? z % 3 == 0 ? z - 1 : z : z + 1) % (steps_notes)) + 
+          (length_note_table / 2) + (frame % 31 == 0 ? steps_notes : 0) - 1
+        ]
+      );
 
-    z = z + 1;
+      cer0_oscillator_frequency_set(
+        &oscillators[3],
+        oscillators[2].phase.frequency
+      );
+
+      z = z + 1;
+    }
   }
 
   frame = (
@@ -61,7 +65,7 @@ OSStatus io_proc(
 
   for (
     unsigned long int index_buffer = 0;
-    index_buffer < count_buffer;
+    index_buffer < buffer_list_audio_out->mNumberBuffers;
     ++index_buffer
   ) {
     AudioBuffer audio_buffer_current = buffer_list_audio_out->mBuffers[index_buffer];
@@ -78,26 +82,22 @@ OSStatus io_proc(
       unsigned long int channel = index_buffer % count_channel_out;
 
       if (channel == 0) {
-        value_phase = cer0_phase_advance(
-          value_phase,
-          increment_phase
-        );
-        value_signal = cer0_signal_sine(value_phase);
-        float value_signal_secondary = cer0_signal_triangle(value_phase);
+        float value_buffer_out = 0.0f;
 
-        value_phase_high = cer0_phase_advance(
-          value_phase_high,
-          increment_phase_high
-        );
-        value_signal_high = cer0_signal_triangle(value_phase_high);
-        float value_signal_high_secondary = cer0_signal_sine(value_phase_high);
+        for (
+          unsigned int index_oscillator = 0;
+          index_oscillator < length_oscillators;
+          ++index_oscillator
+        ) {
+          value_buffer_out = (
+            value_buffer_out +
+            (cer0_oscillator_poll(
+              &oscillators[index_oscillator]
+            ) / length_oscillators)
+          );
+        }
 
-        buffer_out[index_buffer_out] = (
-          (
-            (((value_signal * 0.9) + (value_signal_secondary * 0.1)) * (1.0f - high_low_ratio)) + 
-            (((value_signal_high * 0.3) + (value_signal_high_secondary * 0.7)) * high_low_ratio)
-          ) * amplitude
-        );
+        buffer_out[index_buffer_out] = value_buffer_out * amplitude;
       } else {
         buffer_out[index_buffer_out] = ((float*) buffer_list_audio_out->mBuffers[0].mData)[index_buffer_out];
       }
@@ -133,7 +133,23 @@ int main() {
     (void*)0
   );
 
-  sample_rate = audio_output.sample_rate;
+  length_oscillators = 4;
+  oscillators = malloc(
+    sizeof(struct cer0_oscillator) * length_oscillators
+  );
+
+  for (
+    unsigned int index_oscillator = 0;
+    index_oscillator < length_oscillators;
+    ++index_oscillator
+  ) {
+    cer0_oscillator_initialize(
+      &oscillators[index_oscillator],
+      audio_output.sample_rate,
+      0,
+      sine
+    );
+  }
 
   getc(stdin);
 
@@ -142,6 +158,7 @@ int main() {
   );
 
   free(note_table);
+  free(oscillators);
 
   return 0;
 }
