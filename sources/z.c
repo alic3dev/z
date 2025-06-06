@@ -21,46 +21,54 @@ OSStatus io_proc(
   struct io_proc_data* io_proc_data = (struct io_proc_data*) data;
 
   if (
-    io_proc_data->length_oscillators > 0
+    io_proc_data->synthesizer.length_oscillators > 0
   ) {
     if (rand() % 128 == 0) {
-      cer0_oscillator_frequency_set(
-        &io_proc_data->oscillators[0],
-        io_proc_data->note_table[
-          (rand() % io_proc_data->steps_notes) +
-          io_proc_data->steps_notes
-        ]
+      float frequency = io_proc_data->note_table[
+        (rand() % io_proc_data->steps_notes) +
+        io_proc_data->steps_notes
+      ];
+
+      cer0_synthesizer_oscillator_frequency_set(
+        &io_proc_data->synthesizer,
+        0,
+        frequency
       );
 
-      cer0_oscillator_frequency_set(
-        &io_proc_data->oscillators[1],
-        io_proc_data->oscillators[0].phase.frequency
+      cer0_synthesizer_oscillator_frequency_set(
+        &io_proc_data->synthesizer,
+        1,
+        frequency
       );
     }
 
     if (
       io_proc_data->frame % 8 == 0
     ) {
-      cer0_oscillator_frequency_set(
-        &io_proc_data->oscillators[2],
-        io_proc_data->note_table[
-          ((io_proc_data->z % 2 == 0
-            ? io_proc_data->z % 3 == 0 
-            ? io_proc_data->z - 1 
-            : io_proc_data->z 
-            : io_proc_data->z + 1
-          ) % (io_proc_data->steps_notes)) + 
-          (io_proc_data->length_note_table / 2) +
-          (io_proc_data->frame % 31 == 0
-            ? io_proc_data->steps_notes
-            : 0
-          ) - 1
-        ]
+      float frequency = io_proc_data->note_table[
+        ((io_proc_data->z % 2 == 0
+          ? io_proc_data->z % 3 == 0 
+          ? io_proc_data->z - 1 
+          : io_proc_data->z 
+          : io_proc_data->z + 1
+        ) % (io_proc_data->steps_notes)) + 
+        (io_proc_data->length_note_table / 2) +
+        (io_proc_data->frame % 31 == 0
+          ? io_proc_data->steps_notes
+          : 0
+        ) - 1
+      ];
+
+      cer0_synthesizer_oscillator_frequency_set(
+        &io_proc_data->synthesizer,
+        2,
+        frequency
       );
 
-      cer0_oscillator_frequency_set(
-        &io_proc_data->oscillators[3],
-        io_proc_data->oscillators[2].phase.frequency
+      cer0_synthesizer_oscillator_frequency_set(
+        &io_proc_data->synthesizer,
+        3,
+        frequency
       );
 
       io_proc_data->z = (
@@ -92,22 +100,9 @@ OSStatus io_proc(
       unsigned long int channel = index_buffer % count_channel_out;
 
       if (channel == 0) {
-        float value_buffer_out = 0.0f;
-
-        for (
-          unsigned int index_oscillator = 0;
-          index_oscillator < io_proc_data->length_oscillators;
-          ++index_oscillator
-        ) {
-          value_buffer_out = (
-            value_buffer_out +
-            (cer0_oscillator_poll(
-              &io_proc_data->oscillators[index_oscillator]
-            ) / io_proc_data->length_oscillators)
-          );
-        }
-
-        buffer_out[index_buffer_out] = value_buffer_out * io_proc_data->amplitude;
+        buffer_out[index_buffer_out] = cer0_synthesizer_poll(
+          &io_proc_data->synthesizer
+        );
       } else {
         buffer_out[index_buffer_out] = ((float*) buffer_list_audio_out->mBuffers[0].mData)[index_buffer_out];
       }
@@ -133,7 +128,7 @@ int main() {
     &io_proc_data
   );
 
-  io_proc_data_initialize_oscillators(
+  io_proc_data_initialize_synthesizer(
     &io_proc_data,
     audio_output.sample_rate
   );
