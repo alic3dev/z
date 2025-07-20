@@ -23,7 +23,7 @@ jobs:
           repository: alic3dev/cer0
           path: cer0
       - name: make_clic3
-        run: cd clic3 && make clic3
+        run: cd clic3 && make
       - name: make_cer0
         run: cd cer0 && make cer0
       - name: make_z
