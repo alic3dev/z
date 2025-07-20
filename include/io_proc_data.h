@@ -10,9 +10,13 @@ struct io_proc_data {
   float* note_table;
   signed char octave_ending;
   signed char octave_starting;
+  signed char octave_range;
   unsigned char steps_notes;
   struct cer0_synthesizer synthesizer;
   unsigned long z;
+
+  const unsigned char* scale;
+  unsigned char length_scale;
 };
 
 void io_proc_data_initialize(
