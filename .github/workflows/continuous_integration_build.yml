@@ -22,9 +22,16 @@ jobs:
         with:
           repository: alic3dev/cer0
           path: cer0
+      - name: checkout_interrupt_handler
+        uses: actions/checkout@v4
+        with:
+          repository: alic3dev/interrupt_handler
+          path: interrupt_handler
       - name: make_clic3
         run: cd clic3 && make
       - name: make_cer0
         run: cd cer0 && make cer0
+      - name: make_interrupt_handler
+        run: cd interrupt_handler && make
       - name: make_z
         run: cd z && make
