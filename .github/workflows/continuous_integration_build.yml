@@ -12,11 +12,18 @@ jobs:
         uses: actions/checkout@v4
         with:
           path: z
+      - name: checkout_clic3
+        uses: actions/checkout@v4
+        with:
+          repository: alic3dev/clic3
+          path: clic3
       - name: checkout_cer0
         uses: actions/checkout@v4
         with:
           repository: alic3dev/cer0
           path: cer0
+      - name: make_clic3
+        run: cd clic3 && make clic3
       - name: make_cer0
         run: cd cer0 && make cer0
       - name: make_z
