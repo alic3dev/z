@@ -3,8 +3,8 @@
 #include <close_exit.h>
 #include <io_proc.h>
 #include <io_proc_data.h>
+#include <queue.h>
 #include <track.h>
-#include <track_threads.h>
 #include <value.h>
 
 #include <cer0.h>
@@ -19,8 +19,7 @@ int main() {
 
   value_seed();
 
-  tracks_initialize();
-  track_threads_initialize();
+  queue_initialize();
 
   close_exit_initialize();
 
@@ -50,7 +49,7 @@ int main() {
   track_destroy(track_current);
   track_destroy(track_upcoming);
 
-  track_threads_destroy();
+  queue_destroy();
 
   cer0_audio_output_destroy(
     &audio_output
