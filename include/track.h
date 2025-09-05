@@ -13,6 +13,8 @@ struct track {
   float speed;
   float length;
 
+  float progress;
+
   unsigned char length_lanes;
   struct track_lane* lanes;
 

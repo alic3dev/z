@@ -1,5 +1,6 @@
 #include <track.h>
 
+#include <display.h>
 #include <value.h>
 #include <queue.h>
 
@@ -50,6 +51,8 @@ void track_generate(
     0,
     12
   );
+
+  track->progress = 0.0f;
 
   unsigned char index_scale = (int) value_get() % length_scales;
   track->scale = (unsigned char*) scales[index_scale];
