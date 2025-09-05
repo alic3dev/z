@@ -1,18 +1,34 @@
 #include <z.h>
+
+#include <close_exit.h>
 #include <io_proc.h>
 #include <io_proc_data.h>
+#include <track.h>
+#include <track_threads.h>
+#include <value.h>
 
 #include <cer0.h>
 #include <interrupt_handler.h>
 
 #include <CoreAudio/CoreAudio.h>
 
-#include <time.h>
+#include <pthread.h>
 
 int main() {
-  srand(time((void*)0));
-
   struct io_proc_data io_proc_data;
+
+  value_seed();
+
+  tracks_initialize();
+  track_threads_initialize();
+
+  close_exit_initialize();
+
+  interrupt_handler_initialize();
+
+  interrupt_handler_interrupt_function_add(
+    close_exit
+  );
 
   io_proc_data_initialize(
     &io_proc_data
@@ -25,22 +41,19 @@ int main() {
     &io_proc_data
   );
 
-  io_proc_data_initialize_synthesizer(
-    &io_proc_data,
-    audio_output.sample_rate
+  io_proc_data.initialized = 1;
+
+  pthread_mutex_lock(
+    &close_exit_mutex
   );
 
-  interrupt_handler_initialize();
+  track_destroy(track_current);
+  track_destroy(track_upcoming);
 
-  printf("[press_enter_to_exit] ");
-  getc(stdin);
+  track_threads_destroy();
 
   cer0_audio_output_destroy(
     &audio_output
-  );
-
-  io_proc_data_destroy(
-    &io_proc_data
   );
 
   return 0;

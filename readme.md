@@ -1,11 +1,37 @@
 # z
 
-experimentation preliminarily with [`cer0`](https://github.com/alic3dev/cer0)
+z: a slow, quiet, radio. enjoy.
 
-# build
+## development
+
+### requirements
+
+- [`cer0`](https://github.com/alic3dev/cer0)
+- [`clic3`](https://github.com/alic3dev/clic3)
+- [`interrupt_handler`](https://github.com/alic3dev/interrupt_handler)
+
+### build
 
 ```zsh
 make
+```
+
+### clean
+
+```zsh
+make clean
+```
+
+## running
+
+```zsh
+./output/z
+```
+
+or
+
+```zsh
+make run
 ```
 
 ## copyleft|copyright
