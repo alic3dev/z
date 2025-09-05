@@ -3,11 +3,6 @@
 
 #include <cer0_phase.h>
 
-struct track;
-
-extern struct track* track_current;
-extern struct track* track_upcoming;
-
 extern float sample_rate;
 
 struct track_lane;
@@ -45,8 +40,6 @@ struct track_lane {
 
   struct cer0_phase phase;
 };
-
-void tracks_initialize();
 
 void track_generate(
   struct track*
