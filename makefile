@@ -31,6 +31,9 @@ c_flags_output=-framework CoreAudio
 
 ${name}: ${file_output}
 
+run: .always
+	./${file_output}
+
 ${file_output}: ${files_objects} ${directory_output}
 	${cc} ${c_flags} ${c_flags_output} ${file_cero_library} ${file_clic3_library} ${file_interrupt_handler_library} ${files_objects} -o ${file_output}
 
@@ -50,3 +53,5 @@ clean_objects:
 
 clean_output:
 	-rm -r ${directory_output}
+
+.always:
