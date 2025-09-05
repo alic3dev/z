@@ -31,7 +31,7 @@ void queue_initialize() {
     track_upcoming
   );
 
-  display_render();
+  // display_render();
 
   pthread_mutex_init(
     &queue_mutex_track_completion,
@@ -80,7 +80,7 @@ void* queue_track_completion_handler(void* _) {
     );
     track_generate(track_upcoming);
     
-    display_render();
+    // display_render();
 
     pthread_mutex_unlock(
       &queue_mutex_track_generating
