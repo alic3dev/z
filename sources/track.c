@@ -1,6 +1,7 @@
 #include <track.h>
 
 #include <value.h>
+#include <queue.h>
 
 #include <cer0_frequency_root.h>
 #include <cer0_note_table.h>
@@ -8,11 +9,6 @@
 #include <cer0_scale.h>
 
 #include <stdlib.h>
-#include <stdio.h>
-#include <time.h>
-
-struct track* track_current = (void*)0;
-struct track* track_upcoming = (void*)0;
 
 const unsigned char length_scales = 4;
 
@@ -31,31 +27,6 @@ const unsigned char lengths_scales[length_scales] = {
 };
 
 float sample_rate = 44100.0f;
-
-void tracks_initialize() {
-  track_current = malloc(
-    sizeof(struct track)
-  );
-
-  track_upcoming = malloc(
-    sizeof(struct track)
-  );
-
-  track_generate(
-    track_current
-  );
-
-  track_generate(
-    track_upcoming
-  );
-
-  printf(
-    "playing_track->{%s}\n",
-    track_current->name
-  );
-
-  printf("upcoming_track->{%s}\n", track_upcoming->name);
-}
 
 void track_generate(
   struct track* track

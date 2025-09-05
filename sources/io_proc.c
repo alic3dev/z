@@ -1,8 +1,8 @@
 #include <io_proc.h>
 
 #include <io_proc_data.h>
+#include <queue.h>
 #include <track.h>
-#include <track_threads.h>
 
 #include <cer0.h>
 
@@ -135,7 +135,7 @@ OSStatus io_proc(
         track = track_upcoming;
 
         pthread_mutex_unlock(
-          &track_threads_mutex_track_completion
+          &queue_mutex_track_completion
         );
       }
     }
