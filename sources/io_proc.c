@@ -1,5 +1,6 @@
 #include <io_proc.h>
 
+#include <display.h>
 #include <io_proc_data.h>
 #include <queue.h>
 #include <track.h>
@@ -124,9 +125,11 @@ OSStatus io_proc(
         );
       }
 
+      track->progress = ((float) io_proc_data->frame) / (((float) track->length) * 100.0f);
+
       if (
         channel == 0 &&
-        ((io_proc_data->frame + 1) % ((int) (track->length * 100))) == 0
+        io_proc_data->frame == track->length * 100
       ) {
         io_proc_data->frame = 0;
 
@@ -140,6 +143,8 @@ OSStatus io_proc(
       }
     }
   }
+
+  display_render();
 
   return 0;
 }
