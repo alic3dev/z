@@ -60,8 +60,8 @@ void track_generate(
   );
 
   track->length_note_table = cer0_note_table_length(
-    0,
-    12
+    octave_minimum,
+    octave_maximum
   );
 
   track->progress = 0.0f;
