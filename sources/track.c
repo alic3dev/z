@@ -35,6 +35,9 @@ void track_generate(
 ) {
   value_seed();
 
+  track->seed = value_seed_value;
+  value_buffer_seed_set(track->buffer_seed);
+
   unsigned char length_track_name = (int) value_get() % 33 + 10;
 
   track->name = malloc(
