@@ -1,7 +1,7 @@
 #include <value.h>
 
 #include <stdlib.h>
-#include <time.h>
+#include <sys/time.h>
 
 float value_seed_value = 0.0f;
 float value_value = 0.0f;
@@ -9,9 +9,16 @@ float value_value = 0.0f;
 unsigned long int value_seed_addition = 0;
 
 void value_seed() {
+  struct timeval time;
+
+  gettimeofday(
+    &time,
+    (void*)0
+  );
+
   value_seed_value = (
     (float) ((
-      time((void*)0) + value_seed_addition++
+      time.tv_usec + value_seed_addition++
     ) % 1000000)
   );
   value_value = value_seed_value;
