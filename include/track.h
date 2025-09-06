@@ -1,7 +1,7 @@
 #ifndef __track_h
 #define __track_h
 
-#include <cer0_phase.h>
+#include <cer0_synthesizer.h>
 
 extern float sample_rate;
 
@@ -20,6 +20,8 @@ struct track {
 
   float* note_table;
   unsigned int length_note_table;
+
+  unsigned char range_octave;
 
   unsigned char* scale;
   unsigned char length_scale;
@@ -40,7 +42,7 @@ struct track_lane {
   unsigned long int length_notes;
   struct track_note* notes;
 
-  struct cer0_phase phase;
+  struct cer0_synthesizer synthesizer;
 };
 
 void track_generate(

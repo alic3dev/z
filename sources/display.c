@@ -82,11 +82,15 @@ void display_render() {
     "upcoming_track->{%s}\n"
     "\n"
     "%s\n"
+    "\n"
+    ": "
     "\e[?25h",
     track_current->name,
     track_upcoming->name,
     buffer_track_progress
   );
+
+  fflush(stdout);
 
   free(buffer_track_progress);
 }

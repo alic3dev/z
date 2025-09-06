@@ -4,10 +4,11 @@
 #include <value.h>
 #include <queue.h>
 
+#include <cer0_octave_range.h>
 #include <cer0_frequency_root.h>
 #include <cer0_note_table.h>
-#include <cer0_phase.h>
 #include <cer0_scale.h>
+#include <cer0_synthesizer.h>
 
 #include <stdlib.h>
 
@@ -41,10 +42,18 @@ void track_generate(
     length_track_name
   );
 
+  unsigned int octave_minimum = (int) value_get() % 2 + 2;
+  unsigned int octave_maximum = (int) value_get() % 2 + 1 + octave_minimum;
+
   track->note_table = cer0_note_table_create(
-    2,
-    6,
+    octave_minimum,
+    octave_maximum,
     cer0_frequency_root_standard
+  );
+
+  track->range_octave = cer0_octave_range_get(
+    octave_minimum,
+    octave_maximum
   );
 
   track->length_note_table = cer0_note_table_length(
@@ -112,6 +121,28 @@ void track_generate(
     index_lane < track->length_lanes;
     ++index_lane
   ) {
+    cer0_synthesizer_initialize(
+      &track->lanes[
+        index_lane
+      ].synthesizer,
+      sample_rate
+    );
+
+    unsigned char count_oscillators = ((int) value_get() % 4) + 2;
+
+    for (
+      unsigned char index_oscillator = 0;
+      index_oscillator < count_oscillators;
+      ++index_oscillator
+    ) {
+      cer0_synthesizer_oscillator_add(
+        &track->lanes[
+          index_lane
+        ].synthesizer,
+        ((int) value_get() % (cer0_length_signals - 2)) + 1
+      );
+    }
+
     track->lanes[
       index_lane
     ].length_notes = (int) value_get() % 400 + 100;
@@ -136,7 +167,11 @@ void track_generate(
         index_lane
       ].notes[
         index_note
-      ].time = (float)((int) value_get() % 1000) / 1000.0f * track->length;
+      ].time = (
+        (float)((int) value_get() % 1000) /
+        1000.0f *
+        track->length
+      );
 
       track->lanes[
         index_lane
@@ -147,19 +182,20 @@ void track_generate(
            (int) value_get() % track->length_scale
         ] + (
           cer0_default_steps_notes *
-          ((int) value_get() % 4)
+          ((int) value_get() % track->range_octave)
         ) + track->key
       ) % track->length_note_table];
     }
 
-    cer0_phase_initialize(
+    cer0_synthesizer_frequency_set(
       &track->lanes[
         index_lane
-      ].phase,
-      sample_rate,
+      ].synthesizer,
       track->lanes[
-        index_lane
-      ].notes[0].value
+        0
+      ].notes[
+        0
+      ].value
     );
   }
 
@@ -177,6 +213,12 @@ void track_destroy(
     index_lane < track->length_lanes;
     ++index_lane
   ) {
+    cer0_synthesizer_destroy(
+      &track->lanes[
+        index_lane
+      ].synthesizer
+    );
+
     free(
       track->lanes[
         index_lane
