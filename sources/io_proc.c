@@ -6,6 +6,7 @@
 #include <track.h>
 
 #include <cer0_synthesizer.h>
+#include <math_c.h>
 
 #include <pthread.h>
 #include <stdio.h>
@@ -110,8 +111,13 @@ OSStatus io_proc(
           );
         }
 
-        buffer_out[index_buffer_out] = (
-          value / (float) track->length_lanes
+        buffer_out[index_buffer_out] = math_c_floating_point_minimum(
+          math_c_floating_point_maximum((
+              value / (float) track->length_lanes
+            ),
+            -1.0f
+          ),
+          1.0f
         );
       } else {
         buffer_out[index_buffer_out] = (

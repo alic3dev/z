@@ -2,7 +2,8 @@
 
 #include <queue.h>
 
-#include <math.h>
+#include <math_c.h>
+
 #include <stdlib.h>
 #include <stdio.h>
 #include <sys/ioctl.h>
@@ -38,8 +39,8 @@ void display_render() {
     ] = '\0';
 
     unsigned int length_progress_indicators = (
-      (width - 1) * fmin(
-        fmax(
+      (width - 1) * math_c_floating_point_minimum(
+        math_c_floating_point_maximum(
           track_current->progress,
           0.0f
         ),
