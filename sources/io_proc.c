@@ -5,7 +5,7 @@
 #include <queue.h>
 #include <track.h>
 
-#include <cer0.h>
+#include <cer0_synthesizer.h>
 
 #include <pthread.h>
 #include <stdio.h>
@@ -77,7 +77,7 @@ OSStatus io_proc(
               track->lanes[
                 index_lane
               ].index_note
-            ].time * 32.0f))) == 0
+            ].time * 16.0f))) == 0
           ) {
             track->lanes[
               index_lane
@@ -89,10 +89,10 @@ OSStatus io_proc(
               index_lane
             ].length_notes;
 
-            cer0_phase_frequency_set(
+            cer0_synthesizer_frequency_set(
               &track->lanes[
                 index_lane
-              ].phase,
+              ].synthesizer,
               track->lanes[
                 index_lane
               ].notes[
@@ -103,16 +103,10 @@ OSStatus io_proc(
             );
           }
 
-          cer0_phase_poll(
+          value += cer0_synthesizer_poll(
             &track->lanes[
               index_lane
-            ].phase
-          );
-
-          value += cer0_signal_sine(
-            track->lanes[
-              index_lane
-            ].phase.value
+            ].synthesizer
           );
         }
 
@@ -121,11 +115,14 @@ OSStatus io_proc(
         );
       } else {
         buffer_out[index_buffer_out] = (
-          buffer_out[index_buffer_out - 1]
+          buffer_out[index_buffer_out - channel]
         );
       }
 
-      track->progress = ((float) io_proc_data->frame) / (((float) track->length) * 100.0f);
+      track->progress = (
+        ((float) io_proc_data->frame) / 
+        (((float) track->length) * 100.0f)
+      );
 
       if (
         channel == 0 &&
