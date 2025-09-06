@@ -195,7 +195,7 @@ void track_generate(
         index_lane
       ].synthesizer,
       track->lanes[
-        0
+        index_lane
       ].notes[
         0
       ].value
