@@ -79,19 +79,20 @@ void display_render() {
     "\e[?25l"
     "\e[H\e[2J\e[3J"
     "playing_track->{%s}\n"
-    "seed: %x%x%x%x\n"
     "upcoming_track->{%s}\n"
+    "\n"
+    "seed: %.2x %.2x %.2x %.2x\n"
     "\n"
     "%s\n"
     "\n"
     ": "
     "\e[?25h",
     track_current->name,
+    track_upcoming->name,
     track_current->buffer_seed[0],
     track_current->buffer_seed[1],
     track_current->buffer_seed[2],
     track_current->buffer_seed[3],
-    track_upcoming->name,
     buffer_track_progress
   );
 
