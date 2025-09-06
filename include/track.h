@@ -10,6 +10,11 @@ struct track_lane;
 struct track {
   char* name;
 
+  float seed;
+  unsigned char buffer_seed[
+    sizeof(float)
+  ];
+
   float speed;
   float length;
 
