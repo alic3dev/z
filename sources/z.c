@@ -4,6 +4,7 @@
 #include <io_proc.h>
 #include <io_proc_data.h>
 #include <queue.h>
+#include <settings.h>
 #include <track.h>
 #include <value.h>
 
@@ -16,6 +17,8 @@
 
 int main() {
   struct io_proc_data io_proc_data;
+
+  settings_initialize();
 
   value_seed();
 

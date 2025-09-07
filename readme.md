@@ -2,6 +2,26 @@
 
 z: a slow, quiet, radio. enjoy.
 
+## settings
+
+### location
+
+`${HOME}/.config/z`
+
+### options
+
+- `volume`:`float`
+
+#### format
+
+`name->{value};`
+
+### example
+
+```
+volume->{0.5};
+```
+
 ## development
 
 ### requirements
@@ -9,6 +29,7 @@ z: a slow, quiet, radio. enjoy.
 - [`cer0`](https://github.com/alic3dev/cer0)
 - [`clic3`](https://github.com/alic3dev/clic3)
 - [`interrupt_handler`](https://github.com/alic3dev/interrupt_handler)
+- [`math_c`](https://github.com/alic3dev/math_c)
 
 ### build
 

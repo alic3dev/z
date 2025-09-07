@@ -3,6 +3,7 @@
 #include <display.h>
 #include <io_proc_data.h>
 #include <queue.h>
+#include <settings.h>
 #include <track.h>
 
 #include <cer0_synthesizer.h>
@@ -61,9 +62,7 @@ OSStatus io_proc(
         io_proc_data->frame = (
           io_proc_data->frame + 1
         );
-      }
-
-      if (channel == 0) {
+        
         float value = 0.0f;
 
         for (
@@ -114,7 +113,7 @@ OSStatus io_proc(
         buffer_out[index_buffer_out] = math_c_floating_point_minimum(
           math_c_floating_point_maximum((
               value / (float) track->length_lanes
-            ),
+            ) * settings.volume,
             -1.0f
           ),
           1.0f
