@@ -10,6 +10,7 @@ directory_cero_include=${directory_cero}/include
 directory_cero_library=${directory_cero}/library
 
 directory_clic3=../clic3
+directory_clic3_include=${directory_clic3}/include
 directory_clic3_library=${directory_clic3}/library
 
 directory_interrupt_handler=../interrupt_handler
@@ -32,7 +33,7 @@ files_objects=${patsubst ${directory_sources}/%.c,${directory_objects}/%.o,${fil
 files_libraries=${file_cero_library} ${file_clic3_library} ${file_interrupt_handler_library} ${file_math_c_library}
 
 cc=clang
-c_includes=${addprefix -I,${directory_include} ${directory_cero_include} ${directory_interrupt_handler_include} ${directory_math_c_include}}
+c_includes=${addprefix -I,${directory_include} ${directory_cero_include} ${directory_clic3_include} ${directory_interrupt_handler_include} ${directory_math_c_include}}
 c_flags=-O3 ${c_includes}
 c_flags_output=-framework CoreAudio
 
