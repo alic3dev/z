@@ -2,6 +2,8 @@
 
 z: a slow, quiet, radio. enjoy.
 
+<img width="878" height="248" alt="display_with_seed" src="https://github.com/user-attachments/assets/94eff80e-1b01-4158-bd47-6203769c691c" />
+
 ## settings
 
 ### location
