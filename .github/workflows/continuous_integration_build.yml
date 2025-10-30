@@ -36,7 +36,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           repository: alic3dev/rand
-          path: interrupt_handler
+          path: rand
       - name: make_clic3
         run: cd clic3 && make
       - name: make_cer0
