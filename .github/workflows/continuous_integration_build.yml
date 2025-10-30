@@ -32,6 +32,11 @@ jobs:
         with:
           repository: alic3dev/interrupt_handler
           path: interrupt_handler
+      - name: checkout_rand
+        uses: actions/checkout@v4
+        with:
+          repository: alic3dev/rand
+          path: rand
       - name: make_clic3
         run: cd clic3 && make
       - name: make_cer0
@@ -40,5 +45,7 @@ jobs:
         run: cd math_c && make math_c
       - name: make_interrupt_handler
         run: cd interrupt_handler && make
+      - name: make_rand
+        run: cd rand && make
       - name: make_z
         run: cd z && make

@@ -1,6 +1,5 @@
 #include <track.h>
 
-#include <value.h>
 #include <queue.h>
 
 #include <cer0_octave_range.h>
@@ -9,18 +8,24 @@
 #include <cer0_scale.h>
 #include <cer0_synthesizer.h>
 
+#include <rand_functions.h>
+#include <rand_result.h>
+#include <rand_source.h>
+
 #include <stdlib.h>
 
-const unsigned char length_scales = 4;
-
-const unsigned char* scales[length_scales] = {
+const unsigned char* scales[
+  cer0_length_track_scales
+] = {
   cer0_scale_notes_harmonic_minor,
   cer0_scale_notes_minor_pentatonic,
   cer0_scale_notes_minor_pentatonic,
   cer0_scale_notes_minor_pentatonic
 };
 
-const unsigned char lengths_scales[length_scales] = {
+const unsigned char lengths_scales[
+  cer0_length_track_scales
+] = {
   cer0_scale_length_harmonic_minor,
   cer0_scale_length_minor_pentatonic,
   cer0_scale_length_minor_pentatonic,
@@ -32,20 +37,84 @@ float sample_rate = 44100.0f;
 void track_generate(
   struct track* track
 ) {
-  value_seed();
+  track->rand_parameters.length = 5;
+  track->rand_parameters.mode = rand_mode_bytes;
+  track->rand_parameters.error = 0;
+  track->rand_parameters.help = 0;
+  track->rand_parameters.type_source = rand_source_type_divisive;
 
-  track->seed = value_seed_value;
-  value_buffer_seed_set(track->buffer_seed);
+  track->rand_source_parameters.type_source = (
+    track->rand_parameters.type_source
+  );
 
-  unsigned char length_track_name = (int) value_get() % 33 + 10;
+  rand_source_initialize(
+    &track->rand_source,
+    &track->rand_source_parameters
+  );
+
+  struct rand_result rand_result;
+
+  rand_result_initialize(
+    &track->rand_result,
+    track->rand_parameters.length
+  );
+
+  unsigned char status_rand_get = rand_get(
+    &track->rand_source,
+    &track->rand_result,
+    &track->rand_parameters
+  );
+
+  track->seed = (
+    (struct rand_source_divisive_data*) track->rand_source.data
+  )->seed;
+
+  for (
+    unsigned char index_byte = 0;
+    index_byte < sizeof(float);
+    ++index_byte
+  ) {
+    track->buffer_seed[
+      index_byte
+    ] = (
+      (unsigned char*) &track->seed
+    )[
+      index_byte
+    ];
+  }
+
+  rand_get(
+    &track->rand_source,
+    &track->rand_result,
+    &track->rand_parameters
+  );
+
+  unsigned char length_track_name = (
+    track->rand_result.bytes[
+      0
+    ] % 33 + 10
+  );
 
   track->name = malloc(
     sizeof(char) *
     length_track_name
   );
 
-  unsigned int octave_minimum = (int) value_get() % 2 + 2;
-  unsigned int octave_maximum = (int) value_get() % 2 + 1 + octave_minimum;
+  unsigned int octave_minimum = (
+    track->rand_result.bytes[
+      1
+    ]
+  ) % 2 + 2;
+
+  unsigned int octave_maximum = (
+    (
+      track->rand_result.bytes[
+        2
+      ]
+    ) % 2 + 
+    1 + 
+    octave_minimum
+  );
 
   track->note_table = cer0_note_table_create(
     octave_minimum,
@@ -65,37 +134,51 @@ void track_generate(
 
   track->progress = 0.0f;
 
-  unsigned char index_scale = (int) value_get() % length_scales;
+  unsigned char index_scale = (
+    track->rand_result.bytes[
+      3
+    ] % cer0_length_track_scales
+  );
   track->scale = (unsigned char*) scales[index_scale];
   track->length_scale = lengths_scales[index_scale];
-  track->key = (int) value_get() % cer0_default_steps_notes;
+  track->key = (
+    track->rand_result.bytes[
+      4
+    ]
+  ) % cer0_default_steps_notes;
 
   for (
     unsigned char index_track_name = 0;
     index_track_name < length_track_name - 1;
     ++index_track_name
   ) {
-    switch ((int) value_get() % 10) {
+    rand_get(
+      &track->rand_source,
+      &track->rand_result,
+      &track->rand_parameters
+    );
+
+    switch (track->rand_result.bytes[0] % 10) {
       case 0:
       case 1:
       case 2:
         track->name[
           index_track_name
-        ] = 'a' + ((int) value_get() % 26);
+        ] = 'a' + (track->rand_result.bytes[1] % 26);
         break;
       case 3:
       case 4:
       case 5:
         track->name[
           index_track_name
-        ] = 'A' + ((int) value_get() % 26);
+        ] = 'A' + (track->rand_result.bytes[1] % 26);
         break;
       case 6:
       case 7:
       case 8:
         track->name[
           index_track_name
-        ] = '0' + ((int) value_get() % 10);
+        ] = '0' + (track->rand_result.bytes[1] % 10);
         break;
       case 9:
         track->name[
@@ -109,10 +192,30 @@ void track_generate(
     length_track_name - 1
   ] = '\0';
 
-  track->speed = (float)((int) value_get() % 1000) / 1000.0f;
-  track->length = (float)((int) value_get() % 1000 * 100 + 10000);
+  rand_get(
+    &track->rand_source,
+    &track->rand_result,
+    &track->rand_parameters
+  );
 
-  track->length_lanes = (int) value_get() % 10 + 4;
+  track->speed = (float)(
+    (
+      track->rand_result.bytes[0] *
+      track->rand_result.bytes[1]
+    ) % 1000
+  ) / 1000.0f;
+
+  track->length = (float)(
+    (
+      track->rand_result.bytes[2] *
+      track->rand_result.bytes[3]
+    ) % 1000 * 100 + 10000
+  );
+
+  track->length_lanes = (
+    track->rand_result.bytes[4]
+  ) % 10 + 4;
+
   track->lanes = malloc(
     sizeof(struct track_lane) *
     track->length_lanes
@@ -123,6 +226,12 @@ void track_generate(
     index_lane < track->length_lanes;
     ++index_lane
   ) {
+    rand_get(
+      &track->rand_source,
+      &track->rand_result,
+      &track->rand_parameters
+    );
+
     cer0_synthesizer_initialize(
       &track->lanes[
         index_lane
@@ -130,7 +239,9 @@ void track_generate(
       sample_rate
     );
 
-    unsigned char count_oscillators = ((int) value_get() % 4) + 2;
+    unsigned char count_oscillators = (
+      track->rand_result.bytes[0] % 4
+    ) + 2;
 
     for (
       unsigned char index_oscillator = 0;
@@ -140,14 +251,20 @@ void track_generate(
       cer0_synthesizer_oscillator_add(
         &track->lanes[
           index_lane
-        ].synthesizer,
-        ((int) value_get() % (cer0_length_signals - 2)) + 1
+        ].synthesizer, (
+          track->rand_result.bytes[index_oscillator + 1] %
+          (cer0_length_signals - 2)
+        ) + 1
       );
     }
 
     track->lanes[
       index_lane
-    ].length_notes = (int) value_get() % 400 + 100;
+    ].length_notes = (
+      track->rand_result.bytes[
+        4
+      ]
+    ) % 400 + 100;
 
     track->lanes[
       index_lane
@@ -165,12 +282,22 @@ void track_generate(
       ].length_notes;
       ++index_note
     ) {
+      rand_get(
+        &track->rand_source,
+        &track->rand_result,
+        &track->rand_parameters
+      );
+
       track->lanes[
         index_lane
       ].notes[
         index_note
       ].time = (
-        (float)((int) value_get() % 1000) /
+        (float)((
+            track->rand_result.bytes[0] *
+            track->rand_result.bytes[1]
+          ) % 1000
+        ) /
         1000.0f *
         track->length
       );
@@ -179,14 +306,21 @@ void track_generate(
         index_lane
       ].notes[
         index_note
-      ].value = track->note_table[(
-        track->scale[
-           (int) value_get() % track->length_scale
-        ] + (
-          cer0_default_steps_notes *
-          ((int) value_get() % track->range_octave)
-        ) + track->key
-      ) % track->length_note_table];
+      ].value = track->note_table[
+        (
+          track->scale[
+            (
+              track->rand_result.bytes[2] *
+              track->rand_result.bytes[3]
+            ) % track->length_scale
+          ] + (
+            cer0_default_steps_notes * (
+              track->rand_result.bytes[4] %
+              track->range_octave
+            )
+          ) + track->key
+        ) % track->length_note_table
+      ];
     }
 
     cer0_synthesizer_frequency_set(
@@ -209,6 +343,14 @@ void track_destroy(
 ) {
   free(track->name);
   free(track->note_table);
+
+  rand_result_clean(
+    &track->rand_result
+  );
+
+  rand_source_clean(
+    &track->rand_source
+  );
 
   for (
     unsigned char index_lane = 0;
