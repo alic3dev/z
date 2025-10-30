@@ -21,29 +21,44 @@ directory_math_c=../math_c
 directory_math_c_include=${directory_math_c}/include
 directory_math_c_library=${directory_math_c}/library
 
+directory_rand=../rand
+directory_rand_include=${directory_rand}/include
+directory_rand_library=${directory_rand}/library
+
 file_output=${directory_output}/${name}
 
-file_cero_library=${directory_cero_library}/cer0.o
-file_clic3_library=${directory_clic3_library}/clic3.o
-file_interrupt_handler_library=${directory_interrupt_handler_library}/interrupt_handler.o
-file_math_c_library=${directory_math_c_library}/math_c.o
+file_cero_library=${directory_cero_library}/cer0.0.dylib
+file_clic3_library=${directory_clic3_library}/clic3.0.dylib
+file_interrupt_handler_library=${directory_interrupt_handler_library}/interrupt_handler.0.dylib
+file_math_c_library=${directory_math_c_library}/math_c.0.dylib
+file_rand_library=${directory_rand_library}/rand.0.dylib
 
 files_sources=${wildcard ${directory_sources}/*.c}
 files_objects=${patsubst ${directory_sources}/%.c,${directory_objects}/%.o,${files_sources}}
-files_libraries=${file_cero_library} ${file_clic3_library} ${file_interrupt_handler_library} ${file_math_c_library}
+files_libraries=${file_cero_library} ${file_clic3_library} ${file_interrupt_handler_library} ${file_math_c_library} ${file_rand_library}
 
 cc=clang
-c_includes=${addprefix -I,${directory_include} ${directory_cero_include} ${directory_clic3_include} ${directory_interrupt_handler_include} ${directory_math_c_include}}
+c_includes=${addprefix -I,${directory_include} ${directory_cero_include} ${directory_clic3_include} ${directory_interrupt_handler_include} ${directory_math_c_include} ${directory_rand_include}}
 c_flags=-O3 ${c_includes}
 c_flags_output=-framework CoreAudio
 
 ${name}: ${file_output}
 
-run: .always
+run:
 	./${file_output}
 
 ${file_output}: ${files_objects} ${directory_output}
 	${cc} ${c_flags} ${c_flags_output} ${files_libraries} ${files_objects} -o ${file_output}
+	-rm ${directory_output}/${shell basename ${file_cero_library}}
+	-rm ${directory_output}/${shell basename ${file_clic3_library}}
+	-rm ${directory_output}/${shell basename ${file_interrupt_handler_library}}
+	-rm ${directory_output}/${shell basename ${file_math_c_library}}
+	-rm ${directory_output}/${shell basename ${file_rand_library}}
+	ln -s ../${file_cero_library} ${directory_output}/${shell basename ${file_cero_library}}
+	ln -s ../${file_clic3_library} ${directory_output}/${shell basename ${file_clic3_library}}
+	ln -s ../${file_interrupt_handler_library} ${directory_output}/${shell basename ${file_interrupt_handler_library}}
+	ln -s ../${file_math_c_library} ${directory_output}/${shell basename ${file_math_c_library}}
+	ln -s ../${file_rand_library} ${directory_output}/${shell basename ${file_rand_library}}
 
 ${directory_objects}/%.o: ${directory_sources}/%.c ${directory_objects}
 	${cc} ${c_flags} -c $< -o $@
@@ -61,5 +76,3 @@ clean_objects:
 
 clean_output:
 	-rm -r ${directory_output}
-
-.always:

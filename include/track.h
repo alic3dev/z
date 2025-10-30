@@ -3,6 +3,11 @@
 
 #include <cer0_synthesizer.h>
 
+#include <rand_result.h>
+#include <rand_source.h>
+
+#define cer0_length_track_scales 4
+
 extern float sample_rate;
 
 struct track_lane;
@@ -34,6 +39,11 @@ struct track {
   unsigned char key;
 
   unsigned char complete;
+
+  struct rand_parameters rand_parameters;
+  struct rand_result rand_result;
+  struct rand_source rand_source;
+  struct rand_source_parameters rand_source_parameters;
 };
 
 struct track_note {
