@@ -1,12 +1,10 @@
 #ifndef __z_track_h
 #define __z_track_h
 
-#include <cer0_synthesizer.h>
+#include <z_track_lane.h>
 
 #include <rand_result.h>
 #include <rand_source.h>
-
-struct z_track_lane;
 
 struct z_track {
   char* name;
@@ -38,20 +36,6 @@ struct z_track {
   struct rand_result rand_result;
   struct rand_source rand_source;
   struct rand_source_parameters rand_source_parameters;
-};
-
-struct z_track_note {
-  float time;
-  float value;
-};
-
-struct z_track_lane {
-  unsigned long int index_note;
-
-  unsigned long int length_notes;
-  struct z_track_note* notes;
-
-  struct cer0_synthesizer synthesizer;
 };
 
 void z_track_generate(

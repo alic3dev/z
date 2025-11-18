@@ -1,6 +1,8 @@
 #include <z_track.h>
 
 #include <z_queue.h>
+#include <z_track_note.h>
+#include <z_track_lane.h>
 
 #include <cer0_octave_range.h>
 #include <cer0_frequency_root.h>
@@ -278,7 +280,9 @@ void z_track_generate(
     track->lanes[
       index_lane
     ].notes = malloc(
-      sizeof(struct z_track_note) *
+      sizeof(
+        struct z_track_note
+      ) *
       track->lanes[
         index_lane
       ].length_notes
