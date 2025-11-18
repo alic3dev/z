@@ -82,15 +82,6 @@ OSStatus z_io_proc(
     z_io_proc_data->queue
   );
 
-  if (
-    z_queue->track_current == (void*)0 ||
-    z_queue->track_current->complete == 1
-  ) {
-    z_queue->track_current = (
-      z_queue->track_upcoming
-    );
-  }
-
   for (
     unsigned long int index_buffer = 0;
     index_buffer < buffer_list_audio_out->mNumberBuffers;
@@ -203,21 +194,34 @@ OSStatus z_io_proc(
 
       if (
         channel == 0 &&
-        z_io_proc_data->frame == (
+        z_io_proc_data->frame >= (
           z_queue->track_current->length *
           100
         )
       ) {
         z_io_proc_data->frame = 0;
 
-        z_queue->track_current->complete = 1;
+        z_track_destroy(
+          z_queue->track_current
+        );
+
+        free(z_queue->track_current);
 
         z_queue->track_current = (
           z_queue->track_upcoming
         );
 
-        pthread_mutex_unlock(
-          &z_queue->mutex_track_completion
+        z_queue->track_upcoming = malloc(
+          sizeof(struct z_track)
+        );
+
+        z_track_generate(
+          z_queue->track_upcoming,
+          z_queue->audio_output->sample_rate
+        );
+
+        z_display_render(
+          z_queue
         );
       }
     }

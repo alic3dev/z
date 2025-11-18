@@ -215,7 +215,7 @@ void z_track_generate(
     (
       track->rand_result.bytes[2] *
       track->rand_result.bytes[3]
-    ) % 11 * 9.1f + 1 + 119 * 911 * 119
+    ) % 11 * 9.1f + 1 + 119 * 911
   );
 
   track->length_lanes = (
@@ -273,7 +273,7 @@ void z_track_generate(
       track->rand_result.bytes[
         4
       ]
-    ) % (1 * (index_lane + 1)) * 5000;
+    ) % (1 * (index_lane + 1)) * 5000 / 119;
 
     track->lanes[
       index_lane
@@ -381,8 +381,6 @@ void z_track_generate(
       ].value
     );
   }
-
-  track->complete = 0;
 }
 
 void z_track_destroy(
