@@ -66,9 +66,14 @@ void z_track_generate(
     (struct rand_source_divisive_data*) track->rand_source.data
   )->seed;
 
+  unsigned char size_float = (
+    sizeof(float)
+  );
+
   for (
     unsigned char index_byte = 0;
-    index_byte < sizeof(float);
+    index_byte < size_float &&
+    index_byte < 4;
     ++index_byte
   ) {
     track->buffer_seed[
@@ -78,6 +83,16 @@ void z_track_generate(
     )[
       index_byte
     ];
+  }
+
+  for (
+    unsigned char index_byte = size_float;
+    index_byte < 4;
+    ++index_byte
+  ) {
+    track->buffer_seed[
+      index_byte
+    ] = 0x0;
   }
 
   rand_get(
