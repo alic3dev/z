@@ -1,6 +1,6 @@
-#include <track.h>
+#include <z_track.h>
 
-#include <queue.h>
+#include <z_queue.h>
 
 #include <cer0_octave_range.h>
 #include <cer0_frequency_root.h>
@@ -14,30 +14,27 @@
 
 #include <stdlib.h>
 
-const unsigned char* scales[
-  cer0_length_track_scales
-] = {
-  cer0_scale_notes_harmonic_minor,
-  cer0_scale_notes_minor_pentatonic,
-  cer0_scale_notes_minor_pentatonic,
-  cer0_scale_notes_minor_pentatonic
-};
 
-const unsigned char lengths_scales[
-  cer0_length_track_scales
-] = {
-  cer0_scale_length_harmonic_minor,
-  cer0_scale_length_minor_pentatonic,
-  cer0_scale_length_minor_pentatonic,
-  cer0_scale_length_minor_pentatonic
-};
-
-float sample_rate = 44100.0f;
-
-void track_generate(
-  struct track* track
+void z_track_generate(
+  struct z_track* track,
+  float sample_rate
 ) {
-  track->rand_parameters.length = 5;
+  unsigned char length_scales = 1;
+
+  const unsigned char* z_scales[
+    1
+  ] = {
+    cer0_scale_notes_major_pentatonic
+  };
+
+  unsigned char z_lengths_scales[
+    1
+  ] = {
+    cer0_scale_length_major_pentatonic
+  };
+
+
+  track->rand_parameters.length = 10;
   track->rand_parameters.mode = rand_mode_bytes;
   track->rand_parameters.error = 0;
   track->rand_parameters.help = 0;
@@ -100,21 +97,8 @@ void track_generate(
     length_track_name
   );
 
-  unsigned int octave_minimum = (
-    track->rand_result.bytes[
-      1
-    ]
-  ) % 2 + 2;
-
-  unsigned int octave_maximum = (
-    (
-      track->rand_result.bytes[
-        2
-      ]
-    ) % 2 + 
-    1 + 
-    octave_minimum
-  );
+  unsigned int octave_minimum = 0;
+  unsigned int octave_maximum = 5;
 
   track->note_table = cer0_note_table_create(
     octave_minimum,
@@ -137,10 +121,14 @@ void track_generate(
   unsigned char index_scale = (
     track->rand_result.bytes[
       3
-    ] % cer0_length_track_scales
+    ] % length_scales
   );
-  track->scale = (unsigned char*) scales[index_scale];
-  track->length_scale = lengths_scales[index_scale];
+  track->scale = (
+    z_scales[
+      index_scale
+    ]
+  );
+  track->length_scale = z_lengths_scales[index_scale];
   track->key = (
     track->rand_result.bytes[
       4
@@ -158,7 +146,10 @@ void track_generate(
       &track->rand_parameters
     );
 
-    switch (track->rand_result.bytes[0] % 10) {
+    switch (
+      track->rand_result.bytes[0] %
+      10
+    ) {
       case 0:
       case 1:
       case 2:
@@ -202,22 +193,22 @@ void track_generate(
     (
       track->rand_result.bytes[0] *
       track->rand_result.bytes[1]
-    ) % 1000
-  ) / 1000.0f;
+    ) % 119
+  ) / 119.0f;
 
   track->length = (float)(
     (
       track->rand_result.bytes[2] *
       track->rand_result.bytes[3]
-    ) % 1000 * 100 + 10000
+    ) % 11 * 9.1f + 1 + 119 * 911 * 119
   );
 
   track->length_lanes = (
     track->rand_result.bytes[4]
-  ) % 10 + 4;
+  ) % 9 + 11;
 
   track->lanes = malloc(
-    sizeof(struct track_lane) *
+    sizeof(struct z_track_lane) *
     track->length_lanes
   );
 
@@ -240,8 +231,8 @@ void track_generate(
     );
 
     unsigned char count_oscillators = (
-      track->rand_result.bytes[0] % 4
-    ) + 2;
+      track->rand_result.bytes[0] % 11
+    ) + 9;
 
     for (
       unsigned char index_oscillator = 0;
@@ -252,9 +243,12 @@ void track_generate(
         &track->lanes[
           index_lane
         ].synthesizer, (
-          track->rand_result.bytes[index_oscillator + 1] %
-          (cer0_length_signals - 2)
-        ) + 1
+          index_lane >= (track->length_lanes - 2)
+          ? index_lane == (track->length_lanes - 2)
+          ? 3
+          : 4
+          : 2
+        )
       );
     }
 
@@ -264,16 +258,27 @@ void track_generate(
       track->rand_result.bytes[
         4
       ]
-    ) % 400 + 100;
+    ) % (1 * (index_lane + 1)) * 5000;
 
     track->lanes[
       index_lane
     ].notes = malloc(
-      sizeof(struct track_note) *
+      sizeof(struct z_track_note) *
       track->lanes[
         index_lane
       ].length_notes
     );
+
+    rand_get(
+      &track->rand_source,
+      &track->rand_result,
+      &track->rand_parameters
+    );
+
+    float speed = ((float) ((
+      track->rand_result.bytes[5] *
+      track->rand_result.bytes[6]
+    ) % 9) + 11) * 119.0f / (float) (index_lane + 1);
 
     for (
       unsigned long int index_note = 0;
@@ -288,19 +293,46 @@ void track_generate(
         &track->rand_parameters
       );
 
-      track->lanes[
-        index_lane
-      ].notes[
-        index_note
-      ].time = (
-        (float)((
-            track->rand_result.bytes[0] *
-            track->rand_result.bytes[1]
-          ) % 1000
-        ) /
-        1000.0f *
-        track->length
-      );
+      if (
+        index_note > 0
+      ) {
+        track->lanes[
+          index_lane
+        ].notes[
+          index_note
+        ].time = (
+          track->lanes[
+            index_lane
+          ].notes[
+            index_note - 1
+          ].time +
+          (float)((
+              track->rand_result.bytes[0] *
+              track->rand_result.bytes[1]
+            ) % 1000
+          ) /
+          speed *
+          (float) track->length / (float) track->lanes[
+            index_lane
+          ].length_notes
+        );
+      } else {
+        track->lanes[
+          index_lane
+        ].notes[
+          index_note
+        ].time = (
+          (float)((
+              track->rand_result.bytes[0] *
+              track->rand_result.bytes[1]
+            ) % 1000
+          ) /
+          speed *
+          (float) track->length / (float) track->lanes[
+            index_lane
+          ].length_notes
+        );
+      }
 
       track->lanes[
         index_lane
@@ -338,11 +370,16 @@ void track_generate(
   track->complete = 0;
 }
 
-void track_destroy(
-  struct track* track
+void z_track_destroy(
+  struct z_track* track
 ) {
-  free(track->name);
-  free(track->note_table);
+  free(
+    track->name
+  );
+
+  free(
+    track->note_table
+  );
 
   rand_result_clean(
     &track->rand_result
@@ -370,7 +407,7 @@ void track_destroy(
     );
   }
 
-  free(track->lanes);
-
-  free(track);
+  free(
+    track->lanes
+  );
 }

@@ -1,11 +1,11 @@
 #include <z.h>
 
-#include <close_exit.h>
-#include <io_proc.h>
-#include <io_proc_data.h>
-#include <queue.h>
-#include <settings.h>
-#include <track.h>
+#include <z_close_exit.h>
+#include <z_io_proc.h>
+#include <z_io_proc_data.h>
+#include <z_queue.h>
+#include <z_settings.h>
+#include <z_track.h>
 
 #include <cer0.h>
 #include <interrupt_handler.h>
@@ -15,45 +15,50 @@
 #include <pthread.h>
 
 int main() {
-  struct io_proc_data io_proc_data;
+  struct z_io_proc_data z_io_proc_data;
 
-  settings_initialize();
-
-  queue_initialize();
-
-  close_exit_initialize();
+  z_close_exit_initialize();
 
   interrupt_handler_initialize();
 
   interrupt_handler_interrupt_function_add(
-    close_exit
-  );
-
-  io_proc_data_initialize(
-    &io_proc_data
+    z_close_exit
   );
 
   struct cer0_audio_output audio_output;
+
+  z_io_proc_data_initialize(
+    &z_io_proc_data,
+    &audio_output
+  );
+
   cer0_audio_output_initialize(
     &audio_output,
-    io_proc,
-    &io_proc_data
+    z_io_proc,
+    &z_io_proc_data
   );
-
-  io_proc_data.initialized = 1;
 
   pthread_mutex_lock(
-    &close_exit_mutex
+    &z_close_exit_mutex
   );
 
-  track_destroy(track_current);
-  track_destroy(track_upcoming);
+  z_io_proc_data.exiting = 1;
 
-  queue_destroy();
+  pthread_mutex_lock(
+    &z_io_proc_data.mutex_exited
+  );
 
   cer0_audio_output_destroy(
     &audio_output
   );
 
+  pthread_mutex_destroy(
+    &z_io_proc_data.mutex_exited
+  );
+
+  pthread_mutex_destroy(
+    &z_io_proc_data.mutex_exited
+  );
+  
   return 0;
 }

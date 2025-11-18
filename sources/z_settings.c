@@ -1,4 +1,4 @@
-#include <settings.h>
+#include <z_settings.h>
 
 #include <clic3_bytes.h>
 #include <clic3_char_arrays.h>
@@ -6,11 +6,11 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-struct settings settings = {
-  .volume = 1.0f
-};
+void z_settings_initialize(
+  struct z_settings* settings
+) {
+  settings->volume = 1.0f;
 
-void settings_initialize() {
   char* path_home = getenv("HOME");
 
   char* path_settings = clic3_char_arrays_concatenate(
@@ -23,9 +23,13 @@ void settings_initialize() {
     "r"
   );
 
-  free(path_settings);
+  free(
+    path_settings
+  );
 
-  if (file_settings != (void*)0) {
+  if (
+    file_settings != (void*)0
+  ) {
     char character_file_settings = getc(
       file_settings
     );
@@ -96,8 +100,13 @@ void settings_initialize() {
           length_settings_value + 1
         );
 
-        settings_name[index_value_start] = '\0';
-        settings_value[index_value_start] = '\0';
+        settings_name[
+          index_value_start
+        ] = '\0';
+        
+        settings_value[
+          index_value_start
+        ] = '\0';
 
         clic3_bytes_copy(
           settings_name,
@@ -120,14 +129,19 @@ void settings_initialize() {
 
           clic3_char_array_to_float(
             settings_value,
-            &settings.volume
+            &settings->volume
           );
         }
 
         length_buffer_line_file_settings = 0;
 
-        free(settings_name);
-        free(settings_value);
+        free(
+          settings_name
+        );
+
+        free(
+          settings_value
+        );
       }
 
       character_file_settings = getc(
@@ -135,8 +149,12 @@ void settings_initialize() {
       );
     }
 
-    free(buffer_line_file_settings);
+    free(
+      buffer_line_file_settings
+    );
   }
 
-  fclose(file_settings);
+  fclose(
+    file_settings
+  );
 }
