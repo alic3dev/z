@@ -1,18 +1,12 @@
-#ifndef __track_h
-#define __track_h
+#ifndef __z_track_h
+#define __z_track_h
 
-#include <cer0_synthesizer.h>
+#include <z_track_lane.h>
 
 #include <rand_result.h>
 #include <rand_source.h>
 
-#define cer0_length_track_scales 4
-
-extern float sample_rate;
-
-struct track_lane;
-
-struct track {
+struct z_track {
   char* name;
 
   float seed;
@@ -26,19 +20,17 @@ struct track {
   float progress;
 
   unsigned char length_lanes;
-  struct track_lane* lanes;
+  struct z_track_lane* lanes;
 
   float* note_table;
   unsigned int length_note_table;
 
   unsigned char range_octave;
 
-  unsigned char* scale;
+  const unsigned char* scale;
   unsigned char length_scale;
 
   unsigned char key;
-
-  unsigned char complete;
 
   struct rand_parameters rand_parameters;
   struct rand_result rand_result;
@@ -46,26 +38,13 @@ struct track {
   struct rand_source_parameters rand_source_parameters;
 };
 
-struct track_note {
-  float time;
-  float value;
-};
-
-struct track_lane {
-  unsigned long int index_note;
-
-  unsigned long int length_notes;
-  struct track_note* notes;
-
-  struct cer0_synthesizer synthesizer;
-};
-
-void track_generate(
-  struct track*
+void z_track_generate(
+  struct z_track*,
+  float
 );
 
-void track_destroy(
-  struct track*
+void z_track_destroy(
+  struct z_track*
 );
 
 #endif
