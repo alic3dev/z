@@ -21,21 +21,26 @@ void z_display_render(
 
   char* buffer_track_progress;
 
-  if (status_ioctl == -1) {
+  if (
+    status_ioctl == -1 ||
+    terminal_size.ws_col < 1
+  ) {
     buffer_track_progress = malloc(0);
   } else {
-    unsigned int width = (terminal_size.ws_col);
+    unsigned int width = terminal_size.ws_col;
 
     buffer_track_progress = malloc(
       sizeof(char) * (
-        width
-      ) + 1
+        width + 1
+      )
     );
 
     buffer_track_progress[0] = '|';
+    
     buffer_track_progress[
-      width - 1
+      (width - 1)
     ] = '|';
+
     buffer_track_progress[
       width
     ] = '\0';

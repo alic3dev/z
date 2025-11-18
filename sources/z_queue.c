@@ -33,10 +33,6 @@ void z_queue_initialize(
     z_queue->audio_output->sample_rate
   );
 
-  z_display_render(
-    z_queue
-  );
-
   pthread_mutex_init(
     &z_queue->mutex_track_completion,
     (void*)0
