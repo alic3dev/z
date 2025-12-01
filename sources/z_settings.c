@@ -11,7 +11,9 @@ void z_settings_initialize(
 ) {
   settings->volume = 1.0f;
 
-  char* path_home = getenv("HOME");
+  char* path_home = getenv(
+    "HOME"
+  );
 
   char* path_settings = clic3_char_arrays_concatenate(
     path_home,
@@ -45,7 +47,10 @@ void z_settings_initialize(
       feof(file_settings) == 0 &&
       character_file_settings != '\0'
     ) {
-      ++length_buffer_line_file_settings;
+      length_buffer_line_file_settings = (
+        length_buffer_line_file_settings +
+        1
+      );
 
       buffer_line_file_settings = realloc(
         buffer_line_file_settings,
@@ -54,7 +59,8 @@ void z_settings_initialize(
       );
 
       buffer_line_file_settings[
-        length_buffer_line_file_settings - 1
+        length_buffer_line_file_settings -
+        1
       ] = character_file_settings;
 
       if (
@@ -70,16 +76,20 @@ void z_settings_initialize(
           index_value_start == 0 ||
           length_buffer_line_file_settings < index_value_start + 6 ||
           buffer_line_file_settings[
-            length_buffer_line_file_settings - 2
+            length_buffer_line_file_settings -
+            2
           ] != ';' ||
           buffer_line_file_settings[
-            length_buffer_line_file_settings - 3
+            length_buffer_line_file_settings -
+            3
           ] != '}' ||
           buffer_line_file_settings[
-            index_value_start + 1
+            index_value_start +
+            1
           ] != '{'
         ) {
           length_buffer_line_file_settings = 0;
+
           continue;
         }
 
@@ -87,17 +97,21 @@ void z_settings_initialize(
         char* settings_value;
 
         unsigned int length_settings_value = (
-          length_buffer_line_file_settings - index_value_start - 5
+          length_buffer_line_file_settings -
+          index_value_start -
+          5
         );
 
         settings_name = malloc(
           sizeof(char) *
-          index_value_start + 1
+          index_value_start +
+          1
         );
 
         settings_value = malloc(
           sizeof(char) *
-          length_settings_value + 1
+          length_settings_value +
+          1
         );
 
         settings_name[
@@ -111,7 +125,8 @@ void z_settings_initialize(
         clic3_bytes_copy(
           settings_name,
           buffer_line_file_settings,
-          index_value_start - 1
+          index_value_start -
+          1
         );
 
         if (
@@ -123,7 +138,9 @@ void z_settings_initialize(
         ) {
           clic3_bytes_copy(
             settings_value,
-            buffer_line_file_settings + index_value_start + 2,
+            buffer_line_file_settings +
+            index_value_start +
+            2,
             length_settings_value
           );
 

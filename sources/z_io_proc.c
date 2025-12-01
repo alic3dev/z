@@ -87,7 +87,11 @@ OSStatus z_io_proc(
     index_buffer < buffer_list_audio_out->mNumberBuffers;
     ++index_buffer
   ) {
-    AudioBuffer audio_buffer_current = buffer_list_audio_out->mBuffers[index_buffer];
+    AudioBuffer audio_buffer_current = (
+      buffer_list_audio_out->mBuffers[
+        index_buffer
+      ]
+    );
 
     float* buffer_out = audio_buffer_current.mData;
     unsigned long int size_buffer_out = audio_buffer_current.mDataByteSize / sizeof(float);
@@ -113,13 +117,21 @@ OSStatus z_io_proc(
           ++index_lane
         ) {
           if (
-            ((z_io_proc_data->frame + 1) % ((unsigned long long int) (z_queue->track_current->lanes[
-              index_lane
-            ].notes[
-              z_queue->track_current->lanes[
-                index_lane
-              ].index_note
-            ].time * 16.0f))) == 0
+            (
+              (z_io_proc_data->frame + 1) %
+              (
+                (unsigned long long int) (
+                  z_queue->track_current->lanes[
+                    index_lane
+                  ].notes[
+                    z_queue->track_current->lanes[
+                      index_lane
+                    ].index_note
+                  ].time *
+                  16.0f
+                )
+              )
+            ) == 0
           ) {
             z_queue->track_current->lanes[
               index_lane
@@ -164,15 +176,19 @@ OSStatus z_io_proc(
           );
         }
 
-        buffer_out[index_buffer_out] = math_c_floating_point_minimum(
-          math_c_floating_point_maximum((
-              value / (
-                (float) z_queue->track_current->length_lanes
-              )
-            ) * z_io_proc_data->settings.volume,
-            -1.0f
-          ),
-          1.0f
+        buffer_out[
+          index_buffer_out
+        ] = (
+          math_c_floating_point_minimum(
+            math_c_floating_point_maximum((
+                value / (
+                  (float) z_queue->track_current->length_lanes
+                )
+              ) * z_io_proc_data->settings.volume,
+              -1.0f
+            ),
+            1.0f
+          )
         );
       } else {
         buffer_out[
