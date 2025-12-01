@@ -7,23 +7,23 @@ directory_sources=sources
 
 directory_cero=../cer0
 directory_cero_include=${directory_cero}/include
-directory_cero_library=${directory_cero}/library
+directory_cero_library=${directory_cero}/library/macos/release
 
 directory_clic3=../clic3
 directory_clic3_include=${directory_clic3}/include
-directory_clic3_library=${directory_clic3}/library
+directory_clic3_library=${directory_clic3}/library/macos/release
 
 directory_interrupt_handler=../interrupt_handler
 directory_interrupt_handler_include=${directory_interrupt_handler}/include
-directory_interrupt_handler_library=${directory_interrupt_handler}/library
+directory_interrupt_handler_library=${directory_interrupt_handler}/library/macos/release
 
 directory_math_c=../math_c
 directory_math_c_include=${directory_math_c}/include
-directory_math_c_library=${directory_math_c}/library
+directory_math_c_library=${directory_math_c}/library/macos/release
 
 directory_rand=../rand
 directory_rand_include=${directory_rand}/include
-directory_rand_library=${directory_rand}/library
+directory_rand_library=${directory_rand}/library/macos/release
 
 file_output=${directory_output}/${name}
 
@@ -37,9 +37,18 @@ files_sources=${wildcard ${directory_sources}/*.c}
 files_objects=${patsubst ${directory_sources}/%.c,${directory_objects}/%.o,${files_sources}}
 files_libraries=${file_cero_library} ${file_clic3_library} ${file_interrupt_handler_library} ${file_math_c_library} ${file_rand_library}
 
+ifndef target_device_version
+	target_device_version=26.1
+endif
+
+target_platform=arm64-apple-macos${target_device_version}
+
+directory_sdk=${shell xcrun --sdk macosx${target_device_version} --show-sdk-path}
+
 cc=clang
+c_flags_platform=-target ${target_platform} -isysroot ${directory_sdk}
 c_includes=${addprefix -I,${directory_include} ${directory_cero_include} ${directory_clic3_include} ${directory_interrupt_handler_include} ${directory_math_c_include} ${directory_rand_include}}
-c_flags=-O3 ${c_includes}
+c_flags=-O3 ${c_flags_platform} ${c_includes} -Daudio_enabled=1
 c_flags_output=-framework CoreAudio
 
 ${name}: ${file_output}
