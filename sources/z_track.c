@@ -10,12 +10,12 @@
 #include <cer0_scale.h>
 #include <cer0_synthesizer.h>
 
+#include <rand_clean.h>
 #include <rand_functions.h>
 #include <rand_result.h>
 #include <rand_source.h>
 
 #include <stdlib.h>
-
 
 void z_track_generate(
   struct z_track* track,
@@ -34,7 +34,6 @@ void z_track_generate(
   ] = {
     cer0_scale_length_major_pentatonic
   };
-
 
   track->rand_parameters.length = 10;
   track->rand_parameters.mode = rand_mode_bytes;
@@ -65,7 +64,8 @@ void z_track_generate(
   );
 
   track->seed = (
-    (struct rand_source_divisive_data*) track->rand_source.data
+    (struct rand_source_divisive_data*)
+    track->rand_source.data
   )->seed;
 
   unsigned char size_float = (
@@ -81,7 +81,8 @@ void z_track_generate(
     track->buffer_seed[
       index_byte
     ] = (
-      (unsigned char*) &track->seed
+      (unsigned char*)
+      &track->seed
     )[
       index_byte
     ];
@@ -106,7 +107,9 @@ void z_track_generate(
   unsigned char length_track_name = (
     track->rand_result.bytes[
       0
-    ] % 33 + 10
+    ] %
+    33 +
+    10
   );
 
   track->name = malloc(
@@ -138,19 +141,28 @@ void z_track_generate(
   unsigned char index_scale = (
     track->rand_result.bytes[
       3
-    ] % length_scales
+    ] %
+    length_scales
   );
+
   track->scale = (
     z_scales[
       index_scale
     ]
   );
-  track->length_scale = z_lengths_scales[index_scale];
+
+  track->length_scale = (
+    z_lengths_scales[
+      index_scale
+    ]
+  );
+
   track->key = (
     track->rand_result.bytes[
       4
-    ]
-  ) % cer0_default_steps_notes;
+    ] %
+    cer0_default_steps_notes
+  );
 
   for (
     unsigned char index_track_name = 0;
@@ -172,21 +184,36 @@ void z_track_generate(
       case 2:
         track->name[
           index_track_name
-        ] = 'a' + (track->rand_result.bytes[1] % 26);
+        ] = (
+          'a' + (
+            track->rand_result.bytes[1] %
+            26
+          )
+        );
         break;
       case 3:
       case 4:
       case 5:
         track->name[
           index_track_name
-        ] = 'A' + (track->rand_result.bytes[1] % 26);
+        ] = (
+          'A' + (
+            track->rand_result.bytes[1] %
+            26
+          )
+        );
         break;
       case 6:
       case 7:
       case 8:
         track->name[
           index_track_name
-        ] = '0' + (track->rand_result.bytes[1] % 10);
+        ] = (
+          '0' + (
+            track->rand_result.bytes[1] %
+            10
+          )
+        );
         break;
       case 9:
         track->name[
@@ -197,7 +224,8 @@ void z_track_generate(
   }
 
   track->name[
-    length_track_name - 1
+    length_track_name -
+    1
   ] = '\0';
 
   rand_get(
@@ -206,26 +234,39 @@ void z_track_generate(
     &track->rand_parameters
   );
 
-  track->speed = (float)(
-    (
-      track->rand_result.bytes[0] *
-      track->rand_result.bytes[1]
-    ) % 119
-  ) / 119.0f;
+  track->speed = (
+    (float) (
+      (
+        track->rand_result.bytes[0] *
+        track->rand_result.bytes[1]
+      ) %
+      119
+    ) /
+    119.0f
+  );
 
-  track->length = (float)(
+  track->length = (float) (
     (
       track->rand_result.bytes[2] *
       track->rand_result.bytes[3]
-    ) % 11 * 9.1f + 1 + 119 * 911
+    ) %
+    11 *
+    9.1f +
+    1.0f +
+    119.0f *
+    911.0f
   );
 
   track->length_lanes = (
-    track->rand_result.bytes[4]
-  ) % 9 + 11;
+    track->rand_result.bytes[4] %
+    9 +
+    11
+  );
 
   track->lanes = malloc(
-    sizeof(struct z_track_lane) *
+    sizeof(
+      struct z_track_lane
+    ) *
     track->length_lanes
   );
 
@@ -234,6 +275,12 @@ void z_track_generate(
     index_lane < track->length_lanes;
     ++index_lane
   ) {
+    struct z_track_lane* track_lane = &(
+      track->lanes[
+        index_lane
+      ]
+    );
+
     rand_get(
       &track->rand_source,
       &track->rand_result,
@@ -241,15 +288,15 @@ void z_track_generate(
     );
 
     cer0_synthesizer_initialize(
-      &track->lanes[
-        index_lane
-      ].synthesizer,
+      &track_lane->synthesizer,
       sample_rate
     );
 
     unsigned char count_oscillators = (
-      track->rand_result.bytes[0] % 11
-    ) + 9;
+      track->rand_result.bytes[0] %
+      11 +
+      9
+    );
 
     for (
       unsigned char index_oscillator = 0;
@@ -257,11 +304,15 @@ void z_track_generate(
       ++index_oscillator
     ) {
       cer0_synthesizer_oscillator_add(
-        &track->lanes[
-          index_lane
-        ].synthesizer, (
-          index_lane >= (track->length_lanes - 2)
-          ? index_lane == (track->length_lanes - 2)
+        &track_lane->synthesizer, (
+          index_lane >= (
+            track->length_lanes -
+            2
+          )
+          ? index_lane == (
+            track->length_lanes -
+            2
+          )
           ? 3
           : 4
           : 2
@@ -269,23 +320,24 @@ void z_track_generate(
       );
     }
 
-    track->lanes[
-      index_lane
-    ].length_notes = (
+    track_lane->length_notes = (
       track->rand_result.bytes[
         4
-      ]
-    ) % (1 * (index_lane + 1)) * 5000 / 119;
+      ] % (
+        1 * (
+          index_lane +
+          1
+        )
+      ) *
+      5000 /
+      119
+    );
 
-    track->lanes[
-      index_lane
-    ].notes = malloc(
+    track_lane->notes = malloc(
       sizeof(
         struct z_track_note
       ) *
-      track->lanes[
-        index_lane
-      ].length_notes
+      track_lane->length_notes
     );
 
     rand_get(
@@ -294,16 +346,31 @@ void z_track_generate(
       &track->rand_parameters
     );
 
-    float speed = ((float) ((
-      track->rand_result.bytes[5] *
-      track->rand_result.bytes[6]
-    ) % 9) + 11) * 119.0f / (float) (index_lane + 1);
+    float speed = (
+      (
+        (float) (
+          (
+            track->rand_result.bytes[5] *
+            track->rand_result.bytes[6]
+          ) %
+          9
+        ) + 
+        11.0f
+      ) *
+      119.0f /
+      (float) (
+        index_lane +
+        1
+      )
+    );
+
+    struct z_track_note* notes = (
+      track_lane->notes
+    );
 
     for (
       unsigned long int index_note = 0;
-      index_note < track->lanes[
-        index_lane
-      ].length_notes;
+      index_note < track_lane->length_notes;
       ++index_note
     ) {
       rand_get(
@@ -312,75 +379,69 @@ void z_track_generate(
         &track->rand_parameters
       );
 
+      struct z_track_note note = (
+        notes[
+          index_note
+        ]
+      );
+
       if (
         index_note > 0
       ) {
-        track->lanes[
-          index_lane
-        ].notes[
-          index_note
-        ].time = (
-          track->lanes[
-            index_lane
-          ].notes[
-            index_note - 1
+        note.time = (
+          notes[
+            index_note -
+            1
           ].time +
-          (float)((
+          (float) (
+            (
               track->rand_result.bytes[0] *
               track->rand_result.bytes[1]
-            ) % 1000
+            ) %
+            1000
           ) /
           speed *
-          (float) track->length / (float) track->lanes[
-            index_lane
-          ].length_notes
+          (float) track->length /
+          (float) track_lane->length_notes
         );
       } else {
-        track->lanes[
-          index_lane
-        ].notes[
-          index_note
-        ].time = (
-          (float)((
+        note.time = (
+          (float) (
+            (
               track->rand_result.bytes[0] *
               track->rand_result.bytes[1]
-            ) % 1000
+            ) %
+            1000
           ) /
           speed *
-          (float) track->length / (float) track->lanes[
-            index_lane
-          ].length_notes
+          (float) track->length /
+          (float) track_lane->length_notes
         );
       }
 
-      track->lanes[
-        index_lane
-      ].notes[
-        index_note
-      ].value = track->note_table[
+      note.value = track->note_table[
         (
           track->scale[
             (
               track->rand_result.bytes[2] *
               track->rand_result.bytes[3]
-            ) % track->length_scale
+            ) %
+            track->length_scale
           ] + (
             cer0_default_steps_notes * (
               track->rand_result.bytes[4] %
               track->range_octave
             )
-          ) + track->key
-        ) % track->length_note_table
+          ) +
+          track->key
+        ) %
+        track->length_note_table
       ];
     }
 
     cer0_synthesizer_frequency_set(
-      &track->lanes[
-        index_lane
-      ].synthesizer,
-      track->lanes[
-        index_lane
-      ].notes[
+      &track_lane->synthesizer,
+      notes[
         0
       ].value
     );
@@ -398,11 +459,8 @@ void z_track_destroy(
     track->note_table
   );
 
-  rand_result_clean(
-    &track->rand_result
-  );
-
-  rand_source_clean(
+  rand_clean(
+    &track->rand_result,
     &track->rand_source
   );
 

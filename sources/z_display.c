@@ -46,7 +46,8 @@ void z_display_render(
     ] = '\0';
 
     unsigned int length_progress_indicators = (
-      (width - 1) * math_c_floating_point_minimum(
+      (width - 1) *
+      math_c_floating_point_minimum(
         math_c_floating_point_maximum(
           z_queue->track_current->progress,
           0.0f
