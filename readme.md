@@ -32,6 +32,7 @@ volume->{0.5};
 - [`clic3`](https://github.com/alic3dev/clic3)
 - [`interrupt_handler`](https://github.com/alic3dev/interrupt_handler)
 - [`math_c`](https://github.com/alic3dev/math_c)
+- [`rand`](https://github.com/alic3dev/rand)
 
 ### build
 
