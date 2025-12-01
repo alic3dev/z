@@ -379,7 +379,7 @@ void z_track_generate(
         &track->rand_parameters
       );
 
-      struct z_track_note note = (
+      struct z_track_note* note = &(
         notes[
           index_note
         ]
@@ -388,7 +388,7 @@ void z_track_generate(
       if (
         index_note > 0
       ) {
-        note.time = (
+        note->time = (
           notes[
             index_note -
             1
@@ -405,7 +405,7 @@ void z_track_generate(
           (float) track_lane->length_notes
         );
       } else {
-        note.time = (
+        note->time = (
           (float) (
             (
               track->rand_result.bytes[0] *
@@ -419,7 +419,7 @@ void z_track_generate(
         );
       }
 
-      note.value = track->note_table[
+      note->value = track->note_table[
         (
           track->scale[
             (
