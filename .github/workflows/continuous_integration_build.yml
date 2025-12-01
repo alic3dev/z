@@ -15,8 +15,9 @@ jobs:
       - name: checkout_z
         uses: actions/checkout@v5
         with:
+          repository: alic3dev/z
           path: z
-     - name: cache_restore_cer0
+      - name: cache_restore_cer0
         id: cache_restore_cer0
         uses: actions/cache/restore@v4
         with:
@@ -92,7 +93,7 @@ jobs:
         if: steps.cache_restore_rand.outputs.cache-hit != 'true'
         run: cd rand && make rand_dylib target_device_version=${{ env.target_device_version_macos }}
       - name: make_z
-        run: cd z && make
+        run: cd z && make z target_device_version=${{ env.target_device_version_macos }}
       - name: cache_save_cer0
         id: cache_save_cer0
         if: steps.cache_restore_cer0.outputs.cache-hit != 'true'
