@@ -56,7 +56,8 @@ ${name}: ${file_output}
 run:
 	./${file_output}
 
-${file_output}: ${files_objects} ${directory_output}
+${file_output}: ${files_objects}
+	mkdir -p ${directory_output}
 	${cc} ${c_flags} ${c_flags_output} ${files_libraries} ${files_objects} -o ${file_output}
 	-rm ${directory_output}/${shell basename ${file_cero_library}}
 	-rm ${directory_output}/${shell basename ${file_clic3_library}}
@@ -69,14 +70,9 @@ ${file_output}: ${files_objects} ${directory_output}
 	ln -s ../${file_math_c_library} ${directory_output}/${shell basename ${file_math_c_library}}
 	ln -s ../${file_rand_library} ${directory_output}/${shell basename ${file_rand_library}}
 
-${directory_objects}/%.o: ${directory_sources}/%.c ${directory_objects}
+${directory_objects}/%.o: ${directory_sources}/%.c
+	mkdir -p ${directory_objects}
 	${cc} ${c_flags} -c $< -o $@
-
-${directory_objects}:
-	mkdir ${directory_objects}
-
-${directory_output}:
-	mkdir ${directory_output}
 
 clean: clean_objects clean_output
 
