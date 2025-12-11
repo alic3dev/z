@@ -21,18 +21,26 @@ void z_track_generate(
   struct z_track* track,
   float sample_rate
 ) {
-  unsigned char length_scales = 1;
+  unsigned char length_scales = 3;
 
   const unsigned char* z_scales[
-    1
+    5
   ] = {
-    cer0_scale_notes_major_pentatonic
+    cer0_scale_notes_minor_pentatonic,
+    cer0_scale_notes_harmonic_minor,
+    cer0_scale_notes_melodic_minor_descending,
+    cer0_scale_notes_octatonic_minor,
+    cer0_scale_notes_neapolitan_minor
   };
 
   unsigned char z_lengths_scales[
-    1
+    5
   ] = {
-    cer0_scale_length_major_pentatonic
+    cer0_scale_length_minor_pentatonic,
+    cer0_scale_length_harmonic_minor,
+    cer0_scale_length_melodic_minor_descending,
+    cer0_scale_length_octatonic_minor,
+    cer0_scale_length_neapolitan_minor
   };
 
   track->rand_parameters.length = 10;
@@ -236,31 +244,22 @@ void z_track_generate(
 
   track->speed = (
     (float) (
-      (
-        track->rand_result.bytes[0] *
-        track->rand_result.bytes[1]
-      ) %
-      119
-    ) /
-    119.0f
+    (
+      track->rand_result.bytes[0] *
+      track->rand_result.bytes[1]
+    ))
   );
 
   track->length = (float) (
-    (
-      track->rand_result.bytes[2] *
+    (float) (
+      track->rand_result.bytes[2] +
       track->rand_result.bytes[3]
-    ) %
-    11 *
-    9.1f +
-    1.0f +
-    119.0f *
-    911.0f
+    ) * 32.0f
   );
 
   track->length_lanes = (
     track->rand_result.bytes[4] %
-    9 +
-    11
+    4 + 2
   );
 
   track->lanes = malloc(
@@ -293,9 +292,7 @@ void z_track_generate(
     );
 
     unsigned char count_oscillators = (
-      track->rand_result.bytes[0] %
-      11 +
-      9
+      1
     );
 
     for (
@@ -313,9 +310,9 @@ void z_track_generate(
             track->length_lanes -
             2
           )
-          ? 3
-          : 4
-          : 2
+          ? square
+          : square
+          : square
         )
       );
     }
@@ -323,14 +320,8 @@ void z_track_generate(
     track_lane->length_notes = (
       track->rand_result.bytes[
         4
-      ] % (
-        1 * (
-          index_lane +
-          1
-        )
-      ) *
-      5000 /
-      119
+      ] *
+      32
     );
 
     track_lane->notes = malloc(
@@ -347,21 +338,8 @@ void z_track_generate(
     );
 
     float speed = (
-      (
-        (float) (
-          (
-            track->rand_result.bytes[5] *
-            track->rand_result.bytes[6]
-          ) %
-          9
-        ) + 
-        11.0f
-      ) *
-      119.0f /
-      (float) (
-        index_lane +
-        1
-      )
+      track->length /
+      track_lane->length_notes
     );
 
     struct z_track_note* notes = (
@@ -419,24 +397,55 @@ void z_track_generate(
         );
       }
 
-      note->value = track->note_table[
-        (
-          track->scale[
+      if (
+        (index_lane + 1) % 3 == 0
+      ) {
+        if (
+          index_note >= 32
+        ) {
+          note->value = notes[
+            index_note % (index_lane * 4)
+          ].value;
+        } else {
+          note->value = track->note_table[
             (
-              track->rand_result.bytes[2] *
-              track->rand_result.bytes[3]
+              track->scale[
+                (
+                  track->rand_result.bytes[2] *
+                  track->rand_result.bytes[3]
+                ) %
+                track->length_scale
+              ] + (
+                cer0_default_steps_notes * (
+                  track->rand_result.bytes[4] %
+                  track->range_octave
+                )
+              ) +
+              track->key
             ) %
-            track->length_scale
-          ] + (
-            cer0_default_steps_notes * (
-              track->rand_result.bytes[4] %
-              track->range_octave
-            )
-          ) +
-          track->key
-        ) %
-        track->length_note_table
-      ];
+            track->length_note_table
+          ];
+        }
+      } else {
+        note->value = track->note_table[
+          (
+            track->scale[
+              (
+                track->rand_result.bytes[2] *
+                track->rand_result.bytes[3]
+              ) %
+              track->length_scale
+            ] + (
+              cer0_default_steps_notes * (
+                track->rand_result.bytes[4] %
+                track->range_octave
+              )
+            ) +
+            track->key
+          ) %
+          track->length_note_table
+        ];
+      }
     }
 
     cer0_synthesizer_frequency_set(
