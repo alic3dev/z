@@ -1,6 +1,6 @@
 #include <z_io_proc.h>
 
-#if !target_ios
+#if !target_os_ios
 
 #include <z_event.h>
 #include <z_io_proc_data.h>

@@ -1,7 +1,7 @@
 #ifndef __z_io_proc_h
 #define __z_io_proc_h
 
-#if !target_ios
+#if !target_os_ios
 
 #include <CoreAudio/CoreAudio.h>
 
