@@ -109,3 +109,15 @@ void z_display_render(
 
   free(buffer_track_progress);
 }
+
+void z_display_render_event(
+  void* z_event_data
+) {
+  struct z_queue* z_queue = (
+    z_event_data
+  );
+
+  z_display_render(
+    z_queue
+  );
+}

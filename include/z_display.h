@@ -7,4 +7,8 @@ void z_display_render(
   struct z_queue*
 );
 
+void z_display_render_event(
+  void* z_event_data
+);
+
 #endif

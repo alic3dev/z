@@ -1,6 +1,8 @@
 #include <z_io_proc.h>
 
-#include <z_display.h>
+#if !target_ios
+
+#include <z_event.h>
 #include <z_io_proc_data.h>
 #include <z_queue.h>
 #include <z_settings.h>
@@ -14,7 +16,7 @@
 
 #include <CoreAudio/CoreAudio.h>
 
-OSStatus z_io_proc(
+int z_io_proc(
   AudioObjectID id_audio_object,
   const AudioTimeStamp* timestamp_audio,
   const AudioBufferList* buffer_list_audio_in,
@@ -236,14 +238,16 @@ OSStatus z_io_proc(
           z_queue->audio_output->sample_rate
         );
 
-        z_display_render(
+        z_event_trigger(
+          z_event_type_track_update,
           z_queue
         );
       }
     }
   }
 
-  z_display_render(
+  z_event_trigger(
+    z_event_type_track_update,
     z_queue
   );
 
@@ -253,3 +257,5 @@ OSStatus z_io_proc(
 
   return 0;
 }
+
+#endif

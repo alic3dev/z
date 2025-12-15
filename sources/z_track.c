@@ -254,7 +254,7 @@ void z_track_generate(
     (float) (
       track->rand_result.bytes[2] +
       track->rand_result.bytes[3]
-    ) * 32.0f
+    ) * 32.0f * 4.0f
   );
 
   track->length_lanes = (

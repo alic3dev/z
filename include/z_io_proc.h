@@ -1,9 +1,11 @@
 #ifndef __z_io_proc_h
 #define __z_io_proc_h
 
+#if !target_ios
+
 #include <CoreAudio/CoreAudio.h>
 
-OSStatus z_io_proc(
+int z_io_proc(
   AudioObjectID,
   const AudioTimeStamp*,
   const AudioBufferList*,
@@ -12,5 +14,7 @@ OSStatus z_io_proc(
   const AudioTimeStamp*,
   void*
 );
+
+#endif
 
 #endif
