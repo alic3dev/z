@@ -1,6 +1,8 @@
 #include <z.h>
 
 #include <z_close_exit.h>
+#include <z_display.h>
+#include <z_event.h>
 #include <z_io_proc.h>
 #include <z_io_proc_data.h>
 #include <z_queue.h>
@@ -32,6 +34,13 @@ int main() {
     &audio_output
   );
 
+  z_event_initialize();
+
+  z_event_on(
+    z_display_render_event,
+    z_event_type_track_update
+  );
+
   cer0_audio_output_initialize(
     &audio_output,
     z_io_proc,
@@ -59,6 +68,8 @@ int main() {
   pthread_mutex_destroy(
     &z_io_proc_data.mutex_exited
   );
+
+  z_event_destroy();
   
   return 0;
 }
