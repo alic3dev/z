@@ -110,10 +110,10 @@ endif
 cc=clang
 c_flags_platform=-target ${target_platform} -isysroot ${directory_sdk}
 c_includes=${addprefix -I,${directory_include} ${directory_cero_include} ${directory_clic3_include} ${directory_interrupt_handler_include} ${directory_math_c_include} ${directory_rand_include}}
-c_flags=-O3 ${c_flags_platform} ${c_includes} -Daudio_enabled
+c_flags=-O3 ${c_flags_platform} ${c_includes}
 
 ifeq (${target_os},ios)
-c_flags:=${c_flags} -Dcer0_audio_disabled -Dtarget_ios
+c_flags:=${c_flags} -Dtarget_os_ios
 endif
 
 c_flags_library=${c_flags}
