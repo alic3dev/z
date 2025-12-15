@@ -1,6 +1,6 @@
 # z
 
-z: a slow, quiet, radio. enjoy.
+z:a_radio:sewer_cavern_time
 
 <img width="876" height="266" alt="z" src="https://github.com/user-attachments/assets/e0d406bf-dbf9-4a18-9037-222859c7ce5e" />
 
@@ -28,17 +28,27 @@ volume->{0.5};
 
 ### requirements
 
-- [`cer0`](https://github.com/alic3dev/cer0)
-- [`clic3`](https://github.com/alic3dev/clic3)
-- [`interrupt_handler`](https://github.com/alic3dev/interrupt_handler)
-- [`math_c`](https://github.com/alic3dev/math_c)
-- [`rand`](https://github.com/alic3dev/rand)
+- [`alic3dev`](https://github.com/alic3dev)
+- - [`cer0`](https://github.com/alic3dev/cer0)
+- - [`clic3`](https://github.com/alic3dev/clic3)
+- - [`interrupt_handler`](https://github.com/alic3dev/interrupt_handler)
+- - [`math_c`](https://github.com/alic3dev/math_c)
+- - [`rand`](https://github.com/alic3dev/rand)
 
-### build
+### `make`:targets
 
 ```zsh
+# executable|libraries
 make
+# library
+make libraries
 ```
+
+### `make`:flags
+
+- `debug=1`:adds->{`debugging_symbols`}:disables->{`optimizations`};
+- `target_device`:sets_the_target_device_platform->{values::[`mac`|`iphone`]}
+- `target_device_version`:sets_the_target_version.for->{`macos`|`metal`};
 
 ### clean
 
