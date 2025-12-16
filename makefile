@@ -40,23 +40,23 @@ directory_sources=sources
 
 directory_cero=../cer0
 directory_cero_include=${directory_cero}/include
-directory_cero_library=${directory_cero}/library/macos/release
+directory_cero_library=${directory_cero}/library/${target_os}/release
 
 directory_clic3=../clic3
 directory_clic3_include=${directory_clic3}/include
-directory_clic3_library=${directory_clic3}/library/macos/release
+directory_clic3_library=${directory_clic3}/library/${target_os}/release
 
 directory_interrupt_handler=../interrupt_handler
 directory_interrupt_handler_include=${directory_interrupt_handler}/include
-directory_interrupt_handler_library=${directory_interrupt_handler}/library/macos/release
+directory_interrupt_handler_library=${directory_interrupt_handler}/library/${target_os}/release
 
 directory_math_c=../math_c
 directory_math_c_include=${directory_math_c}/include
-directory_math_c_library=${directory_math_c}/library/macos/release
+directory_math_c_library=${directory_math_c}/library/${target_os}/release
 
 directory_rand=../rand
 directory_rand_include=${directory_rand}/include
-directory_rand_library=${directory_rand}/library/macos/release
+directory_rand_library=${directory_rand}/library/${target_os}/release
 
 file_library_object=${directory_library}/${name}.o
 
@@ -75,13 +75,24 @@ file_library_static=${directory_library}/${name}.a
 
 file_output=${directory_output}/${name}
 
+ifeq (${target_os},ios)
+file_cero_library=${directory_cero_library}/cer0_ios.0.dylib
+file_clic3_library=${directory_clic3_library}/clic3_ios.0.dylib
+file_interrupt_handler_library=${directory_interrupt_handler_library}/interrupt_handler_ios.0.dylib
+file_math_c_library=${directory_math_c_library}/math_c_ios.0.dylib
+file_rand_library=${directory_rand_library}/rand_ios.0.dylib
+else
 file_cero_library=${directory_cero_library}/cer0.0.dylib
 file_clic3_library=${directory_clic3_library}/clic3.0.dylib
 file_interrupt_handler_library=${directory_interrupt_handler_library}/interrupt_handler.0.dylib
 file_math_c_library=${directory_math_c_library}/math_c.0.dylib
 file_rand_library=${directory_rand_library}/rand.0.dylib
+endif
 
 files_sources=${wildcard ${directory_sources}/*.c}
+ifeq (${target_os},ios)
+files_sources:=${filter-out ${directory_sources}/z.c,${files_sources}}
+endif
 files_objects=${patsubst ${directory_sources}/%.c,${directory_objects}/%.o,${files_sources}}
 files_objects_library:=${patsubst ${directory_objects}/%.o,${directory_objects}/%_library.o,${files_objects}}
 files_objects_library:=${filter-out ${directory_objects}/z_library.o,${files_objects_library}}
@@ -102,7 +113,7 @@ ifeq (${target_os},ios)
 files_objects:=${patsubst ${directory_objects}/%.o,${directory_objects}/%_${target_os}.o,${files_objects}}
 files_objects_library:=${patsubst ${directory_objects}/%.o,${directory_objects}/%_library.o,${files_objects}}
 
-target_platform=arm64-apple-ios${target_iphoneos_version}
+target_platform=arm64-apple-ios${target_device_version}
 
 directory_sdk=${shell xcrun --sdk iphoneos${target_device_version} --show-sdk-path}
 endif
@@ -128,7 +139,11 @@ ld_flags=
 strip=strip
 strip_flags=-x
 
+ifeq (${target_os},ios)
+${name}: libraries
+else
 ${name}: libraries ${file_output}
+endif
 
 ${name}_dylib: ${file_library_dylib}
 ${name}_dynamic: ${file_library_dynamic}
@@ -140,6 +155,7 @@ libraries: ${name}_dylib ${name}_dynamic ${name}_object ${name}_static
 run:
 	./${file_output}
 
+ifeq (${target_os},macos)
 ${file_output}: ${files_objects}
 	mkdir -p ${directory_output}
 	${cc} ${c_flags} ${c_flags_output} ${files_libraries} ${files_objects} -o ${file_output}
@@ -153,6 +169,7 @@ ${file_output}: ${files_objects}
 	ln -s ../${file_interrupt_handler_library} ${directory_output}/${shell basename ${file_interrupt_handler_library}}
 	ln -s ../${file_math_c_library} ${directory_output}/${shell basename ${file_math_c_library}}
 	ln -s ../${file_rand_library} ${directory_output}/${shell basename ${file_rand_library}}
+endif
 
 ${file_library_dylib}: ${files_objects_library}
 	mkdir -p ${directory_library}

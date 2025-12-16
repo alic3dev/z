@@ -2,19 +2,14 @@
 
 #include <z_settings.h>
 
-#include <cer0_audio_output.h>
-
 void z_io_proc_data_initialize(
   struct z_io_proc_data* z_io_proc_data,
-  struct cer0_audio_output* audio_output
+  float* rate_sample
 ) {
-  z_io_proc_data->audio_output = audio_output;
-
   z_io_proc_data->exiting = 0;
-
   z_io_proc_data->frame = 0;
-
   z_io_proc_data->initialized = 0;
+  z_io_proc_data->rate_sample = rate_sample;
 
   z_settings_initialize(
     &z_io_proc_data->settings

@@ -31,7 +31,7 @@ int main() {
 
   z_io_proc_data_initialize(
     &z_io_proc_data,
-    &audio_output
+    &audio_output.sample_rate
   );
 
   z_event_initialize();

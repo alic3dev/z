@@ -1,7 +1,5 @@
 #include <z_io_proc.h>
 
-#if !target_os_ios
-
 #include <z_event.h>
 #include <z_io_proc_data.h>
 #include <z_queue.h>
@@ -13,7 +11,9 @@
 
 #include <pthread.h>
 #include <stdio.h>
+#include <stdlib.h>
 
+#if !target_os_ios
 #include <CoreAudio/CoreAudio.h>
 
 int z_io_proc(
@@ -64,7 +64,7 @@ int z_io_proc(
   ) {
     z_queue_initialize(
       &z_io_proc_data->queue,
-      z_io_proc_data->audio_output
+      z_io_proc_data->rate_sample
     );
 
     z_io_proc_data->initialized = 1;
@@ -106,91 +106,14 @@ int z_io_proc(
     ) {
       unsigned long int channel = index_buffer_out % count_channel_out;
 
-      if (channel == 0) {
-        z_io_proc_data->frame = (
-          z_io_proc_data->frame + 1
-        );
-        
-        float value = 0.0f;
-
-        for (
-          unsigned char index_lane = 0;
-          index_lane < z_queue->track_current->length_lanes;
-          ++index_lane
-        ) {
-          if (
-            (
-              (z_io_proc_data->frame + 1) %
-              (
-                (unsigned long long int) (
-                  z_queue->track_current->lanes[
-                    index_lane
-                  ].notes[
-                    z_queue->track_current->lanes[
-                      index_lane
-                    ].index_note
-                  ].time *
-                  16.0f
-                )
-              )
-            ) == 0
-          ) {
-            z_queue->track_current->lanes[
-              index_lane
-            ].index_note = (
-              z_queue->track_current->lanes[
-                index_lane
-              ].index_note + 1
-            ) % z_queue->track_current->lanes[
-              index_lane
-            ].length_notes;
-
-            cer0_synthesizer_frequency_set(
-              &z_queue->track_current->lanes[
-                index_lane
-              ].synthesizer,
-              z_queue->track_current->lanes[
-                index_lane
-              ].notes[
-                z_queue->track_current->lanes[
-                  index_lane
-                ].index_note
-              ].value
-            );
-          }
-
-          value += cer0_synthesizer_poll(
-            &z_queue->track_current->lanes[
-              index_lane
-            ].synthesizer
-          ) * (
-            index_lane == (
-              z_queue->track_current->length_lanes -
-              2
-            )
-            ? 0.119f
-            : index_lane == (
-              z_queue->track_current->length_lanes -
-              1
-            )
-            ? 0.191f
-            : 1.0f
-          );
-        }
-
-        buffer_out[
+      if (
+        channel == 0
+      ) {
+        z_io_proc_frame_get(
+          z_io_proc_data,
+          z_queue,
+          buffer_out,
           index_buffer_out
-        ] = (
-          math_c_floating_point_minimum(
-            math_c_floating_point_maximum((
-                value / (
-                  (float) z_queue->track_current->length_lanes
-                )
-              ) * z_io_proc_data->settings.volume,
-              -1.0f
-            ),
-            1.0f
-          )
         );
       } else {
         buffer_out[
@@ -200,47 +123,6 @@ int z_io_proc(
             index_buffer_out -
             channel
           ]
-        );
-      }
-
-      z_queue->track_current->progress = (
-        (float) z_io_proc_data->frame / (
-          ((float) z_queue->track_current->length) *
-          100.0f
-        )
-      );
-
-      if (
-        channel == 0 &&
-        z_io_proc_data->frame >= (
-          z_queue->track_current->length *
-          100
-        )
-      ) {
-        z_io_proc_data->frame = 0;
-
-        z_track_destroy(
-          z_queue->track_current
-        );
-
-        free(z_queue->track_current);
-
-        z_queue->track_current = (
-          z_queue->track_upcoming
-        );
-
-        z_queue->track_upcoming = malloc(
-          sizeof(struct z_track)
-        );
-
-        z_track_generate(
-          z_queue->track_upcoming,
-          z_queue->audio_output->sample_rate
-        );
-
-        z_event_trigger(
-          z_event_type_track_update,
-          z_queue
         );
       }
     }
@@ -259,3 +141,138 @@ int z_io_proc(
 }
 
 #endif
+
+void z_io_proc_frame_get(
+  struct z_io_proc_data* z_io_proc_data,
+  struct z_queue* z_queue,
+  float* buffer_out,
+  unsigned long int index_buffer_out
+) {
+  z_io_proc_data->frame = (
+    z_io_proc_data->frame + 1
+  );
+  
+  float value = 0.0f;
+
+  for (
+    unsigned char index_lane = 0;
+    index_lane < z_queue->track_current->length_lanes;
+    ++index_lane
+  ) {
+    if (
+      (
+        (z_io_proc_data->frame + 1) %
+        (
+          (unsigned long long int) (
+            z_queue->track_current->lanes[
+              index_lane
+            ].notes[
+              z_queue->track_current->lanes[
+                index_lane
+              ].index_note
+            ].time *
+            16.0f
+          )
+        )
+      ) == 0
+    ) {
+      z_queue->track_current->lanes[
+        index_lane
+      ].index_note = (
+        z_queue->track_current->lanes[
+          index_lane
+        ].index_note + 1
+      ) % z_queue->track_current->lanes[
+        index_lane
+      ].length_notes;
+
+      cer0_synthesizer_frequency_set(
+        &z_queue->track_current->lanes[
+          index_lane
+        ].synthesizer,
+        z_queue->track_current->lanes[
+          index_lane
+        ].notes[
+          z_queue->track_current->lanes[
+            index_lane
+          ].index_note
+        ].value
+      );
+    }
+
+    value += cer0_synthesizer_poll(
+      &z_queue->track_current->lanes[
+        index_lane
+      ].synthesizer
+    ) * (
+      index_lane == (
+        z_queue->track_current->length_lanes -
+        2
+      )
+      ? 0.119f
+      : index_lane == (
+        z_queue->track_current->length_lanes -
+        1
+      )
+      ? 0.191f
+      : 1.0f
+    );
+  }
+
+  buffer_out[
+    index_buffer_out
+  ] = (
+    math_c_floating_point_minimum(
+      math_c_floating_point_maximum((
+          value / (
+            (float) z_queue->track_current->length_lanes
+          )
+        ) * z_io_proc_data->settings.volume,
+        -1.0f
+      ),
+      1.0f
+    )
+  );
+
+  z_queue->track_current->progress = (
+    (float) z_io_proc_data->frame / (
+      ((float) z_queue->track_current->length) *
+      100.0f
+    )
+  );
+
+  if (
+    z_io_proc_data->frame >= (
+      z_queue->track_current->length *
+      100
+    )
+  ) {
+    z_io_proc_data ->frame = 0;
+
+    z_track_destroy(
+      z_queue->track_current
+    );
+
+    free(
+      z_queue->track_current
+    );
+
+    z_queue->track_current = (
+      z_queue->track_upcoming
+    );
+
+    z_queue->track_upcoming = malloc(
+      sizeof(struct z_track)
+    );
+
+    z_track_generate(
+      z_queue->track_upcoming,
+      *z_queue->rate_sample
+    );
+
+    z_event_trigger(
+      z_event_type_track_update,
+      z_queue
+    );
+  }
+}
