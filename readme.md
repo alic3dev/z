@@ -24,8 +24,6 @@ z:a_radio:sewer_cavern_time
 volume->{0.5};
 ```
 
-// 00 26 a3 46
-
 ## library_usage
 
 ### preprocessor
