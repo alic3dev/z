@@ -1,10 +1,16 @@
 #ifndef __z_io_proc_h
 #define __z_io_proc_h
 
-#if !target_os_ios
+#include <z_io_proc_data.h>
+#include <z_queue.h>
 
+#if target_os_ios
+#else
 #include <CoreAudio/CoreAudio.h>
+#endif
 
+#if target_os_ios
+#else
 int z_io_proc(
   AudioObjectID,
   const AudioTimeStamp*,
@@ -16,5 +22,13 @@ int z_io_proc(
 );
 
 #endif
+
+
+void z_io_proc_frame_get(
+  struct z_io_proc_data*,
+  struct z_queue*,
+  float*,
+  unsigned long int
+);
 
 #endif

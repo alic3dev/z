@@ -4,13 +4,9 @@
 #include <z_queue.h>
 #include <z_settings.h>
 
-#include <cer0_audio_output.h>
-
 #include <pthread.h>
 
 struct z_io_proc_data {
-  struct cer0_audio_output* audio_output;
-
   unsigned char exiting;
 
   unsigned long long int frame;
@@ -23,11 +19,13 @@ struct z_io_proc_data {
 
   pthread_mutex_t mutex_exited;
   pthread_mutex_t mutex_playing;
+
+  float* rate_sample;
 };
 
 void z_io_proc_data_initialize(
   struct z_io_proc_data*,
-  struct cer0_audio_output*
+  float*
 );
 
 #endif

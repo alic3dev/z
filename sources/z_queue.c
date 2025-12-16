@@ -4,16 +4,13 @@
 #include <z_queue_status.h>
 #include <z_track.h>
 
-#include <cer0_audio_output.h>
-
-#include <pthread.h>
 #include <stdlib.h>
 
 void z_queue_initialize(
   struct z_queue* z_queue,
-  struct cer0_audio_output* audio_output
+  float* rate_sample
 ) {
-  z_queue->audio_output = audio_output;
+  z_queue->rate_sample = rate_sample;
 
   z_queue->track_current = malloc(
     sizeof(struct z_track)
@@ -25,12 +22,12 @@ void z_queue_initialize(
 
   z_track_generate(
     z_queue->track_current,
-    z_queue->audio_output->sample_rate
+    *z_queue->rate_sample
   );
 
   z_track_generate(
     z_queue->track_upcoming,
-    z_queue->audio_output->sample_rate
+    *z_queue->rate_sample
   );
 }
 
