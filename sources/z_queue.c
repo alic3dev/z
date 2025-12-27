@@ -8,6 +8,7 @@
 
 void z_queue_initialize(
   struct z_queue* z_queue,
+  struct z_track_parameters* z_track_parameters,
   float* rate_sample
 ) {
   z_queue->rate_sample = rate_sample;
@@ -20,13 +21,19 @@ void z_queue_initialize(
     sizeof(struct z_track)
   );
 
+  z_queue->track_parameters = (
+    z_track_parameters
+  );
+
   z_track_generate(
     z_queue->track_current,
+    z_queue->track_parameters,
     *z_queue->rate_sample
   );
 
   z_track_generate(
     z_queue->track_upcoming,
+    z_queue->track_parameters,
     *z_queue->rate_sample
   );
 }

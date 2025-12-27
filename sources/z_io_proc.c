@@ -44,10 +44,6 @@ int z_io_proc(
 
     z_io_proc_data->exiting = 2;
 
-    z_queue_destroy(
-      &z_io_proc_data->queue
-    );
-
     pthread_mutex_unlock(
       &z_io_proc_data->mutex_exited
     );
@@ -64,6 +60,7 @@ int z_io_proc(
   ) {
     z_queue_initialize(
       &z_io_proc_data->queue,
+      z_io_proc_data->track_parameters,
       z_io_proc_data->rate_sample
     );
 
@@ -106,25 +103,13 @@ int z_io_proc(
     ) {
       unsigned long int channel = index_buffer_out % count_channel_out;
 
-      if (
-        channel == 0
-      ) {
-        z_io_proc_frame_get(
-          z_io_proc_data,
-          z_queue,
-          buffer_out,
-          index_buffer_out
-        );
-      } else {
-        buffer_out[
-          index_buffer_out
-        ] = (
-          buffer_out[
-            index_buffer_out -
-            channel
-          ]
-        );
-      }
+      z_io_proc_frame_get(
+        z_io_proc_data,
+        z_queue,
+        buffer_out,
+        index_buffer_out,
+        channel
+      );
     }
   }
 
@@ -146,7 +131,8 @@ void z_io_proc_frame_get(
   struct z_io_proc_data* z_io_proc_data,
   struct z_queue* z_queue,
   float* buffer_out,
-  unsigned long int index_buffer_out
+  unsigned long int index_buffer_out,
+  unsigned long int channel
 ) {
   z_io_proc_data->frame = (
     z_io_proc_data->frame + 1
@@ -155,26 +141,34 @@ void z_io_proc_frame_get(
   float value = 0.0f;
 
   for (
-    unsigned char index_lane = 0;
+    unsigned char index_lane = channel;
     index_lane < z_queue->track_current->length_lanes;
-    ++index_lane
+    index_lane += 2
   ) {
+    struct z_track_note* note = &(
+      z_queue->track_current->lanes[
+        index_lane
+      ].notes[
+        z_queue->track_current->lanes[
+          index_lane
+        ].index_note
+      ]
+    );
+
+    unsigned int note_life_end = (
+      (unsigned long long int) (
+        note->time *
+        16.0f
+      )
+    );
+
+    unsigned int note_life = (
+      (z_io_proc_data->frame + 1) %
+      note_life_end
+    );
+    
     if (
-      (
-        (z_io_proc_data->frame + 1) %
-        (
-          (unsigned long long int) (
-            z_queue->track_current->lanes[
-              index_lane
-            ].notes[
-              z_queue->track_current->lanes[
-                index_lane
-              ].index_note
-            ].time *
-            16.0f
-          )
-        )
-      ) == 0
+      note_life == 0
     ) {
       z_queue->track_current->lanes[
         index_lane
@@ -186,17 +180,21 @@ void z_io_proc_frame_get(
         index_lane
       ].length_notes;
 
-      cer0_synthesizer_frequency_set(
-        &z_queue->track_current->lanes[
-          index_lane
-        ].synthesizer,
+      note = &(
         z_queue->track_current->lanes[
           index_lane
         ].notes[
           z_queue->track_current->lanes[
             index_lane
           ].index_note
-        ].value
+        ]
+      );
+
+      cer0_synthesizer_frequency_set(
+        &z_queue->track_current->lanes[
+          index_lane
+        ].synthesizer,
+        note->value
       );
     }
 
@@ -216,6 +214,32 @@ void z_io_proc_frame_get(
       )
       ? 0.191f
       : 1.0f
+    ) * (
+      note_life > (note_life_end / 2)
+      ? (
+        1.0f - (
+          (float) (
+            note_life > note_life_end
+            ? note_life_end
+            : note_life
+          ) /
+          (float) (
+            note_life_end
+          )
+        )
+      ) *
+      note->release +
+      (1.0f - note->release)
+      : (
+        (float) (
+          note_life
+        ) /
+        (float) (
+          note_life_end
+        )
+      ) *
+      note->attack +
+      (1.0f - note->attack)
     );
   }
 
@@ -224,10 +248,10 @@ void z_io_proc_frame_get(
   ] = (
     math_c_floating_point_minimum(
       math_c_floating_point_maximum((
-          value / (
-            (float) z_queue->track_current->length_lanes
-          )
-        ) * z_io_proc_data->settings.volume,
+          value /
+          (float) z_queue->track_current->length_lanes
+        ) *
+        z_io_proc_data->settings.volume,
         -1.0f
       ),
       1.0f
@@ -267,6 +291,7 @@ void z_io_proc_frame_get(
 
     z_track_generate(
       z_queue->track_upcoming,
+      z_queue->track_parameters,
       *z_queue->rate_sample
     );
 

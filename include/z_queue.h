@@ -2,6 +2,7 @@
 #define __z_queue_h
 
 #include <z_track.h>
+#include <z_track_parameters.h>
 #include <z_queue_status.h>
 
 #include <pthread.h>
@@ -9,6 +10,8 @@
 struct z_queue {
   struct z_track* track_current;
   struct z_track* track_upcoming;
+
+  struct z_track_parameters* track_parameters;
   
   enum z_queue_status status;
 
@@ -17,6 +20,7 @@ struct z_queue {
 
 void z_queue_initialize(
   struct z_queue*,
+  struct z_track_parameters*,
   float*
 );
 
