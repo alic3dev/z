@@ -4,6 +4,8 @@
 struct z_track_note {
   float time;
   float value;
+  float attack;
+  float release;
 };
 
 #endif

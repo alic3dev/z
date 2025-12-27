@@ -5,9 +5,7 @@
 #include <z_track_lane.h>
 
 #include <cer0_octave_range.h>
-#include <cer0_frequency_root.h>
 #include <cer0_note_table.h>
-#include <cer0_scale.h>
 #include <cer0_synthesizer.h>
 
 #include <rand_clean.h>
@@ -19,35 +17,17 @@
 
 void z_track_generate(
   struct z_track* track,
+  struct z_track_parameters* z_track_parameters,
   float sample_rate
 ) {
-  unsigned char length_scales = 3;
-
-  const unsigned char* z_scales[
-    5
-  ] = {
-    cer0_scale_notes_minor_pentatonic,
-    cer0_scale_notes_harmonic_minor,
-    cer0_scale_notes_melodic_minor_descending,
-    cer0_scale_notes_octatonic_minor,
-    cer0_scale_notes_neapolitan_minor
-  };
-
-  unsigned char z_lengths_scales[
-    5
-  ] = {
-    cer0_scale_length_minor_pentatonic,
-    cer0_scale_length_harmonic_minor,
-    cer0_scale_length_melodic_minor_descending,
-    cer0_scale_length_octatonic_minor,
-    cer0_scale_length_neapolitan_minor
-  };
-
   track->rand_parameters.length = 10;
   track->rand_parameters.mode = rand_mode_bytes;
   track->rand_parameters.error = 0;
   track->rand_parameters.help = 0;
-  track->rand_parameters.type_source = rand_source_type_divisive;
+
+  track->rand_parameters.type_source = (
+    z_track_parameters->rand_source_type
+  );
 
   track->rand_source_parameters.type_source = (
     track->rand_parameters.type_source
@@ -125,23 +105,20 @@ void z_track_generate(
     length_track_name
   );
 
-  unsigned int octave_minimum = 0;
-  unsigned int octave_maximum = 5;
-
   track->note_table = cer0_note_table_create(
-    octave_minimum,
-    octave_maximum,
-    cer0_frequency_root_standard
+    z_track_parameters->octave_minimum,
+    z_track_parameters->octave_maximum,
+    z_track_parameters->frequency_root
   );
 
   track->range_octave = cer0_octave_range_get(
-    octave_minimum,
-    octave_maximum
+    z_track_parameters->octave_minimum,
+    z_track_parameters->octave_maximum
   );
 
   track->length_note_table = cer0_note_table_length(
-    octave_minimum,
-    octave_maximum
+    z_track_parameters->octave_minimum,
+    z_track_parameters->octave_maximum
   );
 
   track->progress = 0.0f;
@@ -150,17 +127,17 @@ void z_track_generate(
     track->rand_result.bytes[
       3
     ] %
-    length_scales
+    z_track_parameters->length_scales
   );
 
   track->scale = (
-    z_scales[
+    z_track_parameters->scales[
       index_scale
     ]
   );
 
   track->length_scale = (
-    z_lengths_scales[
+    z_track_parameters->scales_length[
       index_scale
     ]
   );
@@ -254,13 +231,15 @@ void z_track_generate(
     (float) (
       track->rand_result.bytes[2] +
       track->rand_result.bytes[3]
-    ) * 32.0f * 4.0f
+    ) *
+    32.0f *
+    z_track_parameters->track_length_multiplier
   );
 
   track->length_lanes = (
     track->rand_result.bytes[4] %
     4 + 2
-  );
+  ) * 2;
 
   track->lanes = malloc(
     sizeof(
@@ -292,6 +271,10 @@ void z_track_generate(
     );
 
     unsigned char count_oscillators = (
+      track->rand_result.bytes[
+        0
+      ] %
+      4 +
       1
     );
 
@@ -301,27 +284,37 @@ void z_track_generate(
       ++index_oscillator
     ) {
       cer0_synthesizer_oscillator_add(
-        &track_lane->synthesizer, (
-          index_lane >= (
-            track->length_lanes -
+        &track_lane->synthesizer,
+        z_track_parameters->signals[
+          track->rand_result.bytes[
+            1
+          ] %
+          z_track_parameters_length_signals_default
+        ]
+      );
+
+      track_lane->synthesizer.oscillators[
+        index_oscillator
+      ].amplitude = (
+        (float) (
+          track->rand_result.bytes[
             2
-          )
-          ? index_lane == (
-            track->length_lanes -
-            2
-          )
-          ? square
-          : square
-          : square
-        )
+          ]
+        ) /
+        510.0f +
+        0.5f
       );
     }
 
     track_lane->length_notes = (
-      track->rand_result.bytes[
-        4
-      ] *
-      32
+      (
+        track->rand_result.bytes[
+          4
+        ] %
+        16 +
+        8
+      ) *
+      64
     );
 
     track_lane->notes = malloc(
@@ -339,7 +332,8 @@ void z_track_generate(
 
     float speed = (
       track->length /
-      track_lane->length_notes
+      track_lane->length_notes *
+      z_track_parameters->track_speed_multiplier
     );
 
     struct z_track_note* notes = (
@@ -361,6 +355,29 @@ void z_track_generate(
         notes[
           index_note
         ]
+      );
+
+      note->attack = (
+        (
+          (float) track->rand_result.bytes[5] /
+          255.0f
+        ) *
+        (
+          z_track_parameters->note_attack_maximum -
+          z_track_parameters->note_attack_minimum
+        ) +
+        z_track_parameters->note_attack_minimum
+      );
+
+      note->release = (
+        (
+          (float) track->rand_result.bytes[5] /
+          255.0f
+        ) * (
+          z_track_parameters->note_release_maximum -
+          z_track_parameters->note_release_minimum
+        ) +
+        z_track_parameters->note_release_minimum
       );
 
       if (
@@ -404,7 +421,7 @@ void z_track_generate(
           index_note >= 32
         ) {
           note->value = notes[
-            index_note % (index_lane * 4)
+            (index_note % (index_lane * 4)) % track_lane->length_notes
           ].value;
         } else {
           note->value = track->note_table[

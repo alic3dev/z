@@ -2,6 +2,7 @@
 #define __z_track_h
 
 #include <z_track_lane.h>
+#include <z_track_parameters.h>
 
 #include <rand_result.h>
 #include <rand_source.h>
@@ -40,6 +41,7 @@ struct z_track {
 
 void z_track_generate(
   struct z_track*,
+  struct z_track_parameters*,
   float
 );
 

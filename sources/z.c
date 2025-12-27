@@ -18,6 +18,7 @@
 
 int main() {
   struct z_io_proc_data z_io_proc_data;
+  struct z_track_parameters z_track_parameters;
 
   z_close_exit_initialize();
 
@@ -29,8 +30,13 @@ int main() {
 
   struct cer0_audio_output audio_output;
 
+  z_track_parameters_initialize_defaults(
+    &z_track_parameters
+  );
+
   z_io_proc_data_initialize(
     &z_io_proc_data,
+    &z_track_parameters,
     &audio_output.sample_rate
   );
 
@@ -70,6 +76,14 @@ int main() {
   );
 
   z_event_destroy();
+
+  z_queue_destroy(
+    &z_io_proc_data.queue
+  );
+
+  z_track_parameters_destroy(
+    &z_track_parameters
+  );
   
   return 0;
 }
