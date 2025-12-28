@@ -47,6 +47,8 @@ const struct z_track_parameters z_track_parameters_defaults = {
   },
   .track_length_multiplier = 6.0f,
   .track_speed_multiplier = 0.1f,
+  .oscillator_amplitude_minimum = 0.5f,
+  .oscillator_amplitude_maximum = 1.0f,
   .note_amplitude_minimum = 0.1f,
   .note_amplitude_maximum = 1.0f,
   .note_attack_minimum = 0.9f,
@@ -60,6 +62,10 @@ const struct z_track_parameters z_track_parameters_defaults = {
 void z_track_parameters_initialize(
   struct z_track_parameters* z_track_parameters
 ) {
+  z_track_parameters_initialize_defaults(
+    z_track_parameters
+  );
+
   z_track_parameters->length_scales = 0;
 
   z_track_parameters->scales = malloc(
@@ -70,72 +76,6 @@ void z_track_parameters_initialize(
   z_track_parameters->scales_length = malloc(
     sizeof(unsigned char) *
     z_track_parameters->length_scales
-  );
-
-  z_track_parameters->track_length_lanes_minimum = (
-    z_track_parameters_defaults.track_length_lanes_minimum
-  );
-
-  z_track_parameters->track_length_lanes_maximum = (
-    z_track_parameters_defaults.track_length_lanes_maximum
-  );
-
-  z_track_parameters->frequency_root = (
-    z_track_parameters_defaults.frequency_root
-  );
-
-  z_track_parameters->octave_minimum = (
-    z_track_parameters_defaults.octave_minimum
-  );
-
-  z_track_parameters->octave_maximum = (
-    z_track_parameters_defaults.octave_maximum
-  );
-
-  for (
-    unsigned char index_signal = 0;
-    index_signal < z_track_parameters_length_signals_default;
-    ++index_signal
-  ) {
-    z_track_parameters->signals[index_signal] = (
-      z_track_parameters_defaults.signals[index_signal]
-    );
-  }
-
-  z_track_parameters->track_length_multiplier = (
-    z_track_parameters_defaults.track_length_multiplier
-  );
-
-  z_track_parameters->track_speed_multiplier = (
-    z_track_parameters_defaults.track_speed_multiplier
-  );
-
-  z_track_parameters->note_amplitude_minimum = (
-    z_track_parameters_defaults.note_amplitude_minimum
-  );
-
-  z_track_parameters->note_amplitude_maximum = (
-    z_track_parameters_defaults.note_amplitude_maximum
-  );
-
-  z_track_parameters->note_attack_minimum = (
-    z_track_parameters_defaults.note_attack_minimum
-  );
-
-  z_track_parameters->note_attack_maximum = (
-    z_track_parameters_defaults.note_attack_maximum
-  );
-
-  z_track_parameters->note_release_minimum = (
-    z_track_parameters_defaults.note_release_minimum
-  );
-  
-  z_track_parameters->note_release_maximum = (
-    z_track_parameters_defaults.note_release_maximum
-  );
-
-  z_track_parameters->rand_source_type = (
-    z_track_parameters_defaults.rand_source_type
   );
 
   z_track_parameters->allocated_scales = 1;
@@ -196,6 +136,14 @@ void z_track_parameters_initialize_defaults(
 
   z_track_parameters->track_speed_multiplier = (
     z_track_parameters_defaults.track_speed_multiplier
+  );
+
+  z_track_parameters->oscillator_amplitude_minimum = (
+    z_track_parameters_defaults.oscillator_amplitude_minimum
+  );
+
+  z_track_parameters->oscillator_amplitude_maximum = (
+    z_track_parameters_defaults.oscillator_amplitude_maximum
   );
 
   z_track_parameters->note_amplitude_minimum = (

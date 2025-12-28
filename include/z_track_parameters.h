@@ -27,6 +27,9 @@ struct z_track_parameters {
   float track_length_multiplier;
   float track_speed_multiplier;
 
+  float oscillator_amplitude_minimum;
+  float oscillator_amplitude_maximum;
+
   float note_amplitude_minimum;
   float note_amplitude_maximum;
 
