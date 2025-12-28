@@ -229,7 +229,8 @@ void z_io_proc_frame_get(
           ) *
           note->attack +
           (1.0f - note->attack)
-        )
+        ) *
+        note->amplitude
       )
     );
   }

@@ -5,7 +5,7 @@
 
 #include <rand_source_type.h>
 
-#define z_track_parameters_length_signals_default 6
+#define z_track_parameters_length_signals_default cer0_length_signals
 
 struct z_track_parameters {
   const unsigned char** scales;
@@ -26,6 +26,9 @@ struct z_track_parameters {
 
   float track_length_multiplier;
   float track_speed_multiplier;
+
+  float note_amplitude_minimum;
+  float note_amplitude_maximum;
 
   float note_attack_minimum;
   float note_attack_maximum;

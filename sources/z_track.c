@@ -374,6 +374,16 @@ void z_track_generate(
         ]
       );
 
+      note->amplitude = (
+        (float) track->rand_result.bytes[7] /
+        255.0f *
+        (
+          z_track_parameters->note_amplitude_maximum -
+          z_track_parameters->note_amplitude_minimum
+        ) +
+        z_track_parameters->note_amplitude_minimum
+      );
+
       note->attack = (
         (
           (float) track->rand_result.bytes[5] /
