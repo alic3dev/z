@@ -199,34 +199,38 @@ void z_io_proc_frame_get(
       );
     }
 
-    value += cer0_synthesizer_poll(
-      &track_lane->synthesizer
-    ) * (
-      note_life > (note_life_end / 2)
-      ? (
-        1.0f - (
-          (float) (
-            note_life > note_life_end
-            ? note_life_end
-            : note_life
-          ) /
-          (float) (
-            note_life_end
-          )
+    value = (
+      value + (
+        cer0_synthesizer_poll(
+          &track_lane->synthesizer
+        ) * (
+          (note_life > (note_life_end / 2))
+          ? (
+            1.0f - (
+              (float) (
+                note_life > note_life_end
+                ? note_life_end
+                : note_life
+              ) /
+              (float) (
+                note_life_end
+              )
+            )
+          ) *
+          note->release +
+          (1.0f - note->release)
+          : (
+            (float) (
+              note_life
+            ) /
+            (float) (
+              note_life_end
+            )
+          ) *
+          note->attack +
+          (1.0f - note->attack)
         )
-      ) *
-      note->release +
-      (1.0f - note->release)
-      : (
-        (float) (
-          note_life
-        ) /
-        (float) (
-          note_life_end
-        )
-      ) *
-      note->attack +
-      (1.0f - note->attack)
+      )
     );
   }
 
