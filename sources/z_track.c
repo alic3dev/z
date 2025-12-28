@@ -318,8 +318,11 @@ void z_track_generate(
             2
           ]
         ) /
-        510.0f +
-        0.5f
+        255.0f * (
+          z_track_parameters->oscillator_amplitude_maximum -
+          z_track_parameters->oscillator_amplitude_minimum
+        ) +
+        z_track_parameters->oscillator_amplitude_minimum
       );
     }
 
