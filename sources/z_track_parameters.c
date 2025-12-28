@@ -47,6 +47,8 @@ const struct z_track_parameters z_track_parameters_defaults = {
   },
   .track_length_multiplier = 6.0f,
   .track_speed_multiplier = 0.1f,
+  .note_amplitude_minimum = 0.1f,
+  .note_amplitude_maximum = 1.0f,
   .note_attack_minimum = 0.9f,
   .note_attack_maximum = 1.0f,
   .note_release_minimum = 0.9f,
@@ -106,6 +108,14 @@ void z_track_parameters_initialize(
 
   z_track_parameters->track_speed_multiplier = (
     z_track_parameters_defaults.track_speed_multiplier
+  );
+
+  z_track_parameters->note_amplitude_minimum = (
+    z_track_parameters_defaults.note_amplitude_minimum
+  );
+
+  z_track_parameters->note_amplitude_maximum = (
+    z_track_parameters_defaults.note_amplitude_maximum
   );
 
   z_track_parameters->note_attack_minimum = (
@@ -186,6 +196,14 @@ void z_track_parameters_initialize_defaults(
 
   z_track_parameters->track_speed_multiplier = (
     z_track_parameters_defaults.track_speed_multiplier
+  );
+
+  z_track_parameters->note_amplitude_minimum = (
+    z_track_parameters_defaults.note_amplitude_minimum
+  );
+
+  z_track_parameters->note_amplitude_maximum = (
+    z_track_parameters_defaults.note_amplitude_maximum
   );
 
   z_track_parameters->note_attack_minimum = (
