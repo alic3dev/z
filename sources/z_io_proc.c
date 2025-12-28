@@ -134,9 +134,13 @@ void z_io_proc_frame_get(
   unsigned long int index_buffer_out,
   unsigned long int channel
 ) {
-  z_io_proc_data->frame = (
-    z_io_proc_data->frame + 1
-  );
+  if (
+    channel == 1
+  ) {
+    z_io_proc_data->frame = (
+      z_io_proc_data->frame + 1
+    );
+  }
   
   float value = 0.0f;
 
@@ -145,13 +149,19 @@ void z_io_proc_frame_get(
     index_lane < z_queue->track_current->length_lanes;
     index_lane += 2
   ) {
-    struct z_track_note* note = &(
+    struct z_track_lane* track_lane = &(
       z_queue->track_current->lanes[
         index_lane
-      ].notes[
-        z_queue->track_current->lanes[
-          index_lane
-        ].index_note
+      ]
+    );
+
+    struct z_track_note* notes = (
+      track_lane->notes
+    );
+
+    struct z_track_note* note = &(
+      notes[
+        track_lane->index_note
       ]
     );
 
@@ -170,50 +180,27 @@ void z_io_proc_frame_get(
     if (
       note_life == 0
     ) {
-      z_queue->track_current->lanes[
-        index_lane
-      ].index_note = (
-        z_queue->track_current->lanes[
-          index_lane
-        ].index_note + 1
-      ) % z_queue->track_current->lanes[
-        index_lane
-      ].length_notes;
+      track_lane->index_note = (
+        (
+          track_lane->index_note + 1
+        ) % 
+        track_lane->length_notes
+      );
 
       note = &(
-        z_queue->track_current->lanes[
-          index_lane
-        ].notes[
-          z_queue->track_current->lanes[
-            index_lane
-          ].index_note
+        notes[
+          track_lane->index_note
         ]
       );
 
       cer0_synthesizer_frequency_set(
-        &z_queue->track_current->lanes[
-          index_lane
-        ].synthesizer,
+        &track_lane->synthesizer,
         note->value
       );
     }
 
     value += cer0_synthesizer_poll(
-      &z_queue->track_current->lanes[
-        index_lane
-      ].synthesizer
-    ) * (
-      index_lane == (
-        z_queue->track_current->length_lanes -
-        2
-      )
-      ? 0.119f
-      : index_lane == (
-        z_queue->track_current->length_lanes -
-        1
-      )
-      ? 0.191f
-      : 1.0f
+      &track_lane->synthesizer
     ) * (
       note_life > (note_life_end / 2)
       ? (
@@ -251,6 +238,7 @@ void z_io_proc_frame_get(
           value /
           (float) z_queue->track_current->length_lanes
         ) *
+        2.0f *
         z_io_proc_data->settings.volume,
         -1.0f
       ),
@@ -258,46 +246,50 @@ void z_io_proc_frame_get(
     )
   );
 
-  z_queue->track_current->progress = (
-    (float) z_io_proc_data->frame / (
-      ((float) z_queue->track_current->length) *
-      100.0f
-    )
-  );
-
   if (
-    z_io_proc_data->frame >= (
-      z_queue->track_current->length *
-      100
-    )
+    channel == 1
   ) {
-    z_io_proc_data ->frame = 0;
-
-    z_track_destroy(
-      z_queue->track_current
+    z_queue->track_current->progress = (
+      (float) z_io_proc_data->frame / (
+        ((float) z_queue->track_current->length) *
+        100.0f
+      )
     );
 
-    free(
-      z_queue->track_current
-    );
+    if (
+      z_io_proc_data->frame >= (
+        z_queue->track_current->length *
+        100
+      )
+    ) {
+      z_io_proc_data ->frame = 0;
 
-    z_queue->track_current = (
-      z_queue->track_upcoming
-    );
+      z_track_destroy(
+        z_queue->track_current
+      );
 
-    z_queue->track_upcoming = malloc(
-      sizeof(struct z_track)
-    );
+      free(
+        z_queue->track_current
+      );
 
-    z_track_generate(
-      z_queue->track_upcoming,
-      z_queue->track_parameters,
-      *z_queue->rate_sample
-    );
+      z_queue->track_current = (
+        z_queue->track_upcoming
+      );
 
-    z_event_trigger(
-      z_event_type_track_update,
-      z_queue
-    );
+      z_queue->track_upcoming = malloc(
+        sizeof(struct z_track)
+      );
+
+      z_track_generate(
+        z_queue->track_upcoming,
+        z_queue->track_parameters,
+        *z_queue->rate_sample
+      );
+
+      z_event_trigger(
+        z_event_type_track_update,
+        z_queue
+      );
+    }
   }
 }
