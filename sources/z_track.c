@@ -238,8 +238,18 @@ void z_track_generate(
 
   track->length_lanes = (
     track->rand_result.bytes[4] %
-    4 + 2
+    4 +
+    4
   ) * 2;
+
+  if (
+    track->length_lanes % 2 != 0
+  ) {
+    track->length_lanes = (
+      track->length_lanes +
+      1
+    );
+  }
 
   track->lanes = malloc(
     sizeof(
@@ -371,7 +381,7 @@ void z_track_generate(
 
       note->release = (
         (
-          (float) track->rand_result.bytes[5] /
+          (float) track->rand_result.bytes[6] /
           255.0f
         ) * (
           z_track_parameters->note_release_maximum -
@@ -415,13 +425,14 @@ void z_track_generate(
       }
 
       if (
-        (index_lane + 1) % 3 == 0
+        index_lane < 2
       ) {
         if (
           index_note >= 32
         ) {
           note->value = notes[
-            (index_note % (index_lane * 4)) % track_lane->length_notes
+            (index_note % 8) %
+            track_lane->length_notes
           ].value;
         } else {
           note->value = track->note_table[
