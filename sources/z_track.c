@@ -3,6 +3,7 @@
 #include <z_queue.h>
 #include <z_track_note.h>
 #include <z_track_lane.h>
+#include <z_words.h>
 
 #include <cer0_octave_range.h>
 #include <cer0_note_table.h>
@@ -93,11 +94,13 @@ void z_track_generate(
   );
 
   unsigned char length_track_name = (
-    track->rand_result.bytes[
-      0
-    ] %
-    33 +
-    10
+    (
+      track->rand_result.bytes[
+        0
+      ] %
+      6
+    ) +
+    2
   );
 
   track->name = malloc(
@@ -149,62 +152,58 @@ void z_track_generate(
     cer0_default_steps_notes
   );
 
+  rand_get(
+    &track->rand_source,
+    &track->rand_result,
+    &track->rand_parameters
+  );
+
   for (
     unsigned char index_track_name = 0;
     index_track_name < length_track_name - 1;
     ++index_track_name
   ) {
-    rand_get(
-      &track->rand_source,
-      &track->rand_result,
-      &track->rand_parameters
+    track->name[
+      index_track_name
+    ] = (
+      track->rand_result.bytes[
+        index_track_name
+      ] %
+      126 +
+      1
     );
 
-    switch (
-      track->rand_result.bytes[0] %
-      10
+    for (
+      unsigned char index_track_name_lookup = 0;
+      index_track_name_lookup < index_track_name;
     ) {
-      case 0:
-      case 1:
-      case 2:
+      if (
+        track->name[
+          index_track_name
+        ] == track->name[
+          index_track_name_lookup
+        ]
+      ) {
         track->name[
           index_track_name
         ] = (
-          'a' + (
-            track->rand_result.bytes[1] %
-            26
-          )
+          (
+            track->name[
+              index_track_name
+            ] +
+            1 
+          ) %
+          126 +
+          1
         );
-        break;
-      case 3:
-      case 4:
-      case 5:
-        track->name[
-          index_track_name
-        ] = (
-          'A' + (
-            track->rand_result.bytes[1] %
-            26
-          )
+
+        index_track_name_lookup = 0;
+      } else {
+        index_track_name_lookup = (
+          index_track_name_lookup +
+          1
         );
-        break;
-      case 6:
-      case 7:
-      case 8:
-        track->name[
-          index_track_name
-        ] = (
-          '0' + (
-            track->rand_result.bytes[1] %
-            10
-          )
-        );
-        break;
-      case 9:
-        track->name[
-          index_track_name
-        ] = ' ';
-        break;
+      }
     }
   }
 
