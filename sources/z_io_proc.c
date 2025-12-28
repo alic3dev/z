@@ -235,10 +235,11 @@ void z_io_proc_frame_get(
   ] = (
     math_c_floating_point_minimum(
       math_c_floating_point_maximum((
-          value /
-          (float) z_queue->track_current->length_lanes
+          value / (
+            (float) z_queue->track_current->length_lanes /
+            2.0f
+          )
         ) *
-        2.0f *
         z_io_proc_data->settings.volume,
         -1.0f
       ),
