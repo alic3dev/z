@@ -415,7 +415,8 @@ void z_track_generate(
                 1
               )
             ) %
-            1000
+            1000 +
+            1
           ) /
           speed *
           (float) track->length /
@@ -433,7 +434,8 @@ void z_track_generate(
                 1
               )
             ) %
-            1000
+            1000 +
+            1
           ) /
           speed *
           (float) track->length /
