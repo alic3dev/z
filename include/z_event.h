@@ -2,7 +2,8 @@
 #define __z_event_h
 
 enum z_event_type {
-  z_event_type_track_update = 0
+  z_event_type_track_update = 0,
+  z_event_type_track_pregeneration = 1
 };
 
 typedef void (*z_event_function)(

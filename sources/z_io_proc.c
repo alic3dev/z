@@ -285,6 +285,11 @@ void z_io_proc_frame_get(
         sizeof(struct z_track)
       );
 
+      z_event_trigger(
+        z_event_type_track_pregeneration,
+        z_queue
+      );
+
       z_track_generate(
         z_queue->track_upcoming,
         z_queue->track_parameters,
