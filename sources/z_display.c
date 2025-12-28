@@ -1,6 +1,7 @@
 #include <z_display.h>
 
 #include <z_queue.h>
+#include <z_words.h>
 
 #include <math_c.h>
 
@@ -87,8 +88,56 @@ void z_display_render(
   printf(
     "\e[?25l"
     "\e[H\e[2J\e[3J"
-    "playing_track->{%s}\n"
-    "upcoming_track->{%s}\n"
+    "playing_track->{"
+  );
+
+  for (
+    unsigned char index_name = 0;
+    z_queue->track_current->name[
+      index_name
+    ] != '\0';
+    ++index_name
+  ) {
+    printf(
+      index_name != 0
+      ? " %s"
+      : "%s",
+      z_words[
+        z_queue->track_current->name[
+          index_name
+        ] %
+        z_words_length
+      ]
+    );
+  }
+  
+  printf(
+    "}\n"
+    "upcoming_track->{"
+  );
+  
+  for (
+    unsigned char index_name = 0;
+    z_queue->track_upcoming->name[
+      index_name
+    ] != '\0';
+    ++index_name
+  ) {
+    printf(
+      index_name != 0
+      ? " %s"
+      : "%s",
+      z_words[
+        z_queue->track_upcoming->name[
+          index_name
+        ] %
+        z_words_length
+      ]
+    );
+  }
+  
+  printf(
+    "}\n"
     "\n"
     "seed: %.2x %.2x %.2x %.2x\n"
     "\n"
@@ -96,8 +145,6 @@ void z_display_render(
     "\n"
     ": "
     "\e[?25h",
-    z_queue->track_current->name,
-    z_queue->track_upcoming->name,
     z_queue->track_current->buffer_seed[0],
     z_queue->track_current->buffer_seed[1],
     z_queue->track_current->buffer_seed[2],
