@@ -32,6 +32,8 @@ const struct z_track_parameters z_track_parameters_defaults = {
   .scales = z_track_scales_defaults,
   .scales_length = z_track_scales_lengths_defaults,
   .length_scales = z_track_parameters_length_scales_default,
+  .track_length_lanes_minimum = 4,
+  .track_length_lanes_maximum = 8,
   .frequency_root = cer0_frequency_root_magic,
   .octave_minimum = 2,
   .octave_maximum = 5,
@@ -66,6 +68,14 @@ void z_track_parameters_initialize(
   z_track_parameters->scales_length = malloc(
     sizeof(unsigned char) *
     z_track_parameters->length_scales
+  );
+
+  z_track_parameters->track_length_lanes_minimum = (
+    z_track_parameters_defaults.track_length_lanes_minimum
+  );
+
+  z_track_parameters->track_length_lanes_maximum = (
+    z_track_parameters_defaults.track_length_lanes_maximum
   );
 
   z_track_parameters->frequency_root = (
@@ -138,6 +148,14 @@ void z_track_parameters_initialize_defaults(
   
   z_track_parameters->length_scales = (
     z_track_parameters_defaults.length_scales
+  );
+
+  z_track_parameters->track_length_lanes_minimum = (
+    z_track_parameters_defaults.track_length_lanes_minimum
+  );
+
+  z_track_parameters->track_length_lanes_maximum = (
+    z_track_parameters_defaults.track_length_lanes_maximum
   );
 
   z_track_parameters->frequency_root = (

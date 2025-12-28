@@ -237,9 +237,11 @@ void z_track_generate(
   );
 
   track->length_lanes = (
-    track->rand_result.bytes[4] %
-    4 +
-    4
+    track->rand_result.bytes[4] % (
+      z_track_parameters->track_length_lanes_maximum -
+      z_track_parameters->track_length_lanes_minimum
+    ) +
+    z_track_parameters->track_length_lanes_minimum
   ) * 2;
 
   if (
