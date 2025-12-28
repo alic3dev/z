@@ -222,8 +222,13 @@ void z_track_generate(
   track->speed = (
     (float) (
     (
-      track->rand_result.bytes[0] *
-      track->rand_result.bytes[1]
+      (
+        track->rand_result.bytes[0] +
+        1
+      ) * (
+        track->rand_result.bytes[1] +
+        1
+      )
     ))
   );
 
@@ -402,8 +407,13 @@ void z_track_generate(
           ].time +
           (float) (
             (
-              track->rand_result.bytes[0] *
-              track->rand_result.bytes[1]
+              (
+                track->rand_result.bytes[0] +
+                1
+              ) * (
+                track->rand_result.bytes[1] +
+                1
+              )
             ) %
             1000
           ) /
@@ -415,8 +425,13 @@ void z_track_generate(
         note->time = (
           (float) (
             (
-              track->rand_result.bytes[0] *
-              track->rand_result.bytes[1]
+              (
+                track->rand_result.bytes[0] +
+                1
+              ) * (
+                track->rand_result.bytes[1] +
+                1
+              )
             ) %
             1000
           ) /
@@ -441,8 +456,13 @@ void z_track_generate(
             (
               track->scale[
                 (
-                  track->rand_result.bytes[2] *
-                  track->rand_result.bytes[3]
+                  (
+                    track->rand_result.bytes[2] +
+                    1
+                  ) * (
+                    track->rand_result.bytes[3] +
+                    1
+                  )
                 ) %
                 track->length_scale
               ] + (
@@ -461,8 +481,13 @@ void z_track_generate(
           (
             track->scale[
               (
-                track->rand_result.bytes[2] *
-                track->rand_result.bytes[3]
+                (
+                  track->rand_result.bytes[2] +
+                  1
+                ) * (
+                  track->rand_result.bytes[3] +
+                  1
+                )
               ) %
               track->length_scale
             ] + (
