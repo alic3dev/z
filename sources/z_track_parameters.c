@@ -11,49 +11,49 @@
 const unsigned char* z_track_scales_defaults[
   z_track_parameters_length_scales_default
 ] = {
-  cer0_scale_notes_minor_pentatonic,
-  cer0_scale_notes_harmonic_minor,
-  cer0_scale_notes_melodic_minor_descending,
-  cer0_scale_notes_octatonic_minor,
-  cer0_scale_notes_neapolitan_minor
+  cer0_scale_notes_major_pentatonic,
+  cer0_scale_notes_harmonic_major,
+  cer0_scale_notes_major_pentatonic,
+  cer0_scale_notes_harmonic_major,
+  cer0_scale_notes_neapolitan_major
 };
 
 unsigned char z_track_scales_lengths_defaults[
   z_track_parameters_length_scales_default
 ] = {
-  cer0_scale_length_minor_pentatonic,
-  cer0_scale_length_harmonic_minor,
-  cer0_scale_length_melodic_minor_descending,
-  cer0_scale_length_octatonic_minor,
-  cer0_scale_length_neapolitan_minor
+  cer0_scale_length_major_pentatonic,
+  cer0_scale_length_harmonic_major,
+  cer0_scale_length_major_pentatonic,
+  cer0_scale_length_harmonic_major,
+  cer0_scale_length_neapolitan_major
 };
 
 const struct z_track_parameters z_track_parameters_defaults = {
   .scales = z_track_scales_defaults,
   .scales_length = z_track_scales_lengths_defaults,
   .length_scales = z_track_parameters_length_scales_default,
-  .track_length_lanes_minimum = 4,
-  .track_length_lanes_maximum = 8,
+  .track_length_lanes_minimum = 2,
+  .track_length_lanes_maximum = 4,
   .frequency_root = cer0_frequency_root_magic,
-  .octave_minimum = 2,
-  .octave_maximum = 5,
+  .octave_minimum = 1,
+  .octave_maximum = 7,
   .signals = {
     sine,
     sine,
+    square,
     sine,
-    triangle,
-    triangle,
-    sine
+    sine,
+    triangle
   },
-  .track_length_multiplier = 6.0f,
-  .track_speed_multiplier = 0.1f,
-  .oscillator_amplitude_minimum = 0.5f,
+  .track_length_multiplier = 4.0f,
+  .track_speed_multiplier = 0.2f,
+  .oscillator_amplitude_minimum = 0.8f,
   .oscillator_amplitude_maximum = 1.0f,
-  .note_amplitude_minimum = 0.1f,
+  .note_amplitude_minimum = 0.0f,
   .note_amplitude_maximum = 1.0f,
-  .note_attack_minimum = 0.9f,
+  .note_attack_minimum = 0.0f,
   .note_attack_maximum = 1.0f,
-  .note_release_minimum = 0.9f,
+  .note_release_minimum = 0.0f,
   .note_release_maximum = 1.0f,
   .rand_source_type = rand_source_type_divisive,
   .allocated_scales = 0
