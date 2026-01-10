@@ -109,7 +109,7 @@ jobs:
         if: steps.cache_restore_rand.outputs.cache-hit != 'true'
         run: cd rand && make rand_dylib target_device_version=${{ env.target_device_version }}
       - name: make_z
-        run: cd z && make z target_device_version=${{ env.target_device_version }}
+        run: cd z && make target_device_version=${{ env.target_device_version }}
       - name: cache_save_cer0
         id: cache_save_cer0
         if: ${{ env.enabled_caching == '1' && env.enabled_caching_cer0 == '1' && steps.cache_restore_cer0.outputs.cache-hit != 'true' }}
