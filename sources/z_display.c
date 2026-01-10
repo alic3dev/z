@@ -139,22 +139,40 @@ void z_display_render(
   printf(
     "}\n"
     "\n"
-    "seed: %.2x %.2x %.2x %.2x\n"
-    "\n"
-    "%s\n"
-    "\n"
+    "seed: "
+  );
+
+  struct rand_source_divisive_data* rand_source_divisive_data = (
+    z_queue->track_current->rand_source.data
+  );
+
+  for (
+    unsigned short int index_byte_seed = 0;
+    index_byte_seed < rand_source_divisive_data->length_seed;
+    ++index_byte_seed
+  ) {
+    printf(
+      "%.2x",
+      rand_source_divisive_data->seed[
+        index_byte_seed
+      ]
+    );
+  }
+
+  printf(
+    "\n\n%s\n\n"
     ": "
     "\e[?25h",
-    z_queue->track_current->buffer_seed[0],
-    z_queue->track_current->buffer_seed[1],
-    z_queue->track_current->buffer_seed[2],
-    z_queue->track_current->buffer_seed[3],
     buffer_track_progress
   );
 
-  fflush(stdout);
+  fflush(
+    stdout
+  );
 
-  free(buffer_track_progress);
+  free(
+    buffer_track_progress
+  );
 }
 
 void z_display_render_event(

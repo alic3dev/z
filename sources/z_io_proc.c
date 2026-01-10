@@ -82,8 +82,6 @@ int z_io_proc(
     z_io_proc_data->queue
   );
 
-
-
   for (
     unsigned long int index_buffer = 0;
     index_buffer < buffer_list_audio_out->mNumberBuffers;

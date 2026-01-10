@@ -125,8 +125,12 @@ void z_track_parameters_initialize_defaults(
     index_signal < z_track_parameters_length_signals_default;
     ++index_signal
   ) {
-    z_track_parameters->signals[index_signal] = (
-      z_track_parameters_defaults.signals[index_signal]
+    z_track_parameters->signals[
+      index_signal
+    ] = (
+      z_track_parameters_defaults.signals[
+        index_signal
+      ]
     );
   }
 
