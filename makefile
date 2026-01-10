@@ -141,7 +141,6 @@ else
 c_flags:=${c_flags} -O3
 endif
 
-c_flags_library=${c_flags}
 c_flags_output=${c_flags} -framework CoreAudio
 c_flags_objects=${c_flags}
 
@@ -151,6 +150,8 @@ c_flags_objects:=${c_flags_objects} -Qy
 else
 c_flags_objects:=${c_flags_objects} -Qn
 endif
+
+c_flags_library=${c_flags_objects}
 
 ar=ar
 ar_flags=cqS
@@ -219,7 +220,7 @@ ${file_library_static}: ${files_objects_library}
 
 ${directory_objects}/%.o: ${directory_sources}/%.c
 	mkdir -p ${directory_objects}
-	${cc} ${c_flags} -c $< -o $@
+	${cc} ${c_flags_objects} -c $< -o $@
 
 ${directory_objects}/%_ios_library.o: ${directory_sources}/%.c
 	mkdir -p ${directory_objects}
@@ -231,7 +232,7 @@ ${directory_objects}/%_library.o: ${directory_sources}/%.c
 
 ${directory_objects}/%_ios.o: ${directory_sources}/%.c
 	mkdir -p ${directory_objects}
-	${cc} ${c_flags} -c $< -o $@
+	${cc} ${c_flags_objects} -c $< -o $@
 
 clean: clean_library clean_objects clean_output
 
