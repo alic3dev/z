@@ -6,14 +6,10 @@
 
 #include <rand_result.h>
 #include <rand_source.h>
+#include <rand_source_divisive_data.h>
 
 struct z_track {
   char* name;
-
-  float seed;
-  unsigned char buffer_seed[
-    sizeof(float)
-  ];
 
   float speed;
   float length;
