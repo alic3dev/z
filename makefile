@@ -89,6 +89,12 @@ file_math_c_library=${directory_math_c_library}/math_c.0.dylib
 file_rand_library=${directory_rand_library}/rand.0.dylib
 endif
 
+file_cero_library:=${shell realpath "${file_cero_library}"}
+file_clic3_library:=${shell realpath "${file_clic3_library}"}
+file_interrupt_handler_library:=${shell realpath "${file_interrupt_handler_library}"}
+file_math_c_library:=${shell realpath "${file_math_c_library}"}
+file_rand_library:=${shell realpath "${file_rand_library}"}
+
 files_sources=${wildcard ${directory_sources}/*.c}
 ifeq (${target_os},ios)
 files_sources:=${filter-out ${directory_sources}/z.c,${files_sources}}
@@ -121,14 +127,30 @@ endif
 cc=clang
 c_flags_platform=-target ${target_platform} -isysroot ${directory_sdk}
 c_includes=${addprefix -I,${directory_include} ${directory_cero_include} ${directory_clic3_include} ${directory_interrupt_handler_include} ${directory_math_c_include} ${directory_rand_include}}
-c_flags=-O3 ${c_flags_platform} ${c_includes}
+c_flags=${c_flags_platform} ${c_includes}
 
 ifeq (${target_os},ios)
 c_flags:=${c_flags} -Dtarget_os_ios
 endif
 
+ifeq (${debug}, 1)
+c_flags_debug=-O0 -g -v
+
+c_flags:=${c_flags} ${c_flags_debug}
+else
+c_flags:=${c_flags} -O3
+endif
+
 c_flags_library=${c_flags}
-c_flags_output=-framework CoreAudio
+c_flags_output=${c_flags} -framework CoreAudio
+c_flags_objects=${c_flags}
+
+ifeq (${debug},1)
+c_flags_output:=${c_flags_output} -dA
+c_flags_objects:=${c_flags_objects} -Qy
+else
+c_flags_objects:=${c_flags_objects} -Qn
+endif
 
 ar=ar
 ar_flags=cqS
@@ -158,17 +180,12 @@ run:
 ifeq (${target_os},macos)
 ${file_output}: ${files_objects}
 	mkdir -p ${directory_output}
-	${cc} ${c_flags} ${c_flags_output} ${files_libraries} ${files_objects} -o ${file_output}
-	-rm ${directory_output}/${shell basename ${file_cero_library}}
-	-rm ${directory_output}/${shell basename ${file_clic3_library}}
-	-rm ${directory_output}/${shell basename ${file_interrupt_handler_library}}
-	-rm ${directory_output}/${shell basename ${file_math_c_library}}
-	-rm ${directory_output}/${shell basename ${file_rand_library}}
-	ln -s ../${file_cero_library} ${directory_output}/${shell basename ${file_cero_library}}
-	ln -s ../${file_clic3_library} ${directory_output}/${shell basename ${file_clic3_library}}
-	ln -s ../${file_interrupt_handler_library} ${directory_output}/${shell basename ${file_interrupt_handler_library}}
-	ln -s ../${file_math_c_library} ${directory_output}/${shell basename ${file_math_c_library}}
-	ln -s ../${file_rand_library} ${directory_output}/${shell basename ${file_rand_library}}
+	${cc} ${c_flags_output} ${files_libraries} ${files_objects} -o ${file_output}
+	if [[ ! -f "${directory_output}/${shell basename ${file_cero_library}}" ]]; then ln -s ${shell realpath "${file_cero_library}"} "${directory_output}/${shell basename ${file_cero_library}}"; fi
+	if [[ ! -f "${directory_output}/${shell basename ${file_clic3_library}}" ]]; then ln -s ${shell realpath "${file_clic3_library}"} "${directory_output}/${shell basename ${file_clic3_library}}"; fi
+	if [[ ! -f "${directory_output}/${shell basename ${file_interrupt_handler_library}}" ]]; then ln -s ${shell realpath "${file_interrupt_handler_library}"} "${directory_output}/${shell basename ${file_interrupt_handler_library}}"; fi
+	if [[ ! -f "${directory_output}/${shell basename ${file_math_c_library}}" ]]; then ln -s ${shell realpath "${file_math_c_library}"} "${directory_output}/${shell basename ${file_math_c_library}}"; fi
+	if [[ ! -f "${directory_output}/${shell basename ${file_rand_library}}" ]]; then ln -s ${shell realpath "${file_rand_library}"} "${directory_output}/${shell basename ${file_rand_library}}"; fi
 endif
 
 ${file_library_dylib}: ${files_objects_library}
@@ -177,7 +194,7 @@ ${file_library_dylib}: ${files_objects_library}
 ifneq (${debug}, 1)
 	${strip} ${strip_flags} ${file_library_dylib_major}
 endif
-	-rm ${file_library_dylib}
+	if [[ -f "${file_library_dylib}" ]]; then rm "${file_library_dylib}"; fi
 	ln -s ${name_library_dylib_major} ${file_library_dylib}
 
 ${file_library_dynamic}: ${files_objects_library}
@@ -186,7 +203,7 @@ ${file_library_dynamic}: ${files_objects_library}
 ifneq (${debug}, 1)
 	${strip} ${strip_flags} ${file_library_dynamic_major}
 endif
-	-rm ${file_library_dynamic}
+	if [[ -f "${file_library_dynamic}" ]]; then rm "${file_library_dynamic}"; fi
 	ln -s ${name_library_dynamic_major} ${file_library_dynamic}
 
 ${file_library_object}: ${files_objects_library}
@@ -216,7 +233,10 @@ ${directory_objects}/%_ios.o: ${directory_sources}/%.c
 	mkdir -p ${directory_objects}
 	${cc} ${c_flags} -c $< -o $@
 
-clean: clean_objects clean_output
+clean: clean_library clean_objects clean_output
+
+clean_library:
+	-rm -r ${directory_library_base}
 
 clean_objects:
 	-rm -r ${directory_objects_base}
