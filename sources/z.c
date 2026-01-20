@@ -17,6 +17,10 @@
 #include <pthread.h>
 
 int main() {
+  cer0_signal_sine_alice(
+    1.3f
+  );
+
   struct z_io_proc_data z_io_proc_data;
   struct z_track_parameters z_track_parameters;
 
