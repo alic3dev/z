@@ -38,11 +38,11 @@ const struct z_track_parameters z_track_parameters_defaults = {
   .octave_minimum = 1,
   .octave_maximum = 4,
   .signals = {
+    sine,
     sine_alice,
+    sine,
     sine_alice,
-    sine_alice,
-    sine_alice,
-    sine_alice,
+    sine,
     sine_alice
   },
   .track_length_multiplier = 8.0f,
