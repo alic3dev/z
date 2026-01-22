@@ -14,7 +14,7 @@ const unsigned char* z_track_scales_defaults[
   cer0_scale_notes_major_pentatonic,
   cer0_scale_notes_harmonic_major,
   cer0_scale_notes_major_pentatonic,
-  cer0_scale_notes_harmonic_major,
+  cer0_scale_notes_harmonic_minor,
   cer0_scale_notes_neapolitan_major
 };
 
@@ -38,23 +38,23 @@ const struct z_track_parameters z_track_parameters_defaults = {
   .octave_minimum = 1,
   .octave_maximum = 4,
   .signals = {
+    sine,
     sine_alice,
+    sine,
     sine_alice,
-    sine_alice,
-    sine_alice,
-    sine_alice,
+    sine,
     sine_alice
   },
-  .track_length_multiplier = 8.0f,
-  .track_speed_multiplier = 0.1f,
-  .oscillator_amplitude_minimum = 0.9f,
-  .oscillator_amplitude_maximum = 1.0f,
-  .note_amplitude_minimum = 0.0f,
-  .note_amplitude_maximum = 1.0f,
-  .note_attack_minimum = 0.95f,
-  .note_attack_maximum = 1.0f,
-  .note_release_minimum = 0.95f,
-  .note_release_maximum = 1.0f,
+  .track_length_multiplier = 6.15f,
+  .track_speed_multiplier = 0.121255f,
+  .oscillator_amplitude_minimum = 0.125f,
+  .oscillator_amplitude_maximum = 0.9f,
+  .note_amplitude_minimum = 0.125f,
+  .note_amplitude_maximum = 0.9f,
+  .note_attack_minimum = 0.112f,
+  .note_attack_maximum = 0.99f,
+  .note_release_minimum = 0.33f,
+  .note_release_maximum = 0.99f,
   .rand_source_type = rand_source_type_divisive,
   .allocated_scales = 0
 };
