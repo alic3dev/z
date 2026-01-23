@@ -5,6 +5,9 @@
 #include <z_track_lane.h>
 #include <z_words.h>
 
+#include <clic3_base_hexadecimal.h>
+#include <clic3_memory.h>
+
 #include <cer0_octave_range.h>
 #include <cer0_note_table.h>
 #include <cer0_synthesizer.h>
@@ -72,10 +75,61 @@ void z_track_generate(
     2
   );
 
-  track->name = malloc(
-    sizeof(char) *
-    length_track_name
+  track->name = (
+    clic3_memory_allocate_raw(
+      length_track_name
+    )
   );
+
+  struct rand_source_divisive_data* rand_source_divisive_data = (
+    track->rand_source.data
+  );
+
+  track->char_array_seed = (
+    clic3_memory_allocate_raw(
+      rand_source_divisive_data->length_seed +
+      rand_source_divisive_data->length_seed +
+      1
+    )
+  );
+
+  for (
+    unsigned int index_seed = 0;
+    index_seed < rand_source_divisive_data->length_seed;
+    ++index_seed
+  ) {
+    const char* char_seed_part = (
+      clic3_base_hexadecimal_unsigned_char_mapping[
+        rand_source_divisive_data->seed[
+          index_seed
+        ]
+      ]
+    );
+    
+    track->char_array_seed[
+      index_seed *
+      2
+    ] = (
+      char_seed_part[
+        0
+      ]
+    );
+
+    track->char_array_seed[
+      index_seed *
+      2 +
+      1
+    ] = (
+      char_seed_part[
+        1
+      ]
+    );
+  }
+
+  track->char_array_seed[
+    rand_source_divisive_data->length_seed +
+    rand_source_divisive_data->length_seed
+  ] = '\0';
 
   track->note_table = cer0_note_table_create(
     z_track_parameters->octave_minimum,
@@ -504,6 +558,10 @@ void z_track_destroy(
 
   free(
     track->note_table
+  );
+
+  free(
+    track->char_array_seed
   );
 
   rand_clean(

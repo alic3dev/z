@@ -29,6 +29,8 @@ struct z_track {
 
   unsigned char key;
 
+  char* char_array_seed;
+
   struct rand_parameters rand_parameters;
   struct rand_result rand_result;
   struct rand_source rand_source;
