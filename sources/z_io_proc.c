@@ -6,13 +6,14 @@
 #include <z_settings.h>
 #include <z_track.h>
 
+#include <clic3_memory.h>
+
 #include <cer0_synthesizer.h>
 #include <math_c_maximum.h>
 #include <math_c_minimum.h>
 
 #include <pthread.h>
 #include <stdio.h>
-#include <stdlib.h>
 
 #if !target_os_ios
 #include <CoreAudio/CoreAudio.h>
@@ -318,7 +319,7 @@ void z_io_proc_frame_get(
         z_queue->track_current
       );
 
-      free(
+      clic3_memory_free_raw(
         z_queue->track_current
       );
 
@@ -326,8 +327,12 @@ void z_io_proc_frame_get(
         z_queue->track_upcoming
       );
 
-      z_queue->track_upcoming = malloc(
-        sizeof(struct z_track)
+      z_queue->track_upcoming = (
+        clic3_memory_allocate_raw(
+          sizeof(
+            struct z_track
+          )
+        )
       );
 
       z_event_trigger(
