@@ -1,8 +1,8 @@
 # z
 
-z:a_radio:sewer_cavern_time
+z:lost_findings
 
-<img width="876" height="266" alt="z" src="https://github.com/user-attachments/assets/e0d406bf-dbf9-4a18-9037-222859c7ce5e" />
+<img width="401" height="84" alt="z" src="https://github.com/user-attachments/assets/fda0bf76-e7fa-45ce-817b-4cff475f3ecb" />
 
 ## settings
 
