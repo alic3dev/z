@@ -24,7 +24,7 @@ unsigned char z_track_scales_lengths_defaults[
   cer0_scale_length_major_pentatonic,
   cer0_scale_length_harmonic_major,
   cer0_scale_length_major_pentatonic,
-  cer0_scale_length_harmonic_major,
+  cer0_scale_length_harmonic_minor,
   cer0_scale_length_neapolitan_major
 };
 
@@ -46,7 +46,8 @@ const struct z_track_parameters z_track_parameters_defaults = {
     sine_alice
   },
   .track_length_multiplier = 6.15f,
-  .track_speed_multiplier = 0.121255f,
+  .track_bpm_minimum = 60.0f,
+  .track_bpm_maximum = 180.0f,
   .oscillator_amplitude_minimum = 0.125f,
   .oscillator_amplitude_maximum = 0.9f,
   .note_amplitude_minimum = 0.125f,
@@ -147,8 +148,12 @@ void z_track_parameters_initialize_defaults(
     z_track_parameters_defaults.track_length_multiplier
   );
 
-  z_track_parameters->track_speed_multiplier = (
-    z_track_parameters_defaults.track_speed_multiplier
+  z_track_parameters->track_bpm_minimum = (
+    z_track_parameters_defaults.track_bpm_minimum
+  );
+
+  z_track_parameters->track_bpm_maximum = (
+    z_track_parameters_defaults.track_bpm_maximum
   );
 
   z_track_parameters->oscillator_amplitude_minimum = (

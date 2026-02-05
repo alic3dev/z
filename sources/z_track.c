@@ -241,17 +241,42 @@ void z_track_generate(
     &track->rand_parameters
   );
 
-  track->speed = (
-    (float) (
+  if (
+    z_track_parameters->track_bpm_minimum >
+    z_track_parameters->track_bpm_maximum
+  ) {
+    float track_bpm_swap = (
+      z_track_parameters->track_bpm_minimum
+    );
+
+    z_track_parameters->track_bpm_minimum = (
+      z_track_parameters->track_bpm_maximum
+    );
+
+    z_track_parameters->track_bpm_maximum = (
+      track_bpm_swap
+    );
+  }
+
+  float track_bpm_range = (
+    z_track_parameters->track_bpm_maximum -
+    z_track_parameters->track_bpm_minimum
+  );
+
+  track->bpm = (
+    z_track_parameters->track_bpm_minimum +
+    (float)
     (
       (
         track->rand_result.bytes[0] +
         1
-      ) * (
+      ) + (
         track->rand_result.bytes[1] +
         1
       )
-    ))
+    ) /
+    510.0f *
+    track_bpm_range
   );
 
   track->length = (
