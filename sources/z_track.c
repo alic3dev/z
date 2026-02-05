@@ -17,8 +17,6 @@
 #include <rand_result.h>
 #include <rand_source.h>
 
-#include <stdlib.h>
-
 void z_track_generate(
   struct z_track* track,
   struct z_track_parameters* z_track_parameters,
@@ -49,10 +47,12 @@ void z_track_generate(
     track->rand_parameters.length
   );
 
-  unsigned char status_rand_get = rand_get(
-    &track->rand_source,
-    &track->rand_result,
-    &track->rand_parameters
+  unsigned char status_rand_get = (
+    rand_get(
+      &track->rand_source,
+      &track->rand_result,
+      &track->rand_parameters
+    )
   );
 
   unsigned char size_float = (
@@ -254,7 +254,7 @@ void z_track_generate(
     ))
   );
 
-  track->length = (float) (
+  track->length = (
     (float) (
       track->rand_result.bytes[2] +
       track->rand_result.bytes[3]
@@ -264,12 +264,18 @@ void z_track_generate(
   );
 
   track->length_lanes = (
-    track->rand_result.bytes[4] % (
-      z_track_parameters->track_length_lanes_maximum -
+    (
+      track->rand_result.bytes[
+        4
+      ] %
+      (
+        z_track_parameters->track_length_lanes_maximum -
+        z_track_parameters->track_length_lanes_minimum
+      ) +
       z_track_parameters->track_length_lanes_minimum
-    ) +
-    z_track_parameters->track_length_lanes_minimum
-  ) * 2;
+    ) *
+    2
+  );
 
   if (
     track->length_lanes % 2 != 0
@@ -280,11 +286,13 @@ void z_track_generate(
     );
   }
 
-  track->lanes = malloc(
-    sizeof(
-      struct z_track_lane
-    ) *
-    track->length_lanes
+  track->lanes = (
+    clic3_memory_allocate_raw(
+      sizeof(
+        struct z_track_lane
+      ) *
+      track->length_lanes
+    )
   );
 
   for (
@@ -340,7 +348,8 @@ void z_track_generate(
             2
           ]
         ) /
-        255.0f * (
+        255.0f *
+        (
           z_track_parameters->oscillator_amplitude_maximum -
           z_track_parameters->oscillator_amplitude_minimum
         ) +
@@ -359,11 +368,13 @@ void z_track_generate(
       64
     );
 
-    track_lane->notes = malloc(
-      sizeof(
-        struct z_track_note
-      ) *
-      track_lane->length_notes
+    track_lane->notes = (
+      clic3_memory_allocate_raw(
+        sizeof(
+          struct z_track_note
+        ) *
+        track_lane->length_notes
+      )
     );
 
     rand_get(
@@ -552,15 +563,15 @@ void z_track_generate(
 void z_track_destroy(
   struct z_track* track
 ) {
-  free(
+  clic3_memory_free_raw(
     track->name
   );
 
-  free(
+  clic3_memory_free_raw(
     track->note_table
   );
 
-  free(
+  clic3_memory_free_raw(
     track->char_array_seed
   );
 
@@ -580,14 +591,14 @@ void z_track_destroy(
       ].synthesizer
     );
 
-    free(
+    clic3_memory_free_raw(
       track->lanes[
         index_lane
       ].notes
     );
   }
 
-  free(
+  clic3_memory_free_raw(
     track->lanes
   );
 }

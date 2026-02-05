@@ -4,7 +4,7 @@
 #include <z_queue_status.h>
 #include <z_track.h>
 
-#include <stdlib.h>
+#include <clic3_memory.h>
 
 void z_queue_initialize(
   struct z_queue* z_queue,
@@ -13,12 +13,20 @@ void z_queue_initialize(
 ) {
   z_queue->rate_sample = rate_sample;
 
-  z_queue->track_current = malloc(
-    sizeof(struct z_track)
+  z_queue->track_current = (
+    clic3_memory_allocate_raw(
+      sizeof(
+        struct z_track
+      )
+    )
   );
 
-  z_queue->track_upcoming = malloc(
-    sizeof(struct z_track)
+  z_queue->track_upcoming = (
+    clic3_memory_allocate_raw(
+      sizeof(
+        struct z_track
+      )
+    )
   );
 
   z_queue->track_parameters = (
@@ -51,11 +59,11 @@ void z_queue_destroy(
     z_queue->track_upcoming
   );
 
-  free(
+  clic3_memory_free_raw(
     z_queue->track_current
   );
   
-  free(
+  clic3_memory_free_raw(
     z_queue->track_upcoming
   );
 }

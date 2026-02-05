@@ -1,6 +1,6 @@
 #include <z_event.h>
 
-#include <stdlib.h>
+#include <clic3_memory.h>
 
 unsigned char z_event_functions_length = 0;
 
@@ -13,14 +13,22 @@ enum z_event_type* z_event_types = (
 );
 
 void z_event_initialize() {
-  z_event_functions = malloc(
-    sizeof(z_event_function) *
-    z_event_functions_length
+  z_event_functions = (
+    clic3_memory_allocate_raw(
+      sizeof(
+        z_event_function
+      ) *
+      z_event_functions_length
+    )
   );
 
-  z_event_types = malloc(
-    sizeof(enum z_event_type) *
-    z_event_functions_length
+  z_event_types = (
+    clic3_memory_allocate_raw(
+      sizeof(
+        enum z_event_type
+      ) *
+      z_event_functions_length
+    )
   );
 }
 
@@ -62,16 +70,24 @@ unsigned char z_event_on(
     1
   );
 
-  z_event_functions = realloc(
-    z_event_functions,
-    sizeof(z_event_function) *
-    z_event_functions_length
+  clic3_memory_reallocate_raw(
+    &z_event_functions,
+    (
+      sizeof(
+        z_event_function
+      ) *
+      z_event_functions_length
+    )
   );
 
-  z_event_types = realloc(
-    z_event_types,
-    sizeof(enum z_event_type) *
-    z_event_functions_length
+  clic3_memory_reallocate_raw(
+    &z_event_types,
+    (
+      sizeof(
+        enum z_event_type
+      ) *
+      z_event_functions_length
+    )
   );
 
   z_event_functions[
@@ -132,16 +148,24 @@ unsigned char z_event_off(
         1
       );
 
-      z_event_functions = realloc(
-        z_event_functions,
-        sizeof(z_event_function) *
-        z_event_functions_length
+      clic3_memory_reallocate_raw(
+        &z_event_functions,
+        (
+          sizeof(
+            z_event_function
+          ) *
+          z_event_functions_length
+        )
       );
 
-      z_event_types = realloc(
-        z_event_types,
-        sizeof(enum z_event_type) *
-        z_event_functions_length
+      clic3_memory_reallocate_raw(
+        &z_event_types,
+        (
+          sizeof(
+            enum z_event_type
+          ) *
+          z_event_functions_length
+        )
       );
 
       return 1;
@@ -152,11 +176,11 @@ unsigned char z_event_off(
 }
 
 void z_event_destroy() {
-  free(
+  clic3_memory_free_raw(
     z_event_functions
   );
 
-  free(
+  clic3_memory_free_raw(
     z_event_types
   );
 }

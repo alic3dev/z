@@ -4,9 +4,9 @@
 #include <cer0_scale.h>
 #include <cer0_signal.h>
 
-#include <rand_source_type.h>
+#include <clic3_memory.h>
 
-#include <stdlib.h>
+#include <rand_source_type.h>
 
 const unsigned char* z_track_scales_defaults[
   z_track_parameters_length_scales_default
@@ -66,19 +66,28 @@ void z_track_parameters_initialize(
     z_track_parameters
   );
 
-  z_track_parameters->length_scales = 0;
-
-  z_track_parameters->scales = malloc(
-    sizeof(const unsigned char*) *
-    z_track_parameters->length_scales
+  z_track_parameters->length_scales = (
+    0
   );
 
-  z_track_parameters->scales_length = malloc(
-    sizeof(unsigned char) *
-    z_track_parameters->length_scales
+  z_track_parameters->scales = (
+    clic3_memory_allocate_raw(
+      sizeof(
+        void*
+      ) *
+      z_track_parameters->length_scales
+    )
   );
 
-  z_track_parameters->allocated_scales = 1;
+  z_track_parameters->scales_length = (
+    clic3_memory_allocate_raw(
+      z_track_parameters->length_scales
+    )
+  );
+
+  z_track_parameters->allocated_scales = (
+    1
+  );
 }
 
 void z_track_parameters_initialize_defaults(
@@ -189,11 +198,11 @@ void z_track_parameters_destroy(
   if (
     z_track_parameters->allocated_scales != 0
   ) {
-    free(
+    clic3_memory_free_raw(
       z_track_parameters->scales
     );
 
-    free(
+    clic3_memory_free_raw(
       z_track_parameters->scales_length
     );
   }

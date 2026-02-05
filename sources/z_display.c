@@ -3,9 +3,10 @@
 #include <z_queue.h>
 #include <z_words.h>
 
+#include <clic3_memory.h>
+
 #include <math_c.h>
 
-#include <stdlib.h>
 #include <stdio.h>
 #include <sys/ioctl.h>
 
@@ -26,28 +27,42 @@ void z_display_render(
     status_ioctl == -1 ||
     terminal_size.ws_col < 1
   ) {
-    buffer_track_progress = malloc(0);
+    buffer_track_progress = (
+      clic3_memory_allocate_raw(
+        0
+      )
+    );
   } else {
     unsigned int width = terminal_size.ws_col;
 
-    buffer_track_progress = malloc(
-      sizeof(char) * (
-        width + 1
+    buffer_track_progress = (
+      clic3_memory_allocate_raw(
+        width +
+        1
       )
     );
 
-    buffer_track_progress[0] = '|';
+    buffer_track_progress[0] = (
+      '|'
+    );
     
     buffer_track_progress[
       (width - 1)
-    ] = '|';
+    ] = (
+      '|'
+    );
 
     buffer_track_progress[
       width
-    ] = '\0';
+    ] = (
+      '\0'
+    );
 
     unsigned int length_progress_indicators = (
-      (width - 1) *
+      (
+        width -
+        1
+      ) *
       math_c_floating_point_minimum(
         math_c_floating_point_maximum(
           z_queue->track_current->progress,
@@ -71,16 +86,22 @@ void z_display_render(
         ) {
           buffer_track_progress[
             index_buffer_track_progress
-          ] = '>';
+          ] = (
+            '>'
+          );
         } else {
           buffer_track_progress[
             index_buffer_track_progress
-          ] = '-';
+          ] = (
+            '-'
+          );
         }
       } else {
         buffer_track_progress[
           index_buffer_track_progress
-        ] = ' ';
+        ] = (
+          ' '
+        );
       }
     }
   }
@@ -151,7 +172,7 @@ void z_display_render(
     stdout
   );
 
-  free(
+  clic3_memory_free_raw(
     buffer_track_progress
   );
 }
