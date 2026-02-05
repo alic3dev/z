@@ -142,6 +142,89 @@ void z_track_generate(
     z_track_parameters->octave_maximum
   );
 
+  unsigned int range_octave_lower_minimum = (
+    z_track_parameters->octave_minimum
+  );
+
+  unsigned int range_octave_lower_maximum = (
+    (
+      range_octave_lower_minimum +
+      1
+    ) >
+    z_track_parameters->octave_maximum
+    ? range_octave_lower_minimum
+    : (
+      range_octave_lower_minimum +
+      1
+    )
+  );
+
+  unsigned int range_octave_mid_minimum = (
+    range_octave_lower_maximum
+  );
+
+  unsigned int range_octave_mid_maximum = (
+    (
+      range_octave_mid_minimum +
+      2
+    ) >
+    z_track_parameters->octave_maximum
+    ? (
+      (
+        range_octave_mid_minimum +
+        1
+      ) >
+      z_track_parameters->octave_maximum
+      ? range_octave_mid_minimum
+      : (
+        range_octave_mid_minimum +
+        1
+      )
+    )
+    : (
+      range_octave_mid_minimum +
+      2
+    )
+  );
+
+  unsigned int range_octave_upper_minimum = (
+    (
+      range_octave_mid_maximum -
+      1
+    ) <
+    z_track_parameters->octave_minimum
+    ? range_octave_mid_maximum
+    : (
+      range_octave_mid_maximum -
+      1
+    )
+  );
+
+  unsigned int range_octave_upper_maximum = (
+    z_track_parameters->octave_maximum
+  );
+
+  unsigned int range_octave_lower = (
+    cer0_octave_range_get(
+      range_octave_lower_minimum,
+      range_octave_lower_maximum
+    )
+  );
+
+  unsigned int range_octave_mid = (
+    cer0_octave_range_get(
+      range_octave_mid_minimum,
+      range_octave_mid_maximum
+    )
+  );
+
+  unsigned int range_octave_upper = (
+    cer0_octave_range_get(
+      range_octave_upper_minimum,
+      range_octave_upper_maximum
+    )
+  );
+
   track->length_note_table = cer0_note_table_length(
     z_track_parameters->octave_minimum,
     z_track_parameters->octave_maximum
@@ -241,17 +324,70 @@ void z_track_generate(
     &track->rand_parameters
   );
 
-  track->speed = (
-    (float) (
+  if (
+    z_track_parameters->track_bpm_minimum >
+    z_track_parameters->track_bpm_maximum
+  ) {
+    float track_bpm_swap = (
+      z_track_parameters->track_bpm_minimum
+    );
+
+    z_track_parameters->track_bpm_minimum = (
+      z_track_parameters->track_bpm_maximum
+    );
+
+    z_track_parameters->track_bpm_maximum = (
+      track_bpm_swap
+    );
+  }
+
+  float track_bpm_range = (
+    z_track_parameters->track_bpm_maximum -
+    z_track_parameters->track_bpm_minimum
+  );
+
+  track->bpm = (
+    z_track_parameters->track_bpm_minimum +
+    (float)
     (
       (
         track->rand_result.bytes[0] +
         1
-      ) * (
+      ) + (
         track->rand_result.bytes[1] +
         1
       )
-    ))
+    ) /
+    510.0f *
+    track_bpm_range
+  );
+
+  float whole_beat = (
+    (
+      60.0f /
+      track->bpm
+    ) *
+    1000.0f
+  );
+
+  float half_beat = (
+    whole_beat /
+    2.0f
+  );
+
+  float quarter_beat = (
+    whole_beat /
+    4.0f
+  );
+
+  float eigth_beat = (
+    whole_beat /
+    8.0f
+  );
+
+  float sixtenth_beat = (
+    whole_beat /
+    16.0f
   );
 
   track->length = (
@@ -330,14 +466,46 @@ void z_track_generate(
       index_oscillator < count_oscillators;
       ++index_oscillator
     ) {
-      cer0_synthesizer_oscillator_add(
-        &track_lane->synthesizer,
-        z_track_parameters->signals[
+      enum cer0_signal signal;
+
+      if (
+        index_lane == 0
+      ) {
+        signal = (
           track->rand_result.bytes[
             1
-          ] %
-          z_track_parameters_length_signals_default
-        ]
+          ] <= 200
+          ? z_track_parameters->signals[
+            0
+          ]
+          : (
+            track->rand_result.bytes[
+              1
+            ] <= 230
+          )
+          ? z_track_parameters->signals[
+            z_track_parameters_length_signals_default -
+            2
+          ]
+          : z_track_parameters->signals[
+            z_track_parameters_length_signals_default -
+            1
+          ]
+        );
+      } else {
+        signal = (
+          z_track_parameters->signals[
+            track->rand_result.bytes[
+              1
+            ] %
+            z_track_parameters_length_signals_default
+          ]
+        );
+      }
+
+      cer0_synthesizer_oscillator_add(
+        &track_lane->synthesizer,
+        signal
       );
 
       track_lane->synthesizer.oscillators[
@@ -383,10 +551,16 @@ void z_track_generate(
       &track->rand_parameters
     );
 
-    float speed = (
-      track->length /
-      track_lane->length_notes *
-      z_track_parameters->track_speed_multiplier
+    unsigned char speed = (
+      index_lane == 0
+      ? 0
+      : (
+        (
+          index_lane
+        ) %
+        3 +
+        1
+      )
     );
 
     struct z_track_note* notes = (
@@ -443,6 +617,104 @@ void z_track_generate(
         z_track_parameters->note_release_minimum
       );
 
+      // float note_offset = (
+      //   (float)
+      //   track->rand_result.bytes[2]
+      //   /
+      //   255.0f *
+      //   0.0001f
+      // );
+
+      // float length_note = (
+      //   (float) (
+      //     (
+      //       (
+      //         track->rand_result.bytes[0] +
+      //         1
+      //       ) * (
+      //         track->rand_result.bytes[1] +
+      //         1
+      //       )
+      //     ) %
+      //     1000 +
+      //     1
+      //   ) /
+      //   (speed + 1) *
+      //   (float) track->length /
+      //   (float) track_lane->length_notes
+      // );
+
+      float length_note;
+
+      switch (
+        speed
+      ) {
+        case 0: {
+          length_note = (
+            (float)
+            (
+              (
+                track->rand_result.bytes[
+                  3
+                ] % 5
+              ) +
+              4
+            ) *
+            half_beat
+          );
+
+          break;
+        }
+        case 1: {
+          length_note = (
+            (float)
+            (
+              (
+                track->rand_result.bytes[
+                  3
+                ] % 9
+              ) +
+              2
+            ) *
+            quarter_beat
+          );
+
+          break;
+        }
+        case 2: {
+          length_note = (
+            (float)
+            (
+              (
+                track->rand_result.bytes[
+                  3
+                ] % 15
+              ) +
+              2
+            ) *
+            eigth_beat
+          );
+
+          break;
+        }
+        case 3: {
+          length_note = (
+            (float)
+            (
+              (
+                track->rand_result.bytes[
+                  3
+                ] % 32
+              ) +
+              3
+            ) *
+            sixtenth_beat
+          );
+
+          break;
+        }
+      }
+
       if (
         index_note > 0
       ) {
@@ -451,104 +723,115 @@ void z_track_generate(
             index_note -
             1
           ].time +
-          (float) (
-            (
-              (
-                track->rand_result.bytes[0] +
-                1
-              ) * (
-                track->rand_result.bytes[1] +
-                1
-              )
-            ) %
-            1000 +
-            1
-          ) /
-          speed *
-          (float) track->length /
-          (float) track_lane->length_notes
+          length_note
         );
       } else {
         note->time = (
-          (float) (
-            (
-              (
-                track->rand_result.bytes[0] +
-                1
-              ) * (
-                track->rand_result.bytes[1] +
-                1
-              )
-            ) %
-            1000 +
-            1
-          ) /
-          speed *
-          (float) track->length /
-          (float) track_lane->length_notes
+          length_note
         );
       }
 
-      if (
-        index_lane < 2
-      ) {
-        if (
-          index_note >= 32
-        ) {
-          note->value = notes[
-            (index_note % 8) %
-            track_lane->length_notes
-          ].value;
-        } else {
-          note->value = track->note_table[
-            (
-              track->scale[
-                (
-                  (
-                    track->rand_result.bytes[2] +
-                    1
-                  ) * (
-                    track->rand_result.bytes[3] +
-                    1
-                  )
-                ) %
-                track->length_scale
-              ] + (
-                cer0_default_steps_notes * (
-                  track->rand_result.bytes[4] %
-                  track->range_octave
-                )
-              ) +
-              track->key
-            ) %
-            track->length_note_table
-          ];
-        }
-      } else {
-        note->value = track->note_table[
+      unsigned char position_scale = (
+        track->scale[
           (
-            track->scale[
-              (
-                (
-                  track->rand_result.bytes[2] +
-                  1
-                ) * (
-                  track->rand_result.bytes[3] +
-                  1
-                )
-              ) %
-              track->length_scale
-            ] + (
-              cer0_default_steps_notes * (
-                track->rand_result.bytes[4] %
-                track->range_octave
-              )
-            ) +
-            track->key
+            (
+              track->rand_result.bytes[2] +
+              1
+            )
           ) %
-          track->length_note_table
-        ];
+          track->length_scale
+        ]
+      );
+
+      float value_note;
+
+      if (
+        index_lane > 1 &&
+        index_note >= 32
+      ) {
+        value_note = (
+          notes[
+            (
+              index_note %
+              8
+            ) %
+            track_lane->length_notes
+          ].value
+        );
+      } else {
+        unsigned int octave_range_minimum;
+        unsigned int octave_range;
+
+        if (
+          index_lane == 0
+        ) {
+          octave_range_minimum = (
+            range_octave_lower_minimum
+          );
+
+          octave_range = (
+            range_octave_lower
+          );
+        } else if (
+          (
+            index_lane %
+            2
+          ) == 0
+        ) {
+          octave_range_minimum = (
+            range_octave_mid_minimum
+          );
+
+          octave_range = (
+            range_octave_mid
+          );
+        } else {
+          octave_range_minimum = (
+            range_octave_upper_minimum
+          );
+
+          octave_range = (
+            range_octave_upper
+          );
+        }
+
+        unsigned int position_note_table = (
+          (
+            (
+              position_scale +
+              track->key
+            ) +
+            (
+              cer0_default_steps_notes *
+              (
+                track->rand_result.bytes[
+                  4
+                ] %
+                octave_range
+              )
+            )
+          ) %
+          (
+            octave_range *
+            cer0_default_steps_notes
+          ) +
+          (
+            octave_range_minimum *
+            cer0_default_steps_notes
+          )
+        );
+
+        value_note = (
+          track->note_table[
+            position_note_table %
+            track->length_note_table
+          ]
+        );
       }
+
+      note->value = (
+        value_note
+      );
     }
 
     cer0_synthesizer_frequency_set(

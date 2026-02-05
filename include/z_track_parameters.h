@@ -24,8 +24,10 @@ struct z_track_parameters {
     z_track_parameters_length_signals_default
   ];
 
+  float track_bpm_minimum;
+  float track_bpm_maximum;
+
   float track_length_multiplier;
-  float track_speed_multiplier;
 
   float oscillator_amplitude_minimum;
   float oscillator_amplitude_maximum;

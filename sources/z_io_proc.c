@@ -214,8 +214,12 @@ void z_io_proc_frame_get(
 
     unsigned int note_life_end = (
       (unsigned long long int) (
-        note->time *
-        16.0f
+        (
+          
+          *z_io_proc_data->rate_sample /
+          600.0f
+        ) *
+        note->time
       )
     );
 

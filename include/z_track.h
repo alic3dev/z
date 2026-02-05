@@ -11,7 +11,7 @@
 struct z_track {
   char* name;
 
-  float speed;
+  float bpm;
   float length;
 
   float progress;
