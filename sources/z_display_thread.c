@@ -31,6 +31,20 @@ void* z_display_render_thread(
     ) {
       continue;
     }
+
+    z_display_thread_data->progress = (
+      z_display_thread_data->queue->track_current->progress
+    );
+
+    if (
+      z_display_thread_data->queue->index_track !=
+      z_display_thread_data->index_track
+    ) {
+      z_display_thread_data_set(
+        z_display_thread_data,
+        z_display_thread_data->queue
+      );
+    }
     
     struct winsize terminal_size;
 
@@ -209,20 +223,6 @@ void z_display_thread_render_event(
     z_queue
   ) {
     z_display_thread_data->queue = (
-      z_queue
-    );
-  }
-
-  z_display_thread_data->progress = (
-    z_display_thread_data->queue->track_current->progress
-  );
-
-  if (
-    z_queue->index_track !=
-    z_display_thread_data->index_track
-  ) {
-    z_display_thread_data_set(
-      z_display_thread_data,
       z_queue
     );
   }
