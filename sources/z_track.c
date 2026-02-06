@@ -56,7 +56,9 @@ void z_track_generate(
   );
 
   unsigned char size_float = (
-    sizeof(float)
+    sizeof(
+      float
+    )
   );
 
   rand_get(
@@ -85,10 +87,14 @@ void z_track_generate(
     track->rand_source.data
   );
 
+  track->length_char_array_seed = (
+    rand_source_divisive_data->length_seed +
+    rand_source_divisive_data->length_seed
+  );
+
   track->char_array_seed = (
     clic3_memory_allocate_raw(
-      rand_source_divisive_data->length_seed +
-      rand_source_divisive_data->length_seed +
+      track->length_char_array_seed +
       1
     )
   );
@@ -127,8 +133,7 @@ void z_track_generate(
   }
 
   track->char_array_seed[
-    rand_source_divisive_data->length_seed +
-    rand_source_divisive_data->length_seed
+    track->length_char_array_seed
   ] = '\0';
 
   track->note_table = cer0_note_table_create(
@@ -616,33 +621,6 @@ void z_track_generate(
         ) +
         z_track_parameters->note_release_minimum
       );
-
-      // float note_offset = (
-      //   (float)
-      //   track->rand_result.bytes[2]
-      //   /
-      //   255.0f *
-      //   0.0001f
-      // );
-
-      // float length_note = (
-      //   (float) (
-      //     (
-      //       (
-      //         track->rand_result.bytes[0] +
-      //         1
-      //       ) * (
-      //         track->rand_result.bytes[1] +
-      //         1
-      //       )
-      //     ) %
-      //     1000 +
-      //     1
-      //   ) /
-      //   (speed + 1) *
-      //   (float) track->length /
-      //   (float) track_lane->length_notes
-      // );
 
       float length_note;
 

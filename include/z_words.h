@@ -7,4 +7,9 @@ extern const char* z_words[
   z_words_length
 ];
 
+void z_words_construct(
+  char**,
+  char*
+);
+
 #endif

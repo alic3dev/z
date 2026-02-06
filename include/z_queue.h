@@ -8,6 +8,8 @@
 #include <pthread.h>
 
 struct z_queue {
+  unsigned int index_track;
+
   struct z_track* track_current;
   struct z_track* track_upcoming;
 
@@ -22,6 +24,10 @@ void z_queue_initialize(
   struct z_queue*,
   struct z_track_parameters*,
   float*
+);
+
+void z_queue_track_next(
+  struct z_queue*
 );
 
 void z_queue_destroy(
