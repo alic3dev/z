@@ -319,39 +319,7 @@ void z_io_proc_frame_get(
     ) {
       z_io_proc_data ->frame = 0;
 
-      z_track_destroy(
-        z_queue->track_current
-      );
-
-      clic3_memory_free_raw(
-        z_queue->track_current
-      );
-
-      z_queue->track_current = (
-        z_queue->track_upcoming
-      );
-
-      z_queue->track_upcoming = (
-        clic3_memory_allocate_raw(
-          sizeof(
-            struct z_track
-          )
-        )
-      );
-
-      z_event_trigger(
-        z_event_type_track_pregeneration,
-        z_queue
-      );
-
-      z_track_generate(
-        z_queue->track_upcoming,
-        z_queue->track_parameters,
-        *z_queue->rate_sample
-      );
-
-      z_event_trigger(
-        z_event_type_track_update,
+      z_queue_track_next(
         z_queue
       );
     }

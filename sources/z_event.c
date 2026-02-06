@@ -2,32 +2,18 @@
 
 #include <clic3_memory.h>
 
-unsigned char z_event_functions_length = 0;
-
-z_event_function* z_event_functions = (
-  (void*) 0
+unsigned int z_event_function_structures_length = (
+  0
 );
 
-enum z_event_type* z_event_types = (
-  (void*) 0
+struct z_event_function_structure** z_event_function_structures = (
+  0
 );
 
 void z_event_initialize() {
-  z_event_functions = (
+  z_event_function_structures = (
     clic3_memory_allocate_raw(
-      sizeof(
-        z_event_function
-      ) *
-      z_event_functions_length
-    )
-  );
-
-  z_event_types = (
-    clic3_memory_allocate_raw(
-      sizeof(
-        enum z_event_type
-      ) *
-      z_event_functions_length
+      0
     )
   );
 }
@@ -37,150 +23,229 @@ void z_event_trigger(
   void* z_event_data
 ) {
   for (
-    unsigned char index_z_event_function = 0;
-    index_z_event_function < z_event_functions_length;
-    ++index_z_event_function
+    unsigned char index_z_event_function_structure = 0;
+    index_z_event_function_structure < z_event_function_structures_length;
+    ++index_z_event_function_structure
   ) {
+    struct z_event_function_structure* z_event_function_structure = (
+      z_event_function_structures[
+        index_z_event_function_structure
+      ]
+    );
+
     if (
-      z_event_types[
-        index_z_event_function
-      ] == z_event_type
+      z_event_function_structure->event_type != z_event_type
     ) {
-      z_event_functions[
-        index_z_event_function
-      ](
-        z_event_data
-      );
+      continue;
+    }
+
+    switch (
+      z_event_function_structure->type
+    ) {
+      case z_event_function_type_with_data: {
+        z_event_function_with_data z_event_function_structure_function = (
+          z_event_function_structure->function
+        );
+
+        void* z_event_function_structure_data = (
+          z_event_function_structure->data
+        );
+
+        z_event_function_structure_function(
+          z_event_data,
+          z_event_function_structure_data
+        );
+
+        break;
+      }
+      case z_event_function_type_without_data: {
+        z_event_function_without_data z_event_function_structure_function = (
+          z_event_function_structure->function
+        );
+
+        z_event_function_structure_function(
+          z_event_data
+        );
+
+        break;
+      }
+      default: {
+        break;
+      }
     }
   }
 }
 
-unsigned char z_event_on(
-  z_event_function z_event_function,
+void z_event_on(
+  z_event_function_without_data z_event_function,
   enum z_event_type z_event_type
 ) {
-  if (
-    z_event_functions_length >= 255
-  ) {
-    return 1;
-  }
+  z_event_function_structures_add(
+    z_event_function,
+    z_event_type,
+    z_event_function_type_without_data,
+    0
+  );
+}
 
-  z_event_functions_length = (
-    z_event_functions_length +
+void z_event_on_with_data(
+  z_event_function_with_data z_event_function,
+  enum z_event_type z_event_type,
+  void* z_event_function_data
+) {
+  z_event_function_structures_add(
+    z_event_function,
+    z_event_type,
+    z_event_function_type_with_data,
+    z_event_function_data
+  );
+}
+
+void z_event_function_structures_add(
+  void* z_event_function_structure_function,
+  enum z_event_type z_event_function_structure_event_type,
+  enum z_event_function_type z_event_function_structure_type,
+  void* z_event_function_structure_data
+) {
+  unsigned int index_z_event_function_structure = (
+    z_event_function_structures_length
+  );
+
+  z_event_function_structures_length = (
+    z_event_function_structures_length +
     1
   );
 
   clic3_memory_reallocate_raw(
-    &z_event_functions,
+    &z_event_function_structures,
     (
       sizeof(
-        z_event_function
+        struct z_event_function_structure
       ) *
-      z_event_functions_length
+      z_event_function_structures_length
     )
   );
 
-  clic3_memory_reallocate_raw(
-    &z_event_types,
-    (
+  z_event_function_structures[
+    index_z_event_function_structure
+  ] = (
+    clic3_memory_allocate_raw(
       sizeof(
-        enum z_event_type
-      ) *
-      z_event_functions_length
+        struct z_event_function_structure
+      )
     )
   );
 
-  z_event_functions[
-    z_event_functions_length -
-    1
-  ] = (
-    z_event_function
+  struct z_event_function_structure* z_event_function_structure = (
+    z_event_function_structures[
+      z_event_function_structures_length -
+      1
+    ]
   );
 
-  z_event_types[
-    z_event_functions_length
-  ] = (
-    z_event_type
+  z_event_function_structure->function = (
+    z_event_function_structure_function
   );
 
-  return 0;
+  z_event_function_structure->event_type = (
+    z_event_function_structure_event_type
+  );
+
+  z_event_function_structure->type = (
+    z_event_function_structure_type
+  );
+
+  z_event_function_structure->data = (
+    z_event_function_structure_data
+  );
 }
 
 unsigned char z_event_off(
-  z_event_function z_event_function,
-  enum z_event_type z_event_type
+  void* z_event_function_structure_function,
+  enum z_event_type z_event_function_structure_event_type
 ) {
   for (
-    unsigned char index_z_event_function = 0;
-    index_z_event_function < z_event_functions_length;
-    ++index_z_event_function
+    unsigned char index_z_event_function_structure = 0;
+    index_z_event_function_structure < z_event_function_structures_length;
+    ++index_z_event_function_structure
   ) {
-    if (
-      z_event_functions[
-        index_z_event_function
-      ] &&
-      z_event_types[
-        index_z_event_function
+    struct z_event_function_structure* z_event_function_structure = (
+      z_event_function_structures[
+        index_z_event_function_structure
       ]
+    );
+
+    if (
+      z_event_function_structure != z_event_function_structure_function ||
+      z_event_function_structure->event_type != z_event_function_structure_event_type
     ) {
-      for (
-        unsigned char index_z_event_function_removal = index_z_event_function;
-        index_z_event_function_removal < z_event_functions_length - 1;
-        ++index_z_event_function_removal
-      ) {
-        z_event_functions[
-          index_z_event_function_removal
-        ] = z_event_functions[
-          index_z_event_function_removal +
-          1
-        ];
-
-        z_event_types[
-          index_z_event_function_removal
-        ] = z_event_types[
-          index_z_event_function_removal +
-          1
-        ];
-      }
-
-      z_event_functions_length = (
-        z_event_functions_length -
-        1
-      );
-
-      clic3_memory_reallocate_raw(
-        &z_event_functions,
-        (
-          sizeof(
-            z_event_function
-          ) *
-          z_event_functions_length
-        )
-      );
-
-      clic3_memory_reallocate_raw(
-        &z_event_types,
-        (
-          sizeof(
-            enum z_event_type
-          ) *
-          z_event_functions_length
-        )
-      );
-
-      return 1;
+      continue;
     }
+
+    clic3_memory_free_raw(
+      z_event_function_structure
+    );
+
+    for (
+      unsigned char index_z_event_function_structure_removal = index_z_event_function_structure;
+      (
+        index_z_event_function_structure_removal < 
+        (
+          z_event_function_structures_length -
+          1
+        )
+      );
+      ++index_z_event_function_structure_removal
+    ) {
+      z_event_function_structures[
+        index_z_event_function_structure_removal
+      ] = (
+        z_event_function_structures[
+          index_z_event_function_structure_removal +
+          1
+        ]
+      );
+    }
+
+    z_event_function_structures_length = (
+      z_event_function_structures_length -
+      1
+    );
+
+    clic3_memory_reallocate_raw(
+      &z_event_function_structures,
+      (
+        sizeof(
+          z_event_function_structure
+        ) *
+        z_event_function_structures_length
+      )
+    );
+
+    return 0;
   }
 
-  return 0;
+  return 1;
 }
 
 void z_event_destroy() {
-  clic3_memory_free_raw(
-    z_event_functions
-  );
+  for (
+    unsigned char index_z_event_function_structure = 0;
+    index_z_event_function_structure < z_event_function_structures_length;
+    ++index_z_event_function_structure
+  ) {
+    struct z_event_function_structure* z_event_function_structure = (
+      z_event_function_structures[
+        index_z_event_function_structure
+      ]
+    );
+
+    clic3_memory_free_raw(
+      z_event_function_structure
+    );
+  }
 
   clic3_memory_free_raw(
-    z_event_types
+    z_event_function_structures
   );
 }

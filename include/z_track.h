@@ -30,6 +30,7 @@ struct z_track {
   unsigned char key;
 
   char* char_array_seed;
+  unsigned int length_char_array_seed;
 
   struct rand_parameters rand_parameters;
   struct rand_result rand_result;

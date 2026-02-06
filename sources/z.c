@@ -1,7 +1,7 @@
 #include <z.h>
 
 #include <z_close_exit.h>
-#include <z_display.h>
+#include <z_display_thread.h>
 #include <z_event.h>
 #include <z_io_proc.h>
 #include <z_io_proc_data.h>
@@ -17,10 +17,8 @@
 #include <pthread.h>
 
 int main() {
-  cer0_signal_sine_alice(
-    1.3f
-  );
-
+  struct cer0_audio_output audio_output;
+  struct z_display_thread_data z_display_thread_data;
   struct z_io_proc_data z_io_proc_data;
   struct z_track_parameters z_track_parameters;
 
@@ -31,8 +29,6 @@ int main() {
   interrupt_handler_interrupt_function_add(
     z_close_exit
   );
-
-  struct cer0_audio_output audio_output;
 
   z_track_parameters_initialize_defaults(
     &z_track_parameters
@@ -46,9 +42,9 @@ int main() {
 
   z_event_initialize();
 
-  z_event_on(
-    z_display_render_event,
-    z_event_type_track_update
+  z_display_thread_initialize(
+    &z_display_thread_data,
+    &z_io_proc_data.queue
   );
 
   cer0_audio_output_initialize(
@@ -80,6 +76,10 @@ int main() {
   );
 
   z_event_destroy();
+
+  z_display_thread_destroy(
+    &z_display_thread_data
+  );
 
   z_queue_destroy(
     &z_io_proc_data.queue

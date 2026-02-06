@@ -98,11 +98,14 @@ file_rand_library:=${shell realpath "${file_rand_library}"}
 files_sources=${wildcard ${directory_sources}/*.c}
 ifeq (${target_os},ios)
 files_sources:=${filter-out ${directory_sources}/z.c,${files_sources}}
+files_sources:=${filter-out ${directory_sources}/z_display.c,${files_sources}}
+files_sources:=${filter-out ${directory_sources}/z_display_thread.c,${files_sources}}
 endif
 files_objects=${patsubst ${directory_sources}/%.c,${directory_objects}/%.o,${files_sources}}
 files_objects_library:=${patsubst ${directory_objects}/%.o,${directory_objects}/%_library.o,${files_objects}}
 files_objects_library:=${filter-out ${directory_objects}/z_library.o,${files_objects_library}}
 files_objects_library:=${filter-out ${directory_objects}/z_display_library.o,${files_objects_library}}
+files_objects_library:=${filter-out ${directory_objects}/z_display_thread_library.o,${files_objects_library}}
 files_libraries=${file_cero_library} ${file_clic3_library} ${file_interrupt_handler_library} ${file_math_c_library} ${file_rand_library}
 
 ifndef target_device_version
