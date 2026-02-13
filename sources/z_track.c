@@ -12,6 +12,8 @@
 #include <cer0_note_table.h>
 #include <cer0_synthesizer.h>
 
+#include <math_c_maximum.h>
+
 #include <rand_clean.h>
 #include <rand_functions.h>
 #include <rand_result.h>
@@ -437,7 +439,7 @@ void z_track_generate(
   );
 
   for (
-    unsigned char index_lane = 0;
+    unsigned int index_lane = 0;
     index_lane < track->length_lanes;
     ++index_lane
   ) {
@@ -462,8 +464,8 @@ void z_track_generate(
       track->rand_result.bytes[
         0
       ] %
-      4 +
-      1
+      3 +
+      4
     );
 
     for (
@@ -538,7 +540,7 @@ void z_track_generate(
         16 +
         8
       ) *
-      64
+      256
     );
 
     track_lane->notes = (
@@ -654,7 +656,7 @@ void z_track_generate(
               ) +
               2
             ) *
-            quarter_beat
+            half_beat
           );
 
           break;
@@ -666,11 +668,11 @@ void z_track_generate(
               (
                 track->rand_result.bytes[
                   3
-                ] % 15
+                ] % 3
               ) +
-              2
+              1
             ) *
-            eigth_beat
+            sixtenth_beat
           );
 
           break;
@@ -682,15 +684,30 @@ void z_track_generate(
               (
                 track->rand_result.bytes[
                   3
-                ] % 32
-              ) +
-              3
+                ] % 3
+              ) *
+              2 +
+              1
             ) *
             sixtenth_beat
           );
 
           break;
         }
+      }
+
+      length_note = (
+        eigth_beat /
+        ((float) (((track->length_lanes + 1) - index_lane) % 6 + 1) / math_c_maximum_float(6,track->length_lanes))
+      );
+
+      if (
+        (index_lane + index_note) % 5 == 0
+      ) {
+        length_note = (
+          2.0f *
+          length_note
+        );
       }
 
       if (
@@ -709,103 +726,73 @@ void z_track_generate(
         );
       }
 
-      unsigned char position_scale = (
-        track->scale[
-          (
-            (
-              track->rand_result.bytes[2] +
-              1
-            )
-          ) %
-          track->length_scale
-        ]
-      );
-
       float value_note;
 
+      unsigned int position_scale = (
+
+        (
+            (index_note + index_lane) % 2 == 0
+          ? index_note : (index_note + 1)
+          ) %
+        track->length_scale
+      );
+
       if (
-        index_lane > 1 &&
-        index_note >= 32
+        position_scale % 3 == 1
       ) {
-        value_note = (
-          notes[
-            (
-              index_note %
-              8
-            ) %
-            track_lane->length_notes
-          ].value
+        position_scale = (
+          (position_scale + 1) %
+          track->length_scale
         );
-      } else {
-        unsigned int octave_range_minimum;
-        unsigned int octave_range;
-
-        if (
-          index_lane == 0
-        ) {
-          octave_range_minimum = (
-            range_octave_lower_minimum
-          );
-
-          octave_range = (
-            range_octave_lower
-          );
-        } else if (
+      }
+      
+      unsigned int position_note_table = (
+        (
           (
-            index_lane %
-            2
-          ) == 0
-        ) {
-          octave_range_minimum = (
-            range_octave_mid_minimum
-          );
-
-          octave_range = (
-            range_octave_mid
-          );
-        } else {
-          octave_range_minimum = (
-            range_octave_upper_minimum
-          );
-
-          octave_range = (
-            range_octave_upper
-          );
-        }
-
-        unsigned int position_note_table = (
+          track->scale[
+            position_scale
+          ] +
+          track->key
+        )
+           +
           (
-            (
-              position_scale +
-              track->key
-            ) +
             (
               cer0_default_steps_notes *
               (
-                track->rand_result.bytes[
-                  4
-                ] %
-                octave_range
+                (
+                  (unsigned int) note->time +
+                  index_note *
+                  (
+                    index_lane -
+                    track->length_lanes
+                  )
+                ) /
+                track->length_scale
               )
-            )
-          ) %
-          (
-            octave_range *
-            cer0_default_steps_notes
-          ) +
-          (
-            octave_range_minimum *
-            cer0_default_steps_notes
+            ) %
+            (unsigned long int) ((float) (
+              z_track_parameters->octave_maximum -
+              z_track_parameters->octave_minimum
+            ) * (
+              (
+                (float) (
+                  index_lane +
+                  1
+                ) / (float) (
+                  track->length_lanes
+                )
+              )
+            ))
           )
-        );
+        )
+      );
 
-        value_note = (
-          track->note_table[
-            position_note_table %
-            track->length_note_table
-          ]
-        );
-      }
+      value_note = (
+        track->note_table[
+          position_note_table %
+          track->length_note_table
+        ]
+      );
 
       note->value = (
         value_note
@@ -842,7 +829,7 @@ void z_track_destroy(
   );
 
   for (
-    unsigned char index_lane = 0;
+    unsigned int index_lane = 0;
     index_lane < track->length_lanes;
     ++index_lane
   ) {
