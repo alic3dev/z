@@ -464,8 +464,8 @@ void z_track_generate(
       track->rand_result.bytes[
         0
       ] %
-      3 +
-      4
+      1 +
+      1
     );
 
     for (
@@ -559,15 +559,7 @@ void z_track_generate(
     );
 
     unsigned char speed = (
-      index_lane == 0
-      ? 0
-      : (
-        (
-          index_lane
-        ) %
-        3 +
-        1
-      )
+      index_lane
     );
 
     struct z_track_note* notes = (
@@ -638,7 +630,7 @@ void z_track_generate(
                   3
                 ] % 5
               ) +
-              4
+              64
             ) *
             half_beat
           );
@@ -654,7 +646,7 @@ void z_track_generate(
                   3
                 ] % 9
               ) +
-              2
+              16
             ) *
             half_beat
           );
@@ -677,6 +669,7 @@ void z_track_generate(
 
           break;
         }
+        default:
         case 3: {
           length_note = (
             (float)
@@ -696,13 +689,8 @@ void z_track_generate(
         }
       }
 
-      length_note = (
-        eigth_beat /
-        ((float) (((track->length_lanes + 1) - index_lane) % 6 + 1) / math_c_maximum_float(6,track->length_lanes))
-      );
-
       if (
-        (index_lane + index_note) % 5 == 0
+        (index_lane + index_note) % 11 == 7
       ) {
         length_note = (
           2.0f *
@@ -729,22 +717,13 @@ void z_track_generate(
       float value_note;
 
       unsigned int position_scale = (
-
         (
-            (index_note + index_lane) % 2 == 0
-          ? index_note : (index_note + 1)
-          ) %
+          track->rand_result.bytes[
+            0
+          ]
+        ) %
         track->length_scale
       );
-
-      if (
-        position_scale % 3 == 1
-      ) {
-        position_scale = (
-          (position_scale + 1) %
-          track->length_scale
-        );
-      }
       
       unsigned int position_note_table = (
         (
