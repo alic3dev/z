@@ -3,9 +3,16 @@
 
 #include <pthread.h>
 
-extern pthread_mutex_t z_close_exit_mutex;
+struct z_close_exit_data {
+  pthread_mutex_t mutex_close_exit;
+  pthread_mutex_t mutex_initializer;
 
-void z_close_exit_initialize();
-void z_close_exit();
+  unsigned int initializing;
+};
+
+void z_close_exit(
+  int,
+  void*
+);
 
 #endif
