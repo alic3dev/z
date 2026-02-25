@@ -1,7 +1,6 @@
 #include <z_close_exit.h>
 
 #include <pthread.h>
-#include <stdio.h>
 
 void z_close_exit(
   int status,
