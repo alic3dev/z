@@ -39,11 +39,6 @@ int main() {
     0
   );
 
-  pthread_join(
-    thread_initializer,
-    0
-  );
-
   struct cer0_audio_output audio_output;
   struct z_display_thread_data z_display_thread_data;
   struct z_io_proc_data z_io_proc_data;
@@ -72,6 +67,11 @@ int main() {
   z_display_thread_initialize(
     &z_display_thread_data,
     &z_io_proc_data.queue
+  );
+
+  pthread_join(
+    thread_initializer,
+    0
   );
 
   cer0_audio_output_initialize(
