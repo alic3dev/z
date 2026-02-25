@@ -20,12 +20,12 @@ void z_io_proc_data_initialize(
 
   pthread_mutex_init(
     &z_io_proc_data->mutex_exited,
-    (void*)0
+    0
   );
 
   pthread_mutex_init(
     &z_io_proc_data->mutex_playing,
-    (void*)0
+    0
   );
 
   pthread_mutex_lock(

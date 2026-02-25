@@ -68,8 +68,16 @@ void* z_initializer_thread_display(
 void* z_initializer_thread(
   void* data
 ) {
+  pthread_mutex_t* mutex_initializer = (
+    data
+  );
+
   cer0_signal_sine_alice(
     333.333f
+  );
+
+  pthread_mutex_unlock(
+    mutex_initializer
   );
 
   return (

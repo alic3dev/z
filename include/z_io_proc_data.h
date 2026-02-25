@@ -1,9 +1,10 @@
 #ifndef __z_io_proc_data_h
 #define __z_io_proc_data_h
 
+#include <z_close_exit.h>
 #include <z_queue.h>
-#include <z_track_parameters.h>
 #include <z_settings.h>
+#include <z_track_parameters.h>
 
 #include <pthread.h>
 
@@ -24,6 +25,8 @@ struct z_io_proc_data {
   pthread_mutex_t mutex_playing;
 
   float* rate_sample;
+
+  struct z_close_exit_data* z_close_exit_data;
 };
 
 void z_io_proc_data_initialize(
