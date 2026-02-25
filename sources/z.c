@@ -3,6 +3,7 @@
 #include <z_close_exit.h>
 #include <z_display_thread.h>
 #include <z_event.h>
+#include <z_initializer.h>
 #include <z_io_proc.h>
 #include <z_io_proc_data.h>
 #include <z_queue.h>
@@ -17,6 +18,32 @@
 #include <pthread.h>
 
 int main() {
+  unsigned char initializing = (
+    1
+  );
+
+  pthread_t thread_initializer;
+  pthread_t thread_initializer_display;
+
+  pthread_create(
+    &thread_initializer_display,
+    0,
+    z_initializer_thread_display,
+    &initializing
+  );
+
+  pthread_create(
+    &thread_initializer,
+    0,
+    z_initializer_thread,
+    0
+  );
+
+  pthread_join(
+    thread_initializer,
+    0
+  );
+
   struct cer0_audio_output audio_output;
   struct z_display_thread_data z_display_thread_data;
   struct z_io_proc_data z_io_proc_data;
@@ -51,6 +78,15 @@ int main() {
     &audio_output,
     z_io_proc,
     &z_io_proc_data
+  );
+
+  initializing = (
+    0
+  );
+
+  pthread_join(
+    thread_initializer_display,
+    0
   );
 
   pthread_mutex_lock(
