@@ -1,20 +1,20 @@
 #include <z_close_exit.h>
 
-pthread_mutex_t z_close_exit_mutex;
+#include <pthread.h>
 
-void z_close_exit_initialize() {
-  pthread_mutex_init(
-    &z_close_exit_mutex,
-    (void*)0
+void z_close_exit(
+  int status,
+  void* data
+) {
+  struct z_close_exit_data* z_close_exit_data = (
+    data
   );
 
-  pthread_mutex_lock(
-    &z_close_exit_mutex
-  );
-}
-
-void z_close_exit() {
   pthread_mutex_unlock(
-    &z_close_exit_mutex
+    &z_close_exit_data->mutex_initializer
+  );
+
+  pthread_mutex_unlock(
+    &z_close_exit_data->mutex_close_exit
   );
 }
