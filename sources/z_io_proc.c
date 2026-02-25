@@ -66,6 +66,10 @@ int z_io_proc(
       z_io_proc_data->rate_sample
     );
 
+    z_io_proc_data->z_close_exit_data->initializing = (
+      0
+    );
+
     z_io_proc_data->initialized = 1;
   }
 
