@@ -45,7 +45,7 @@ void* z_display_render_thread(
         z_display_thread_data->queue
       );
     }
-    
+
     struct winsize terminal_size;
 
     signed char status_ioctl = ioctl(
@@ -71,7 +71,6 @@ void* z_display_render_thread(
     } else {
       unsigned int width = terminal_size.ws_col;
 
-      
       clic3_memory_reallocate_raw(
         &z_display_thread_data->display_data.progress,
         (
@@ -85,7 +84,7 @@ void* z_display_render_thread(
       ] = (
         '|'
       );
-      
+
       z_display_thread_data->display_data.progress[
         width -
         1

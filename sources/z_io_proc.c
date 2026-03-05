@@ -104,7 +104,7 @@ int z_io_proc(
 
     float pan = 0.5f;
     float buffer_out_channel_zero_value = 0.0f;
-    
+
     for (
       unsigned long int index_buffer_out = 0;
       index_buffer_out < size_buffer_out;
@@ -192,7 +192,7 @@ void z_io_proc_frame_get(
       z_io_proc_data->frame + 1
     );
   }
-  
+
   float value = 0.0f;
 
   for (
@@ -219,7 +219,7 @@ void z_io_proc_frame_get(
     unsigned int note_life_end = (
       (unsigned long long int) (
         (
-          
+
           *z_io_proc_data->rate_sample /
           600.0f
         ) *
@@ -231,14 +231,14 @@ void z_io_proc_frame_get(
       (z_io_proc_data->frame + 1) %
       note_life_end
     );
-    
+
     if (
       note_life == 0
     ) {
       track_lane->index_note = (
         (
           track_lane->index_note + 1
-        ) % 
+        ) %
         track_lane->length_notes
       );
 

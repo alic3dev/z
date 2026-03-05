@@ -53,7 +53,7 @@ void* z_initializer_thread_display(
       ) %
       4
     );
-    
+
     nanosleep(
       &timespec_sleep,
       &timespec_sleep_remaining

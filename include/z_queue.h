@@ -14,7 +14,7 @@ struct z_queue {
   struct z_track* track_upcoming;
 
   struct z_track_parameters* track_parameters;
-  
+
   enum z_queue_status status;
 
   float* rate_sample;

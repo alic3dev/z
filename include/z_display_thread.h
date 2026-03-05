@@ -14,7 +14,7 @@ struct z_display_thread_data {
   pthread_mutex_t mutex_render;
 
   float progress;
-  
+
   struct z_display_data display_data;
   struct z_queue* queue;
 

@@ -189,7 +189,7 @@ unsigned char z_event_off(
     for (
       unsigned char index_z_event_function_structure_removal = index_z_event_function_structure;
       (
-        index_z_event_function_structure_removal < 
+        index_z_event_function_structure_removal <
         (
           z_event_function_structures_length -
           1
