@@ -97,15 +97,15 @@ void z_track_parameters_initialize_defaults(
   z_track_parameters->length_scales = (
     z_track_parameters_defaults.length_scales
   );
-  
+
   z_track_parameters->scales = (
     z_track_parameters_defaults.scales
   );
-  
+
   z_track_parameters->scales_length = (
     z_track_parameters_defaults.scales_length
   );
-  
+
   z_track_parameters->length_scales = (
     z_track_parameters_defaults.length_scales
   );
@@ -183,7 +183,7 @@ void z_track_parameters_initialize_defaults(
   z_track_parameters->note_release_minimum = (
     z_track_parameters_defaults.note_release_minimum
   );
-  
+
   z_track_parameters->note_release_maximum = (
     z_track_parameters_defaults.note_release_maximum
   );

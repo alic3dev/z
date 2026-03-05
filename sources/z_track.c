@@ -111,7 +111,7 @@ void z_track_generate(
         ]
       ]
     );
-    
+
     track->char_array_seed[
       index_seed *
       2
@@ -302,7 +302,7 @@ void z_track_generate(
             track->name[
               index_track_name
             ] +
-            1 
+            1
           ) %
           126 +
           1

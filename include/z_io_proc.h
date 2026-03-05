@@ -23,7 +23,6 @@ int z_io_proc(
 
 #endif
 
-
 void z_io_proc_frame_get(
   struct z_io_proc_data*,
   struct z_queue*,

@@ -92,7 +92,7 @@ void z_settings_initialize(
       ) {
         index_value_start = length_buffer_line_file_settings;
       } else if (
-        character_file_settings == '\n' || 
+        character_file_settings == '\n' ||
         character_file_settings == '\0'
       ) {
         if (
@@ -144,7 +144,7 @@ void z_settings_initialize(
         ] = (
           '\0'
         );
-        
+
         settings_value[
           index_value_start
         ] = (
