@@ -118,7 +118,7 @@ jobs:
         run: cd rand && make rand_ios_dylib target_device_version=${{ env.target_device_version }} target_device=iphone
       - name: make_wave
         if: steps.cache_restore_wave.outputs.cache-hit != 'true'
-        run: cd wave && make wave target_device_version=${{ env.target_device_version }} target_device=iphone
+        run: cd wave && make target_device_version=${{ env.target_device_version }} target_device=iphone
       - name: make_z
         run: cd z && make target_device_version=${{ env.target_device_version }} target_device=iphone
       - name: cache_save_cer0
