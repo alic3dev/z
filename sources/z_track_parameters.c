@@ -21,41 +21,41 @@ const unsigned char* z_track_scales_defaults[
 unsigned char z_track_scales_lengths_defaults[
   z_track_parameters_length_scales_default
 ] = {
-  cer0_scale_length_major_pentatonic,
-  cer0_scale_length_harmonic_major,
-  cer0_scale_length_major_pentatonic,
+  cer0_scale_length_minor_pentatonic,
   cer0_scale_length_harmonic_minor,
-  cer0_scale_length_neapolitan_major
+  cer0_scale_length_minor_pentatonic,
+  cer0_scale_length_harmonic_minor,
+  cer0_scale_length_neapolitan_minor
 };
 
 const struct z_track_parameters z_track_parameters_defaults = {
   .scales = z_track_scales_defaults,
   .scales_length = z_track_scales_lengths_defaults,
   .length_scales = z_track_parameters_length_scales_default,
-  .track_length_lanes_minimum = 2,
-  .track_length_lanes_maximum = 8,
+  .track_length_lanes_minimum = 16,
+  .track_length_lanes_maximum = 18,
   .frequency_root = cer0_frequency_root_scientific,
-  .octave_minimum = 1,
-  .octave_maximum = 4,
+  .octave_minimum = 0,
+  .octave_maximum = 16,
   .signals = {
-    sine,
-    sine_alice,
-    sine,
-    sine_alice,
-    sine,
-    sine_alice
+    square,
+    square,
+    square,
+    square,
+    square,
+    square
   },
-  .track_length_multiplier = 6.15f,
-  .track_bpm_minimum = 60.0f,
-  .track_bpm_maximum = 180.0f,
+  .track_length_multiplier = 50.15f,
+  .track_bpm_minimum = 10.0f,
+  .track_bpm_maximum = 20.0f,
   .oscillator_amplitude_minimum = 0.125f,
   .oscillator_amplitude_maximum = 0.9f,
   .note_amplitude_minimum = 0.125f,
   .note_amplitude_maximum = 0.9f,
-  .note_attack_minimum = 0.112f,
-  .note_attack_maximum = 0.99f,
-  .note_release_minimum = 0.33f,
-  .note_release_maximum = 0.99f,
+  .note_attack_minimum = 0.9f,
+  .note_attack_maximum = 1.0f,
+  .note_release_minimum = 0.9f,
+  .note_release_maximum = 1.0f,
   .rand_source_type = rand_source_type_divisive,
   .allocated_scales = 0
 };

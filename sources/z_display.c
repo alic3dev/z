@@ -22,13 +22,13 @@ void z_display_render(
     "%s"
     "}\n"
     "\n"
-    "seed: %s\n"
+    // "seed: %s\n"
     "\n%s\n\n"
     ": "
     "\e[?25h",
     z_display_data->name,
     z_display_data->name_next,
-    z_display_data->seed,
+    // z_display_data->seed,
     z_display_data->progress
   );
 
