@@ -49,7 +49,7 @@ return 0x01;
       .length_channels = 0x02,
       .rate_samples = 0xbb80,
       .bytes_sample = 0x01,
-      .length_samples = 0x0fffffff
+      .length_samples = 0xffffff
     };
 
   struct wave_chunk_data chunk_data;
