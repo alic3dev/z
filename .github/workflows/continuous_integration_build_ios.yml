@@ -103,7 +103,7 @@ jobs:
           path: wave
       - name: make_clic3
         if: steps.cache_restore_clic3.outputs.cache-hit != 'true'
-        run: cd clic3 && make clic3_ios_dylib target_device_version=${{ env.target_device_version }} target_device=iphone
+        run: cd clic3 && make target_device_version=${{ env.target_device_version }} target_device=iphone
       - name: make_math_c
         if: steps.cache_restore_math_c.outputs.cache-hit != 'true'
         run: cd math_c && make math_c_ios_dylib target_device_version=${{ env.target_device_version }} target_device=iphone
@@ -164,7 +164,7 @@ jobs:
       - name: cache_save_wave
         id: cache_save_wave
         if: ${{ env.enabled_caching == '1' && env.enabled_caching_wave == '1' && steps.cache_restore_wave.outputs.cache-hit != 'true' }}
-        uses actions/cache/save@v4
+        uses: actions/cache/save@v4
         with:
           path: |
             wave
