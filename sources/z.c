@@ -11,13 +11,153 @@
 #include <z_track.h>
 
 #include <cer0.h>
+
 #include <interrupt_handler.h>
+
+#include <math_c_minimum.h>
+
+#include <wave_chunk_data.h>
+#include <wave_chunk_fact.h>
+#include <wave_chunk_fmt.h>
+#include <wave_chunk_riff.h>
+#include <wave_format.h>
+#include <wave_parameters.h>
 
 #include <CoreAudio/CoreAudio.h>
 
 #include <pthread.h>
 
-int main() {
+int main(
+  int length_parameters,
+  char** parameters
+) {
+  if (
+    length_parameters == 2
+  ) {
+  FILE* output = fopen(parameters[0x01],"wb");
+if (output == 0x00) {fprintf(stderr,"failed\n");
+return 0x01;
+}
+
+    struct z_track_parameters z_track_parameters;
+    struct z_io_proc_data z_io_proc_data;
+    
+    struct wave_parameters wave_parameters = {
+      .wave_format = (
+        wave_format_microsoft_pcm_format
+      ),
+      .length_channels = 0x02,
+      .rate_samples = 0xbb80,
+      .bytes_sample = 0x01,
+      .length_samples = 0xffffff
+    };
+
+  struct wave_chunk_data chunk_data;
+  struct wave_chunk_fmt chunk_fmt;
+  struct wave_chunk_riff chunk_riff;
+
+  wave_chunk_riff_initialize(
+      &chunk_riff,
+    &wave_parameters
+  );
+  wave_chunk_fmt_initialize(
+    &chunk_fmt,
+    &wave_parameters
+  );
+
+  wave_chunk_data_initialize(
+    &chunk_data,
+    &wave_parameters
+  );
+    z_track_parameters_initialize_defaults(
+      &z_track_parameters
+    );
+
+    float rate_samples = (
+      0xbb80
+    );
+
+    z_io_proc_data_initialize(
+      &z_io_proc_data,
+      &z_track_parameters,
+      &rate_samples
+    );
+
+    z_queue_initialize(
+      &z_io_proc_data.queue,
+      z_io_proc_data.track_parameters,
+      z_io_proc_data.rate_sample
+    ); 
+
+    float buffer_float[0x01] = { 0.0f };
+float pan = 0.5f;
+
+    for (
+      unsigned long long int frame = (
+        0x00
+      );
+      (
+        frame <
+        chunk_data.length_data
+      );
+      ++frame
+    ) {
+      if (frame % 2 == 0){
+      z_io_proc_frame_get(
+        &z_io_proc_data,
+        &z_io_proc_data.queue,
+        buffer_float,
+        0x00,
+        0x00
+      );
+
+pan = (
+  0.5f + (
+    buffer_float[0x00] + 1.0f) / 4.0f);
+   
+      chunk_data.data[frame] = ((buffer_float[0x00] * math_c_minimum_float((1.0f - pan) * 2.0f, 1.0f)) + 1.0f) / 2.0f * 0xff;     }
+else {
+  chunk_data.data[frame] = ((buffer_float[0x00] * math_c_minimum_float(pan * 2.0f, 1.0f)) + 1.0f) / 2.0f * 0xff;
+}
+}
+
+    wave_chunk_riff_write(&chunk_riff,output);
+    wave_chunk_fmt_write(
+&chunk_fmt,
+output
+);
+wave_chunk_data_write(
+&chunk_data,
+output
+);
+
+fclose(output);
+
+wave_chunk_riff_destroy(
+  &chunk_riff
+);
+
+wave_chunk_fmt_destroy(
+  &chunk_fmt
+);
+
+wave_chunk_data_destroy(
+&chunk_data);
+
+  
+    z_queue_destroy(
+      &z_io_proc_data.queue
+    );
+
+    z_track_parameters_destroy(
+      &z_track_parameters
+    );
+
+    return (
+      0x00
+    );
+  }
+  
   pthread_t thread_initializer;
   pthread_t thread_initializer_display;
 

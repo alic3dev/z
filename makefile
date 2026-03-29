@@ -58,6 +58,10 @@ directory_rand=../rand
 directory_rand_include=${directory_rand}/include
 directory_rand_library=${directory_rand}/library/${target_os}/release
 
+directory_wave=../wave
+directory_wave_include=${directory_wave}/include
+directory_wave_library=${directory_wave}/library/${target_os}/release
+
 file_library_object=${directory_library}/${name}.o
 
 name_library_dylib_major=${name}.${version_major}.dylib
@@ -81,12 +85,14 @@ file_clic3_library=${directory_clic3_library}/clic3_ios.0.dylib
 file_interrupt_handler_library=${directory_interrupt_handler_library}/interrupt_handler_ios.0.dylib
 file_math_c_library=${directory_math_c_library}/math_c_ios.0.dylib
 file_rand_library=${directory_rand_library}/rand_ios.0.dylib
+file_wave_library=${directory_wave_library}/wave_ios.0.dylib
 else
 file_cero_library=${directory_cero_library}/cer0.0.dylib
 file_clic3_library=${directory_clic3_library}/clic3.0.dylib
 file_interrupt_handler_library=${directory_interrupt_handler_library}/interrupt_handler.0.dylib
 file_math_c_library=${directory_math_c_library}/math_c.0.dylib
 file_rand_library=${directory_rand_library}/rand.0.dylib
+file_wave_library=${directory_wave_library}/wave.0.dylib
 endif
 
 file_cero_library:=${shell realpath "${file_cero_library}"}
@@ -94,6 +100,7 @@ file_clic3_library:=${shell realpath "${file_clic3_library}"}
 file_interrupt_handler_library:=${shell realpath "${file_interrupt_handler_library}"}
 file_math_c_library:=${shell realpath "${file_math_c_library}"}
 file_rand_library:=${shell realpath "${file_rand_library}"}
+file_wave_library:=${shell realpath "${file_wave_library}"}
 
 files_sources=${wildcard ${directory_sources}/*.c}
 ifeq (${target_os},ios)
@@ -106,7 +113,7 @@ files_objects_library:=${patsubst ${directory_objects}/%.o,${directory_objects}/
 files_objects_library:=${filter-out ${directory_objects}/z_library.o,${files_objects_library}}
 files_objects_library:=${filter-out ${directory_objects}/z_display_library.o,${files_objects_library}}
 files_objects_library:=${filter-out ${directory_objects}/z_display_thread_library.o,${files_objects_library}}
-files_libraries=${file_cero_library} ${file_clic3_library} ${file_interrupt_handler_library} ${file_math_c_library} ${file_rand_library}
+files_libraries=${file_cero_library} ${file_clic3_library} ${file_interrupt_handler_library} ${file_math_c_library} ${file_rand_library} ${file_wave_library}
 
 ifndef target_device_version
 	target_device_version=26.1
@@ -129,7 +136,7 @@ endif
 
 cc=clang
 c_flags_platform=-target ${target_platform} -isysroot ${directory_sdk}
-c_includes=${addprefix -I,${directory_include} ${directory_cero_include} ${directory_clic3_include} ${directory_interrupt_handler_include} ${directory_math_c_include} ${directory_rand_include}}
+c_includes=${addprefix -I,${directory_include} ${directory_cero_include} ${directory_clic3_include} ${directory_interrupt_handler_include} ${directory_math_c_include} ${directory_rand_include} ${directory_wave_include}}
 c_flags=${c_flags_platform} ${c_includes}
 
 ifeq (${target_os},ios)

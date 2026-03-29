@@ -11,11 +11,13 @@ env:
   enabled_caching_interrupt_handler: 1
   enabled_caching_math_c: 1
   enabled_caching_rand: 1
+  enabled_caching_wave: 1
   key_cache_cer0: cache_cer0_0_0_0
   key_cache_clic3: cache_clic3_0_0_0
   key_cache_interrupt_handler: cache_interrupt_handler_0_0_0
   key_cache_math_c: cache_math_c_0_0_0
   key_cache_rand: cache_rand_0_0_0
+  key_cache_wave: cache_wave_0_0_0
   target_device_version: 15.5
 jobs:
   continuous_integration_build:
@@ -63,6 +65,13 @@ jobs:
         with:
           path: rand
           key: ${{ env.key_cache_rand }}
+      - name: cache_restore_wave
+        id: cache_restore_wave
+        if: ${{ env.enabled_caching == '1' && env.enabled_caching_wave == '1' }}
+        uses: actions/cache/restore@v4
+        with:
+          path: wave
+          key: ${{ env.key_cache_wave }}
       - name: checkout_cer0
         if: steps.cache_restore_cer0.outputs.cache-hit != 'true'
         uses: actions/checkout@v5
@@ -93,9 +102,15 @@ jobs:
         with:
           repository: alic3dev/rand
           path: rand
+      - name: checkout_wave
+        if: steps.cache_restore_wave.outputs.cache-hit != 'true'
+        uses: actions/checkout@v5
+        with:
+          repository: alic3dev/wave
+          path: wave
       - name: make_clic3
         if: steps.cache_restore_clic3.outputs.cache-hit != 'true'
-        run: cd clic3 && make clic3_dylib target_device_version=${{ env.target_device_version }}
+        run: cd clic3 && make target_device_version=${{ env.target_device_version }}
       - name: make_math_c
         if: steps.cache_restore_math_c.outputs.cache-hit != 'true'
         run: cd math_c && make math_c_dylib target_device_version=${{ env.target_device_version }}
@@ -108,6 +123,9 @@ jobs:
       - name: make_rand
         if: steps.cache_restore_rand.outputs.cache-hit != 'true'
         run: cd rand && make rand_dylib target_device_version=${{ env.target_device_version }}
+      - name: make_wave
+        if: steps.cache_restore_wave.outputs.cache-hit != 'true'
+        run: cd wave && make target_device_version=${{ env.target_device_version }}
       - name: make_z
         run: cd z && make target_device_version=${{ env.target_device_version }}
       - name: cache_save_cer0
@@ -150,3 +168,11 @@ jobs:
           path: |
             rand
           key: ${{ env.key_cache_rand }}
+      - name: cache_save_wave
+        id: cache_save_wave
+        if: ${{ env.enabled_caching == '1' && env.enabled_caching_wave == '1' && steps.cache_restore_rand.outputs.cache-hit != 'true' }}
+        uses: actions/cache/save@v4
+        with:
+          path: |
+            wave
+          key: ${{ env.key_cache_wave }}
