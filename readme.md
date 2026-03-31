@@ -1,6 +1,6 @@
 # z
 
-z:lost_findings
+z:music_box
 
 <img width="401" height="84" alt="z" src="https://github.com/user-attachments/assets/fda0bf76-e7fa-45ce-817b-4cff475f3ecb" />
 
@@ -21,7 +21,7 @@ z:lost_findings
 ### example
 
 ```
-volume->{0.5};
+volume->{1.0};
 ```
 
 ## library_usage
@@ -40,6 +40,7 @@ volume->{0.5};
 - - [`interrupt_handler`](https://github.com/alic3dev/interrupt_handler)
 - - [`math_c`](https://github.com/alic3dev/math_c)
 - - [`rand`](https://github.com/alic3dev/rand)
+- - [`wave`](https://github.com/alic3dev/wave)
 
 ### `make`:targets
 
@@ -72,6 +73,12 @@ or
 
 ```zsh
 make run
+```
+
+### wave_file_outputs
+
+```zsh
+./output/z output_path.wav
 ```
 
 ## copyleft|copyright
