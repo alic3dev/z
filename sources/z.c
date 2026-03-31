@@ -34,10 +34,21 @@ int main(
   if (
     length_parameters == 2
   ) {
-  FILE* output = fopen(parameters[0x01],"wb");
-if (output == 0x00) {fprintf(stderr,"failed\n");
-return 0x01;
-}
+    FILE* output = fopen(parameters[0x01],"wb");
+    
+    if (
+      output ==
+      0x00
+    ) {
+      fprintf(
+        stderr,
+        "failed\n"
+      );
+
+      return (
+        0x01
+      );
+    }
 
     struct z_track_parameters z_track_parameters;
     struct z_io_proc_data z_io_proc_data;
@@ -49,26 +60,28 @@ return 0x01;
       .length_channels = 0x02,
       .rate_samples = 0xbb80,
       .bytes_sample = 0x01,
-      .length_samples = 0xffffff
+      .length_samples = 0x01ffffff
     };
 
-  struct wave_chunk_data chunk_data;
-  struct wave_chunk_fmt chunk_fmt;
-  struct wave_chunk_riff chunk_riff;
+    struct wave_chunk_data chunk_data;
+    struct wave_chunk_fmt chunk_fmt;
+    struct wave_chunk_riff chunk_riff;
 
-  wave_chunk_riff_initialize(
+    wave_chunk_riff_initialize(
       &chunk_riff,
-    &wave_parameters
-  );
-  wave_chunk_fmt_initialize(
-    &chunk_fmt,
-    &wave_parameters
-  );
+      &wave_parameters
+    );
+  
+    wave_chunk_fmt_initialize(
+      &chunk_fmt,
+      &wave_parameters
+    );
 
-  wave_chunk_data_initialize(
-    &chunk_data,
-    &wave_parameters
-  );
+    wave_chunk_data_initialize(
+      &chunk_data,
+      &wave_parameters
+    );
+
     z_track_parameters_initialize_defaults(
       &z_track_parameters
     );
@@ -89,8 +102,15 @@ return 0x01;
       z_io_proc_data.rate_sample
     ); 
 
-    float buffer_float[0x01] = { 0.0f };
-float pan = 0.5f;
+    float buffer_float[
+      0x01
+    ] = {
+      0.0f
+    };
+    
+    float pan = (
+      0.5f
+    );
 
     for (
       unsigned long long int frame = (
@@ -102,48 +122,111 @@ float pan = 0.5f;
       );
       ++frame
     ) {
-      if (frame % 2 == 0){
-      z_io_proc_frame_get(
-        &z_io_proc_data,
-        &z_io_proc_data.queue,
-        buffer_float,
-        0x00,
+      if (
+        (
+          frame %
+          0x02
+        ) ==
         0x00
-      );
+      ){
+        z_io_proc_frame_get(
+          &z_io_proc_data,
+          &z_io_proc_data.queue,
+          buffer_float,
+          0x00,
+          0x00
+        );
 
-pan = (
-  0.5f + (
-    buffer_float[0x00] + 1.0f) / 4.0f);
+        pan = (
+          0.5f +
+          (
+            buffer_float[
+              0x00
+            ] +
+            1.0f
+          ) /
+          4.0f
+        );
    
-      chunk_data.data[frame] = ((buffer_float[0x00] * math_c_minimum_float((1.0f - pan) * 2.0f, 1.0f)) + 1.0f) / 2.0f * 0xff;     }
-else {
-  chunk_data.data[frame] = ((buffer_float[0x00] * math_c_minimum_float(pan * 2.0f, 1.0f)) + 1.0f) / 2.0f * 0xff;
-}
-}
+        chunk_data.data[
+          frame
+        ] = (
+          (
+            (
+              buffer_float[
+                0x00
+              ] *
+              math_c_minimum_float(
+                (
+                  (
+                    1.0f -
+                    pan
+                  ) *
+                  2.0f
+                ),
+                1.0f
+              )
+            ) +
+            1.0f
+          ) /
+          2.0f *
+          0xff
+        );
+      } else {
+        chunk_data.data[
+          frame
+        ] = (
+          (
+            (
+              buffer_float[
+                0x00
+              ] *
+              math_c_minimum_float(
+                (
+                  pan *
+                  2.0f
+                ),
+                1.0f
+              )
+            ) +
+            1.0f
+          ) /
+          2.0f *
+          0xff
+        );
+      }
+    }
 
-    wave_chunk_riff_write(&chunk_riff,output);
+    wave_chunk_riff_write(
+      &chunk_riff,
+      output
+    );
+    
     wave_chunk_fmt_write(
-&chunk_fmt,
-output
-);
-wave_chunk_data_write(
-&chunk_data,
-output
-);
+      &chunk_fmt,
+      output
+    );
 
-fclose(output);
+    wave_chunk_data_write(
+      &chunk_data,
+      output
+    );
 
-wave_chunk_riff_destroy(
-  &chunk_riff
-);
+    fclose(
+      output
+    );
 
-wave_chunk_fmt_destroy(
-  &chunk_fmt
-);
+    wave_chunk_riff_destroy(
+      &chunk_riff
+    );
 
-wave_chunk_data_destroy(
-&chunk_data);
+    wave_chunk_fmt_destroy(
+      &chunk_fmt
+    );
 
+    wave_chunk_data_destroy(
+      &chunk_data
+    );
   
     z_queue_destroy(
       &z_io_proc_data.queue
@@ -155,6 +238,18 @@ wave_chunk_data_destroy(
 
     return (
       0x00
+    );
+  } else if (
+    length_parameters !=
+    0x01
+  ) {
+    fprintf(
+      stderr,
+      "unknown_parameters\n"
+    );
+
+    return (
+      0x01
     );
   }
   
