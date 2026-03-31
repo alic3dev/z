@@ -1,3 +1,4 @@
 library
 objects
 output
+*.wav
