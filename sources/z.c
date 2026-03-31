@@ -166,7 +166,7 @@ int main(
       if (
         (
           frame %
-          0x02
+          wave_parameters.length_channels
         ) ==
         0x00
       ){
