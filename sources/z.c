@@ -12,6 +12,8 @@
 
 #include <cer0.h>
 
+#include <clic3_memory.h>
+
 #include <interrupt_handler.h>
 
 #include <math_c_minimum.h>
@@ -58,9 +60,9 @@ int main(
         wave_format_microsoft_pcm_format
       ),
       .length_channels = 0x02,
-      .rate_samples = 0xbb80,
-      .bytes_sample = 0x01,
-      .length_samples = 0x01ffffff
+      .rate_samples = 0xac44,
+      .bytes_sample = 0x04,
+      .length_samples = 0xffffff
     };
 
     struct wave_chunk_data chunk_data;
@@ -87,7 +89,7 @@ int main(
     );
 
     float rate_samples = (
-      0xbb80
+      wave_parameters.rate_samples
     );
 
     z_io_proc_data_initialize(
@@ -112,16 +114,55 @@ int main(
       0.5f
     );
 
+    unsigned char* bytes = (
+      clic3_memory_allocate_raw(
+        wave_parameters.bytes_sample
+      )
+    );
+
+    unsigned long int maximum_bytes = (
+      0x00
+    );
+
+    for (
+      unsigned char index_byte = (
+        0x00
+      );
+      (
+        index_byte <
+        wave_parameters.bytes_sample
+      );
+      ++index_byte
+    ) {
+      maximum_bytes = (
+        (
+          maximum_bytes <<
+          0x08
+        ) +
+        0xff
+      );
+    }
+
     for (
       unsigned long long int frame = (
         0x00
       );
       (
         frame <
-        chunk_data.length_data
+        wave_parameters.length_samples *
+        wave_parameters.length_channels
       );
       ++frame
     ) {
+      unsigned long int index_data = (
+        frame *
+        wave_parameters.bytes_sample
+      );
+
+      unsigned long int value = (
+        0x00
+      );
+
       if (
         (
           frame %
@@ -148,9 +189,7 @@ int main(
           4.0f
         );
 
-        chunk_data.data[
-          frame
-        ] = (
+        value = (
           (
             (
               buffer_float[
@@ -170,12 +209,10 @@ int main(
             1.0f
           ) /
           2.0f *
-          0xff
+          maximum_bytes
         );
       } else {
-        chunk_data.data[
-          frame
-        ] = (
+        value = (
           (
             (
               buffer_float[
@@ -192,10 +229,39 @@ int main(
             1.0f
           ) /
           2.0f *
-          0xff
+          maximum_bytes
+        );
+      }
+
+      value = (
+        value /
+        0x02
+      );
+
+      for (
+        unsigned int index_byte = (
+          0x00
+        );
+        (
+          index_byte <
+          wave_parameters.bytes_sample
+        );
+        ++index_byte
+      ) {
+        chunk_data.data[
+          index_data +
+          index_byte
+        ] = (
+          ((unsigned char*) &value)[
+            index_byte
+          ]
         );
       }
     }
+
+    clic3_memory_free_raw(
+      bytes
+    );
 
     wave_chunk_riff_write(
       &chunk_riff,
