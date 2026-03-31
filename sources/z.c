@@ -35,7 +35,7 @@ int main(
     length_parameters == 2
   ) {
     FILE* output = fopen(parameters[0x01],"wb");
-    
+
     if (
       output ==
       0x00
@@ -52,7 +52,7 @@ int main(
 
     struct z_track_parameters z_track_parameters;
     struct z_io_proc_data z_io_proc_data;
-    
+
     struct wave_parameters wave_parameters = {
       .wave_format = (
         wave_format_microsoft_pcm_format
@@ -71,7 +71,7 @@ int main(
       &chunk_riff,
       &wave_parameters
     );
-  
+
     wave_chunk_fmt_initialize(
       &chunk_fmt,
       &wave_parameters
@@ -100,14 +100,14 @@ int main(
       &z_io_proc_data.queue,
       z_io_proc_data.track_parameters,
       z_io_proc_data.rate_sample
-    ); 
+    );
 
     float buffer_float[
       0x01
     ] = {
       0.0f
     };
-    
+
     float pan = (
       0.5f
     );
@@ -147,7 +147,7 @@ int main(
           ) /
           4.0f
         );
-   
+
         chunk_data.data[
           frame
         ] = (
@@ -201,7 +201,7 @@ int main(
       &chunk_riff,
       output
     );
-    
+
     wave_chunk_fmt_write(
       &chunk_fmt,
       output
@@ -227,7 +227,7 @@ int main(
     wave_chunk_data_destroy(
       &chunk_data
     );
-  
+
     z_queue_destroy(
       &z_io_proc_data.queue
     );
@@ -252,7 +252,7 @@ int main(
       0x01
     );
   }
-  
+
   pthread_t thread_initializer;
   pthread_t thread_initializer_display;
 
