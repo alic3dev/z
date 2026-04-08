@@ -461,8 +461,26 @@ void z_track_generate(
     );
 
     static struct cer0_effect* effect_delay;
+    static struct cer0_effect* effect_delay_second;
+    static struct cer0_effect* effect_delay_third;
 
     effect_delay = (
+      clic3_memory_allocate_raw(
+        sizeof(
+          struct cer0_effect
+        )
+      )
+    );
+
+    effect_delay_second = (
+      clic3_memory_allocate_raw(
+        sizeof(
+          struct cer0_effect
+        )
+      )
+    );
+
+    effect_delay_third = (
       clic3_memory_allocate_raw(
         sizeof(
           struct cer0_effect
@@ -474,11 +492,54 @@ void z_track_generate(
       effect_delay
     );
 
+    cer0_effect_delay_initialize(
+      effect_delay_second
+    );
+  
+    cer0_effect_delay_initialize(
+      effect_delay_third
+    );
+
     effect_delay->mix = ( 0.5f );
+
+    cer0_effect_delay_length_frames_buffer_set(
+      effect_delay_second,
+      0xf00f
+    );
+
+    cer0_effect_delay_length_frames_buffer_set(
+      effect_delay_third,
+      0x0100ff
+    );
+
+    struct cer0_effect_delay_data* effect_delay_data_second = (
+      effect_delay_second->data
+    );
+  
+    struct cer0_effect_delay_data* effect_delay_data_third = (
+      effect_delay_third->data
+    );
+    effect_delay_data_second->decay = (
+      0.5f
+    );
+    
+    effect_delay_data_third->decay = (
+      0.3f
+    );
 
     cer0_synthesizer_effect_add(
       &track_lane->synthesizer,
       effect_delay
+    );
+
+    cer0_synthesizer_effect_add(
+      &track_lane->synthesizer,
+      effect_delay_second
+    );
+
+    cer0_synthesizer_effect_add(
+      &track_lane->synthesizer,
+      effect_delay_third
     );
 
     unsigned char count_oscillators = (
