@@ -8,6 +8,8 @@
 #include <clic3_base_hexadecimal.h>
 #include <clic3_memory.h>
 
+#include <cer0_effect.h>
+#include <cer0_effects/cer0_effect_delay.h>
 #include <cer0_octave_range.h>
 #include <cer0_note_table.h>
 #include <cer0_synthesizer.h>
@@ -456,6 +458,27 @@ void z_track_generate(
     cer0_synthesizer_initialize(
       &track_lane->synthesizer,
       sample_rate
+    );
+
+    static struct cer0_effect* effect_delay;
+
+    effect_delay = (
+      clic3_memory_allocate_raw(
+        sizeof(
+          struct cer0_effect
+        )
+      )
+    );
+
+    cer0_effect_delay_initialize(
+      effect_delay
+    );
+
+    effect_delay->mix = ( 0.5f );
+
+    cer0_synthesizer_effect_add(
+      &track_lane->synthesizer,
+      effect_delay
     );
 
     unsigned char count_oscillators = (
