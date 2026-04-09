@@ -10,6 +10,7 @@
 
 #include <cer0_effect.h>
 #include <cer0_effects/cer0_effect_delay.h>
+#include <cer0_effects/cer0_effect_distortion.h>
 #include <cer0_octave_range.h>
 #include <cer0_note_table.h>
 #include <cer0_synthesizer.h>
@@ -462,7 +463,7 @@ void z_track_generate(
 
     static struct cer0_effect* effect_delay;
     static struct cer0_effect* effect_delay_second;
-    static struct cer0_effect* effect_delay_third;
+    static struct cer0_effect* effect_distortion;
 
     effect_delay = (
       clic3_memory_allocate_raw(
@@ -480,7 +481,7 @@ void z_track_generate(
       )
     );
 
-    effect_delay_third = (
+    effect_distortion = (
       clic3_memory_allocate_raw(
         sizeof(
           struct cer0_effect
@@ -496,35 +497,53 @@ void z_track_generate(
       effect_delay_second
     );
   
-    cer0_effect_delay_initialize(
-      effect_delay_third
+    cer0_effect_distortion_initialize(
+      effect_distortion
     );
 
-    effect_delay->mix = ( 0.5f );
+    effect_delay->mix = (
+      0.45f
+    );
+
+    effect_delay_second->mix = (
+      0.5f
+    );
 
     cer0_effect_delay_length_frames_buffer_set(
       effect_delay_second,
-      0xf00f
+      0xaaff
     );
-
-    cer0_effect_delay_length_frames_buffer_set(
-      effect_delay_third,
-      0x0100ff
+    
+    struct cer0_effect_delay_data* effect_delay_data = (
+      effect_delay->data
     );
 
     struct cer0_effect_delay_data* effect_delay_data_second = (
       effect_delay_second->data
     );
-  
-    struct cer0_effect_delay_data* effect_delay_data_third = (
-      effect_delay_third->data
-    );
+
     effect_delay_data_second->decay = (
-      0.5f
+      0.95f
+    );
+  
+    struct cer0_effect_distortion_data* effect_distortion_data = (
+      effect_distortion->data
+    );
+
+    effect_delay_data->decay = (
+      0.75f
+    );
+
+    effect_distortion_data->gain = (
+      2.345f
     );
     
-    effect_delay_data_third->decay = (
-      0.3f
+    effect_distortion_data->noise = (
+      0.075f
+    );
+
+    effect_distortion->mix = (
+      0.1f
     );
 
     cer0_synthesizer_effect_add(
@@ -539,7 +558,7 @@ void z_track_generate(
 
     cer0_synthesizer_effect_add(
       &track_lane->synthesizer,
-      effect_delay_third
+      effect_distortion
     );
 
     unsigned char count_oscillators = (

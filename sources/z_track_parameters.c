@@ -12,7 +12,7 @@ const unsigned char* z_track_scales_defaults[
   z_track_parameters_length_scales_default
 ] = {
   cer0_scale_notes_major_pentatonic,
-  cer0_scale_notes_harmonic_major,
+  cer0_scale_notes_harmonic_minor,
   cer0_scale_notes_major_pentatonic,
   cer0_scale_notes_harmonic_minor,
   cer0_scale_notes_neapolitan_major
@@ -21,41 +21,41 @@ const unsigned char* z_track_scales_defaults[
 unsigned char z_track_scales_lengths_defaults[
   z_track_parameters_length_scales_default
 ] = {
-  cer0_scale_length_minor_pentatonic,
+  cer0_scale_length_major_pentatonic,
   cer0_scale_length_harmonic_minor,
-  cer0_scale_length_minor_pentatonic,
+  cer0_scale_length_major_pentatonic,
   cer0_scale_length_harmonic_minor,
-  cer0_scale_length_neapolitan_minor
+  cer0_scale_length_neapolitan_major
 };
 
 const struct z_track_parameters z_track_parameters_defaults = {
   .scales = z_track_scales_defaults,
   .scales_length = z_track_scales_lengths_defaults,
   .length_scales = z_track_parameters_length_scales_default,
-  .track_length_lanes_minimum = 2,
-  .track_length_lanes_maximum = 3,
+  .track_length_lanes_minimum = 32,
+  .track_length_lanes_maximum = 33,
   .frequency_root = cer0_frequency_root_standard,
   .octave_minimum = 1,
-  .octave_maximum = 10,
+  .octave_maximum = 5,
   .signals = {
     square,
+    sine,
+    triangle,
+    sine,
     square,
-    square,
-    square,
-    square,
-    square
+    sawtooth_down
   },
-  .track_length_multiplier = 50.15f,
-  .track_bpm_minimum = 100.0f,
-  .track_bpm_maximum = 200.0f,
+  .track_length_multiplier = 4.15f,
+  .track_bpm_minimum = 200.0f,
+  .track_bpm_maximum = 404.0f,
   .oscillator_amplitude_minimum = 0.125f,
   .oscillator_amplitude_maximum = 0.9f,
   .note_amplitude_minimum = 0.125f,
   .note_amplitude_maximum = 0.9f,
-  .note_attack_minimum = 0.2f,
-  .note_attack_maximum = 0.3f,
-  .note_release_minimum = 0.2f,
-  .note_release_maximum = 0.3f,
+  .note_attack_minimum = 0.6f,
+  .note_attack_maximum = 1.0f,
+  .note_release_minimum = 0.6f,
+  .note_release_maximum = 1.0f,
   .rand_source_type = rand_source_type_divisive,
   .allocated_scales = 0
 };
