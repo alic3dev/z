@@ -59,10 +59,10 @@ int main(
       .wave_format = (
         wave_format_microsoft_pcm_format
       ),
-      .length_channels = 0x02,
+      .length_channels = 0x01,
       .rate_samples = 0xac44,
-      .bytes_sample = 0x04,
-      .length_samples = 0xffffff
+      .bytes_sample = 0x01,
+      .length_samples = 0x8fffff
     };
 
     struct wave_chunk_data chunk_data;
