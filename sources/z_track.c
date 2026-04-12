@@ -502,16 +502,16 @@ void z_track_generate(
     );
 
     effect_delay->mix = (
-      0.45f
+      0.25f
     );
 
     effect_delay_second->mix = (
-      0.5f
+      0.35f
     );
 
     cer0_effect_delay_length_frames_buffer_set(
       effect_delay_second,
-      0xaaff
+      0x10ff
     );
     
     struct cer0_effect_delay_data* effect_delay_data = (
@@ -523,7 +523,7 @@ void z_track_generate(
     );
 
     effect_delay_data_second->decay = (
-      0.95f
+      0.99f
     );
   
     struct cer0_effect_distortion_data* effect_distortion_data = (
@@ -531,7 +531,7 @@ void z_track_generate(
     );
 
     effect_delay_data->decay = (
-      0.75f
+      0.1f
     );
 
     effect_distortion_data->gain = (
@@ -539,11 +539,11 @@ void z_track_generate(
     );
     
     effect_distortion_data->noise = (
-      0.075f
+      0.0225f
     );
 
     effect_distortion->mix = (
-      0.1f
+      0.37f
     );
 
     cer0_synthesizer_effect_add(

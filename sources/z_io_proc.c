@@ -11,6 +11,7 @@
 #include <cer0_synthesizer.h>
 #include <math_c_maximum.h>
 #include <math_c_minimum.h>
+#include <math_c_modulus.h>
 
 #include <pthread.h>
 #include <stdio.h>
@@ -293,16 +294,46 @@ void z_io_proc_frame_get(
   buffer_out[
     index_buffer_out
   ] = (
-    math_c_minimum_float(
-      math_c_maximum_float((
-          value /
-          (float) z_queue->track_current->length_lanes
-        ) *
-        z_io_proc_data->settings.volume,
-        -1.0f
-      ),
-      1.0f
-    )
+    value /
+    (float) z_queue->track_current->length_lanes *    z_io_proc_data->settings.volume
+  );
+
+  if (
+    (z_io_proc_data->frame) / 101010 % 2 == 0
+) {
+  if (
+    buffer_out[
+      index_buffer_out
+    ] > 0.0f
+  ) {
+    buffer_out[
+      index_buffer_out
+    ] = (
+      -0x01
+    );
+  } else {
+    buffer_out[
+      index_buffer_out
+    ] = (
+      0x01
+    );
+  }
+} else {
+  buffer_out[
+    index_buffer_out] *= 100.0f;
+}
+
+  buffer_out[
+    index_buffer_out
+  ] = (
+  math_c_modulus_float(
+    math_c_maximum_float(
+  math_c_minimum_float(
+    buffer_out[
+      index_buffer_out
+    ],
+    15.0f
+  ),-15.0f) + 15.0f, 30.0f) / 30.0f * 4.0f
   );
 
   if (
