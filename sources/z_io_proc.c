@@ -15,6 +15,9 @@
 #include <pthread.h>
 #include <stdio.h>
 
+#include <math_c_pi.h>
+#include <math_c_sine.h>
+
 #if !target_os_ios
 #include <CoreAudio/CoreAudio.h>
 
@@ -196,7 +199,7 @@ void z_io_proc_frame_get(
   float value = 0.0f;
 
   for (
-    unsigned char index_lane = 0;
+    unsigned int index_lane = 0;
     index_lane < z_queue->track_current->length_lanes;
     ++index_lane
   ) {
@@ -304,6 +307,112 @@ void z_io_proc_frame_get(
       1.0f
     )
   );
+
+  // if (
+  //   ( z_io_proc_data->frame / 313) %
+  //   3 == 0 ||
+  //   ( z_io_proc_data->frame / 3311) %
+  //   (
+  //     z_io_proc_data->frame / 13 % 3 == 0
+  //     ? 5 :
+  //     5
+  //    ) == 0
+  // ) {
+  //   buffer_out[
+  //     index_buffer_out
+  //   ] = (
+  //     buffer_out[
+  //       index_buffer_out
+  //     ] *
+  //     ((float) (index_buffer_out % 131) / 131.0f)
+  //   );
+  // }
+
+  // buffer_out[
+  //   index_buffer_out
+  // ] = (
+  //   buffer_out[
+  //       index_buffer_out
+  //     ] *
+  //     0.75f +
+  //   buffer_out[
+  //       index_buffer_out
+  //     ] *
+  //     (
+  //       0.125f *
+  //       math_c_cosine(
+      
+  //     math_c_pi   *
+  //     (float) z_io_proc_data->frame  /
+  //     (
+  //       (
+  //         *z_io_proc_data->rate_sample /
+  //         600.0f
+  //       ) * ((
+  //         60.0f /
+  //         z_queue->track_current->bpm
+  //       ) * 1000.0f / 4.0f)
+  //     ),
+  //     math_c_pi
+  //   )
+  //  ) +
+  //   buffer_out[
+  //       index_buffer_out
+  //     ] *
+  //     (
+  //       0.125f *
+  //       math_c_sine(
+  //     math_c_pi +
+  //     math_c_pi   *
+  //     (float) z_io_proc_data->frame  /
+  //     (
+  //       (
+  //         *z_io_proc_data->rate_sample /
+  //         600.0f
+  //       ) * ((
+  //         60.0f /
+  //         z_queue->track_current->bpm
+  //       ) * 1000.0f / 2.0f)
+  //     ),
+  //     math_c_pi
+  //   )
+  // )
+  // );
+
+  // if (
+  //   (index_buffer_out / 1000 ) %
+  //   4 == 0
+  // ) {
+  //   buffer_out[
+  //     index_buffer_out
+  //   ] = (
+  //     buffer_out[
+  //       index_buffer_out
+  //     ] *
+  //     0.7f
+  //   );
+  // }
+
+  // if (
+  //   buffer_out[
+  //     index_buffer_out
+  //   ] > 1.0f || 
+  //   buffer_out[
+  //     index_buffer_out
+  //   ] < -1.0f
+  // ) {
+  //   buffer_out[
+  //     index_buffer_out
+  //   ] = (
+  //     buffer_out[
+  //       index_buffer_out
+  //     ] -
+  //     (signed int)
+  //     buffer_out[
+  //       index_buffer_out
+  //     ]
+  //   );
+  // }
 
   if (
     channel == 0
