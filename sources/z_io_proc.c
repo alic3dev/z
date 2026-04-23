@@ -298,7 +298,7 @@ void z_io_proc_frame_get(
     (float) z_queue->track_current->length_lanes *    z_io_proc_data->settings.volume
   );
 
-  if (
+  /*if (
     (z_io_proc_data->frame) / 101010 % 2 == 0
 ) {
   if (
@@ -316,12 +316,12 @@ void z_io_proc_frame_get(
       index_buffer_out
     ] = (
       0x01
-    );
+    ) * 10.0f;
   }
-} else {
+} else {*/
   buffer_out[
     index_buffer_out] *= 100.0f;
-}
+//}
 
   buffer_out[
     index_buffer_out
