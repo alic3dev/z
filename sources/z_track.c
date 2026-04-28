@@ -430,8 +430,7 @@ void z_track_generate(
         z_track_parameters->track_length_lanes_minimum
       ) +
       z_track_parameters->track_length_lanes_minimum
-    ) *
-    2
+    )
   );
 
   if (
