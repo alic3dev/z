@@ -14,18 +14,23 @@ void* z_initializer_thread_display(
   );
 
   unsigned char length_dots = (
-    0
+    0x00
   );
 
   struct timespec timespec_sleep = {
-    .tv_sec = 0,
-    .tv_nsec = 250000000
+    .tv_sec = (
+      0x00
+    ),
+    .tv_nsec = (
+      0x0ee6b280
+    )
   };
 
   struct timespec timespec_sleep_remaining;
 
   while (
-    *initializing == 0x01
+    *initializing ==
+    0x01
   ) {
     printf(
       "\e[H\e[2J\e[3J"
@@ -33,8 +38,13 @@ void* z_initializer_thread_display(
     );
 
     for (
-      unsigned char index_dot = 0;
-      index_dot < length_dots;
+      unsigned char index_dot = (
+        0x00
+      );
+      (
+        index_dot <
+        length_dots
+      );
       ++index_dot
     ) {
       printf(
@@ -49,9 +59,9 @@ void* z_initializer_thread_display(
     length_dots = (
       (
         length_dots +
-        1
+        0x01
       ) %
-      4
+      0x04
     );
 
     nanosleep(
@@ -61,7 +71,7 @@ void* z_initializer_thread_display(
   }
 
   return (
-    0
+    0x00
   );
 }
 
@@ -81,6 +91,6 @@ void* z_initializer_thread(
   );
 
   return (
-    0
+    0x00
   );
 }

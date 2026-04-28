@@ -3,17 +3,17 @@
 #include <clic3_memory.h>
 
 unsigned int z_event_function_structures_length = (
-  0
+  0x00
 );
 
 struct z_event_function_structure** z_event_function_structures = (
-  0
+  0x00
 );
 
 void z_event_initialize() {
   z_event_function_structures = (
     clic3_memory_allocate_raw(
-      0
+      0x00
     )
   );
 }
@@ -23,8 +23,13 @@ void z_event_trigger(
   void* z_event_data
 ) {
   for (
-    unsigned char index_z_event_function_structure = 0;
-    index_z_event_function_structure < z_event_function_structures_length;
+    unsigned char index_z_event_function_structure = (
+      0x00
+    );
+    (
+      index_z_event_function_structure <
+      z_event_function_structures_length
+    );
     ++index_z_event_function_structure
   ) {
     struct z_event_function_structure* z_event_function_structure = (
@@ -34,7 +39,8 @@ void z_event_trigger(
     );
 
     if (
-      z_event_function_structure->event_type != z_event_type
+      z_event_function_structure->event_type !=
+      z_event_type
     ) {
       continue;
     }
@@ -84,7 +90,7 @@ void z_event_on(
     z_event_function,
     z_event_type,
     z_event_function_type_without_data,
-    0
+    0x00
   );
 }
 
@@ -113,7 +119,7 @@ void z_event_function_structures_add(
 
   z_event_function_structures_length = (
     z_event_function_structures_length +
-    1
+    0x01
   );
 
   clic3_memory_reallocate_raw(
@@ -165,8 +171,13 @@ unsigned char z_event_off(
   enum z_event_type z_event_function_structure_event_type
 ) {
   for (
-    unsigned char index_z_event_function_structure = 0;
-    index_z_event_function_structure < z_event_function_structures_length;
+    unsigned char index_z_event_function_structure = (
+      0x00
+    );
+    (
+      index_z_event_function_structure <
+      z_event_function_structures_length
+    );
     ++index_z_event_function_structure
   ) {
     struct z_event_function_structure* z_event_function_structure = (
@@ -176,8 +187,14 @@ unsigned char z_event_off(
     );
 
     if (
-      z_event_function_structure != z_event_function_structure_function ||
-      z_event_function_structure->event_type != z_event_function_structure_event_type
+      (
+        z_event_function_structure !=
+        z_event_function_structure_function
+      ) ||
+      (
+        z_event_function_structure->event_type !=
+        z_event_function_structure_event_type
+      )
     ) {
       continue;
     }
@@ -187,7 +204,9 @@ unsigned char z_event_off(
     );
 
     for (
-      unsigned char index_z_event_function_structure_removal = index_z_event_function_structure;
+      unsigned char index_z_event_function_structure_removal = (
+        index_z_event_function_structure
+      );
       (
         index_z_event_function_structure_removal <
         (
@@ -202,14 +221,14 @@ unsigned char z_event_off(
       ] = (
         z_event_function_structures[
           index_z_event_function_structure_removal +
-          1
+          0x01
         ]
       );
     }
 
     z_event_function_structures_length = (
       z_event_function_structures_length -
-      1
+      0x01
     );
 
     clic3_memory_reallocate_raw(
@@ -222,16 +241,25 @@ unsigned char z_event_off(
       )
     );
 
-    return 0;
+    return (
+      0x00
+    );
   }
 
-  return 1;
+  return (
+    0x01
+  );
 }
 
 void z_event_destroy() {
   for (
-    unsigned char index_z_event_function_structure = 0;
-    index_z_event_function_structure < z_event_function_structures_length;
+    unsigned char index_z_event_function_structure = (
+      0x00
+    );
+    (
+      index_z_event_function_structure <
+      z_event_function_structures_length
+    );
     ++index_z_event_function_structure
   ) {
     struct z_event_function_structure* z_event_function_structure = (

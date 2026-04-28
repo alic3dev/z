@@ -90,17 +90,32 @@ void z_words_construct(
   char** words_constructed,
   char* words
 ) {
-  unsigned int length_name = 0;
-  unsigned int length_name_next = 0;
+  unsigned int length_name = (
+    0x00
+  );
 
-  unsigned int offset_name = 0;
-  unsigned int offset_name_next = 0;
+  unsigned int length_name_next = (
+    0x00
+  );
+
+  unsigned int offset_name = (
+    0x00
+  );
+
+  unsigned int offset_name_next = (
+    0x00
+  );
 
   for (
-    unsigned char index_name = 0;
-    words[
-      index_name
-    ] != '\0';
+    unsigned char index_name = (
+      0x00
+    );
+    (
+      words[
+        index_name
+      ] !=
+      '\0'
+    );
     ++index_name
   ) {
     unsigned int index_word = (
@@ -126,9 +141,12 @@ void z_words_construct(
     length_name = (
       length_name +
       (
-        index_name > 0
-        ? 1
-        : 0
+        (
+          index_name >
+          0x00
+        )
+        ? 0x01
+        : 0x00
       ) +
       length_word
     );
@@ -139,7 +157,8 @@ void z_words_construct(
     );
 
     if (
-      index_name > 0
+      index_name >
+      0x00
     ) {
       (*words_constructed)[
         offset_name
@@ -149,13 +168,13 @@ void z_words_construct(
 
       offset_name = (
         offset_name +
-        1
+        0x01
       );
     }
 
     clic3_bytes_copy(
       (
-        (*words_constructed) +
+        *words_constructed +
         offset_name
       ),
       char_array_word,
@@ -171,7 +190,7 @@ void z_words_construct(
     words_constructed,
     (
       length_name +
-      1
+      0x01
     )
   );
 

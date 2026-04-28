@@ -22,13 +22,11 @@ void z_display_render(
     "%s"
     "}\n"
     "\n"
-    // "seed: %s\n"
     "\n%s\n\n"
     ": "
     "\e[?25h",
     z_display_data->name,
     z_display_data->name_next,
-    // z_display_data->seed,
     z_display_data->progress
   );
 
@@ -42,48 +40,48 @@ void z_display_data_initialize(
 ) {
   z_display_data->name = (
     clic3_memory_allocate_raw(
-      1
+      0x01
     )
   );
 
   z_display_data->name_next = (
     clic3_memory_allocate_raw(
-      1
+      0x01
     )
   );
 
   z_display_data->seed = (
     clic3_memory_allocate_raw(
-      1
+      0x01
     )
   );
 
   z_display_data->progress = (
     clic3_memory_allocate_raw(
-      1
+      0x01
     )
   );
 
   z_display_data->name[
-    0
+    0x00
   ] = (
     '\0'
   );
 
   z_display_data->name_next[
-    0
+    0x00
   ] = (
     '\0'
   );
 
   z_display_data->seed[
-    0
+    0x00
   ] = (
     '\0'
   );
 
   z_display_data->progress[
-    0
+    0x00
   ] = (
     '\0'
   );
@@ -97,7 +95,7 @@ void z_display_data_set(
     &z_display_data->seed,
     (
       z_queue->track_current->length_char_array_seed +
-      1
+      0x01
     )
   );
 
@@ -106,7 +104,7 @@ void z_display_data_set(
     z_queue->track_current->char_array_seed,
     (
       z_queue->track_current->length_char_array_seed +
-      1
+      0x01
     )
   );
 
