@@ -22,6 +22,7 @@
 #include <rand_functions.h>
 #include <rand_result.h>
 #include <rand_source.h>
+#include <rand_source_type.h>
 
 void z_track_generate(
   struct z_track* track,
@@ -34,7 +35,7 @@ void z_track_generate(
     &track->rand_source,
     0xff,
     rand_mode_bytes,
-    z_track_parameters->rand_source_type
+    rand_source_type_divisive
   );
 
   unsigned char status_rand_get = (
@@ -90,8 +91,13 @@ void z_track_generate(
   );
 
   for (
-    unsigned int index_seed = 0;
-    index_seed < rand_source_divisive_data->length_seed;
+    unsigned int index_seed = (
+      0x00
+    );
+    (
+      index_seed <
+      rand_source_divisive_data->length_seed
+    );
     ++index_seed
   ) {
     const char* char_seed_part = (
@@ -104,27 +110,29 @@ void z_track_generate(
 
     track->char_array_seed[
       index_seed *
-      2
+      0x02
     ] = (
       char_seed_part[
-        0
+        0x00
       ]
     );
 
     track->char_array_seed[
       index_seed *
-      2 +
-      1
+      0x02 +
+      0x01
     ] = (
       char_seed_part[
-        1
+        0x01
       ]
     );
   }
 
   track->char_array_seed[
     track->length_char_array_seed
-  ] = '\0';
+  ] = (
+    '\0'
+  );
 
   track->note_table = (
     cer0_note_table_create(
@@ -134,9 +142,11 @@ void z_track_generate(
     )
   );
 
-  track->range_octave = cer0_octave_range_get(
-    z_track_parameters->octave_minimum,
-    z_track_parameters->octave_maximum
+  track->range_octave = (
+    cer0_octave_range_get(
+      z_track_parameters->octave_minimum,
+      z_track_parameters->octave_maximum
+    )
   );
 
   unsigned int range_octave_lower_minimum = (
@@ -145,14 +155,16 @@ void z_track_generate(
 
   unsigned int range_octave_lower_maximum = (
     (
-      range_octave_lower_minimum +
-      1
-    ) >
-    z_track_parameters->octave_maximum
+      (
+        range_octave_lower_minimum +
+        0x01
+      ) >
+      z_track_parameters->octave_maximum
+    )
     ? range_octave_lower_minimum
     : (
       range_octave_lower_minimum +
-      1
+      0x01
     )
   );
 
@@ -162,38 +174,42 @@ void z_track_generate(
 
   unsigned int range_octave_mid_maximum = (
     (
-      range_octave_mid_minimum +
-      2
-    ) >
-    z_track_parameters->octave_maximum
+      (
+        range_octave_mid_minimum +
+        0x02
+      ) >
+      z_track_parameters->octave_maximum
+    )
     ? (
       (
         range_octave_mid_minimum +
-        1
+        0x01
       ) >
       z_track_parameters->octave_maximum
       ? range_octave_mid_minimum
       : (
         range_octave_mid_minimum +
-        1
+        0x01
       )
     )
     : (
       range_octave_mid_minimum +
-      2
+      0x02
     )
   );
 
   unsigned int range_octave_upper_minimum = (
     (
-      range_octave_mid_maximum -
-      1
-    ) <
-    z_track_parameters->octave_minimum
+      (
+        range_octave_mid_maximum -
+        0x01
+      ) <
+      z_track_parameters->octave_minimum
+    )
     ? range_octave_mid_maximum
     : (
       range_octave_mid_maximum -
-      1
+      0x01
     )
   );
 
@@ -235,7 +251,7 @@ void z_track_generate(
 
   unsigned char index_scale = (
     track->rand_result.bytes[
-      3
+      0x03
     ] %
     z_track_parameters->length_scales
   );
@@ -254,7 +270,7 @@ void z_track_generate(
 
   track->key = (
     track->rand_result.bytes[
-      4
+      0x04
     ] %
     cer0_default_steps_notes
   );
@@ -386,11 +402,9 @@ void z_track_generate(
   );
 
   float whole_beat = (
-    (
-      0x3c /
-      track->bpm
-    ) *
-    1000.0f
+    0x3c /
+    track->bpm *
+    0x03e8
   );
 
   float half_beat = (
@@ -414,9 +428,14 @@ void z_track_generate(
   );
 
   track->length = (
-    (float) (
-      track->rand_result.bytes[2] +
-      track->rand_result.bytes[3]
+    (float)
+    (
+      track->rand_result.bytes[
+        0x02
+      ] +
+      track->rand_result.bytes[
+        0x03
+      ]
     ) *
     0x20 *
     z_track_parameters->track_length_multiplier
@@ -523,7 +542,7 @@ void z_track_generate(
 
     cer0_effect_delay_length_frames_buffer_set(
       effect_delay_second,
-      0xffff
+      0xff
     );
     
     struct cer0_effect_delay_data* effect_delay_data = (
@@ -535,7 +554,7 @@ void z_track_generate(
     );
 
     effect_delay_data_second->decay = (
-      0.125f
+      0.0125f
     );
   
     struct cer0_effect_distortion_data* effect_distortion_data = (
@@ -548,7 +567,7 @@ void z_track_generate(
     );
 
     effect_delay_data->decay = (
-      0.125f
+      0.0125f
     );
 
     effect_distortion_data->gain = (
@@ -853,7 +872,6 @@ void z_track_generate(
       );
       
       note->attack_sustain_decay_release_parameters.amplitude_decay = (
-
         (
           (float)
           track->rand_result.bytes[
@@ -888,48 +906,51 @@ void z_track_generate(
       switch (
         speed
       ) {
-        case 0: {
+        case 0x00: {
           length_note = (
             (float)
             (
               (
                 track->rand_result.bytes[
-                  3
-                ] % 5
+                  0x03
+                ] %
+                0x05
               ) +
-              4
+              0x04
             ) *
             half_beat
           );
 
           break;
         }
-        case 1: {
+        case 0x01: {
           length_note = (
             (float)
             (
               (
                 track->rand_result.bytes[
-                  3
-                ] % 9
+                  0x03
+                ] %
+                0x09
               ) +
-              2
+              0x02
             ) *
             quarter_beat
           );
 
           break;
         }
-        case 2: {
+        case 0x02: {
           length_note = (
             (float)
             (
               (
                 track->rand_result.bytes[
-                  3
-                ] % 15
+                  0x03
+                ] %
+                0x0f
               ) +
-              2
+              0x02
             ) *
             eigth_beat
           );
@@ -942,10 +963,11 @@ void z_track_generate(
             (
               (
                 track->rand_result.bytes[
-                  3
-                ] % 32
+                  0x03
+                ] %
+                0x20
               ) +
-              3
+              0x03
             ) *
             sixtenth_beat
           );
@@ -956,16 +978,24 @@ void z_track_generate(
 
       length_note = (
         length_note *
-        (index_lane > 6 ? 0.2f : 1.0f)
+        (
+          (
+            index_lane >
+            0x06
+          )
+        ? 0.2f
+        : 0x01
+        )
       );
 
       if (
-        index_note > 0
+        index_note >
+        0x00
       ) {
         note->time = (
           notes[
             index_note -
-            1
+            0x01
           ].time +
           length_note
         );
@@ -979,8 +1009,10 @@ void z_track_generate(
         track->scale[
           (
             (
-              track->rand_result.bytes[2] +
-              1
+              track->rand_result.bytes[
+                0x02
+              ] +
+              0x01
             )
           ) %
           track->length_scale
@@ -990,14 +1022,20 @@ void z_track_generate(
       float value_note;
 
       if (
-        index_lane > 1 &&
-        index_note >= 32
+        (
+          index_lane >
+          0x01
+        ) &&
+        (
+          index_note >=
+          0x20
+        )
       ) {
         value_note = (
           notes[
             (
               index_note %
-              8
+              0x08
             ) %
             track_lane->length_notes
           ].value
@@ -1007,7 +1045,8 @@ void z_track_generate(
         unsigned int octave_range;
 
         if (
-          index_lane == 0
+          index_lane ==
+          0x00
         ) {
           octave_range_minimum = (
             range_octave_lower_minimum
@@ -1019,8 +1058,9 @@ void z_track_generate(
         } else if (
           (
             index_lane %
-            2
-          ) == 0
+            0x02
+          ) ==
+          0x00
         ) {
           octave_range_minimum = (
             range_octave_mid_minimum
@@ -1049,7 +1089,7 @@ void z_track_generate(
               cer0_default_steps_notes *
               (
                 track->rand_result.bytes[
-                  4
+                  0x04
                 ] %
                 octave_range
               )
@@ -1093,7 +1133,7 @@ void z_track_generate(
         0x00
       ].time *
       sample_rate /
-      600.0f
+      0x0258
     );
 
     cer0_synthesizer_frequency_play(
@@ -1126,8 +1166,13 @@ void z_track_destroy(
   );
 
   for (
-    unsigned int index_lane = 0;
-    index_lane < track->length_lanes;
+    unsigned int index_lane = (
+      0x00
+    );
+    (
+      index_lane <
+      track->length_lanes
+    );
     ++index_lane
   ) {
     cer0_synthesizer_destroy(

@@ -6,6 +6,7 @@
 
 #include <rand_source_type.h>
 
+#define z_track_parameters_length_scales_default 0x05
 #define z_track_parameters_length_signals_default cer0_length_signals
 
 struct z_track_parameters {
@@ -38,13 +39,7 @@ struct z_track_parameters {
 
   struct cer0_attack_sustain_decay_release_parameters attack_sustain_decay_release_parameters_minimum;
   struct cer0_attack_sustain_decay_release_parameters attack_sustain_decay_release_parameters_maximum;
-
-  enum rand_source_type rand_source_type;
-
-  unsigned char allocated_scales;
 };
-
-#define z_track_parameters_length_scales_default 5
 
 extern const unsigned char* z_track_scales_defaults[
   z_track_parameters_length_scales_default

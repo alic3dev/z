@@ -13,7 +13,7 @@ void z_queue_initialize(
   float* rate_sample
 ) {
   z_queue->index_track = (
-    0x00
+    -0x01
   );
 
   z_queue->rate_sample = (
@@ -82,7 +82,7 @@ void z_queue_track_next(
 
   z_queue->index_track = (
     z_queue->index_track +
-    1
+    0x01
   );
 
   z_event_trigger(

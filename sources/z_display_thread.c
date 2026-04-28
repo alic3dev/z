@@ -20,14 +20,16 @@ void* z_display_render_thread(
   );
 
   while (
-    z_display_thread_data->destroying == 0
+    z_display_thread_data->destroying ==
+    0x00
   ) {
     pthread_mutex_lock(
       &z_display_thread_data->mutex_render
     );
 
     if (
-      z_display_thread_data->destroying != 0
+      z_display_thread_data->destroying !=
+      0x00
     ) {
       continue;
     }
@@ -49,45 +51,53 @@ void* z_display_render_thread(
     struct winsize terminal_size;
 
     signed char status_ioctl = ioctl(
-      0,
+      0x00,
       TIOCGWINSZ,
       &terminal_size
     );
 
     if (
-      status_ioctl == -1 ||
-      terminal_size.ws_col < 1
+      (
+        status_ioctl ==
+        -0x01
+      ) ||
+      (
+        terminal_size.ws_col <
+        0x01
+      )
     ) {
       clic3_memory_reallocate_raw(
         &z_display_thread_data->display_data.progress,
-        1
+        0x01
       );
 
       z_display_thread_data->display_data.progress[
-        0
+        0x00
       ] = (
         '\0'
       );
     } else {
-      unsigned int width = terminal_size.ws_col;
+      unsigned int width = (
+        terminal_size.ws_col
+      );
 
       clic3_memory_reallocate_raw(
         &z_display_thread_data->display_data.progress,
         (
           width +
-          1
+          0x01
         )
       );
 
       z_display_thread_data->display_data.progress[
-        0
+        0x00
       ] = (
         '|'
       );
 
       z_display_thread_data->display_data.progress[
         width -
-        1
+        0x01
       ] = (
         '|'
       );
@@ -101,28 +111,46 @@ void* z_display_render_thread(
       unsigned int length_progress_indicators = (
         (
           width -
-          1
+          0x01
         ) *
         math_c_minimum_float(
           math_c_maximum_float(
             z_display_thread_data->progress,
-            0.0f
+            0x00
           ),
-          1.0f
+          0x01
         )
       );
 
       for (
-        unsigned int index_progress = 1;
-        index_progress < width - 1;
+        unsigned int index_progress = (
+          0x01
+        );
+        (
+          index_progress <
+          (
+            width -
+            0x01
+          )
+        );
         ++index_progress
       ) {
         if (
-          index_progress <= length_progress_indicators
+          index_progress <=
+          length_progress_indicators
         ) {
           if (
-            index_progress != width - 2 &&
-            index_progress == length_progress_indicators
+            (
+              index_progress !=
+              (
+                width -
+                0x02
+              )
+            ) &&
+            (
+              index_progress ==
+              length_progress_indicators
+            )
           ) {
             z_display_thread_data->display_data.progress[
               index_progress
@@ -162,7 +190,7 @@ void z_display_thread_initialize(
 ) {
   pthread_mutex_init(
     &z_display_thread_data->mutex_render,
-    0
+    0x00
   );
 
   pthread_mutex_lock(
@@ -174,16 +202,16 @@ void z_display_thread_initialize(
   );
 
   z_display_thread_data->index_track = (
-    10100101
+    0x00
   );
 
   z_display_thread_data->destroying = (
-    0
+    0x00
   );
 
   pthread_create(
     &z_display_thread_data->thread,
-    0,
+    0x00,
     z_display_render_thread,
     z_display_thread_data
   );
@@ -238,7 +266,9 @@ void z_display_thread_render_event(
 void z_display_thread_destroy(
   struct z_display_thread_data* z_display_thread_data
 ) {
-  z_display_thread_data->destroying = 1;
+  z_display_thread_data->destroying = (
+    0x01
+  );
 
   pthread_mutex_unlock(
     &z_display_thread_data->mutex_render
@@ -246,7 +276,7 @@ void z_display_thread_destroy(
 
   pthread_join(
     z_display_thread_data->thread,
-    0
+    0x00
   );
 
   pthread_mutex_destroy(

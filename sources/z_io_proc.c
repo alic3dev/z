@@ -58,19 +58,25 @@ int z_io_proc(
   );
 
   if (
-    z_io_proc_data->exiting == 2
+    z_io_proc_data->exiting ==
+    0x02
   ) {
-    return 0;
+    return (
+      0x00
+    );
   }
 
   if (
-    z_io_proc_data->exiting == 1
+    z_io_proc_data->exiting ==
+    0x01
   ) {
     pthread_mutex_lock(
       &z_io_proc_data->mutex_playing
     );
 
-    z_io_proc_data->exiting = 2;
+    z_io_proc_data->exiting = (
+      0x02
+    );
 
     pthread_mutex_unlock(
       &z_io_proc_data->mutex_exited
@@ -119,9 +125,12 @@ int z_io_proc(
   );
 
   if (
-    z_io_proc_data->exiting != 0
+    z_io_proc_data->exiting !=
+    0x00
   ) {
-    return 0;
+    return (
+      0x00
+    );
   }
 
   struct z_queue* z_queue = &(
@@ -129,8 +138,13 @@ int z_io_proc(
   );
 
   for (
-    unsigned long int index_buffer = 0;
-    index_buffer < buffer_list_audio_out->mNumberBuffers;
+    unsigned long int index_buffer = (
+      0x00
+    );
+    (
+      index_buffer <
+      buffer_list_audio_out->mNumberBuffers
+    );
     ++index_buffer
   ) {
     AudioBuffer audio_buffer_current = (
@@ -139,22 +153,47 @@ int z_io_proc(
       ]
     );
 
-    float* buffer_out = audio_buffer_current.mData;
-    unsigned long int size_buffer_out = audio_buffer_current.mDataByteSize / sizeof(float);
-    unsigned long int count_channel_out = audio_buffer_current.mNumberChannels;
+    float* buffer_out = (
+      audio_buffer_current.mData
+    );
 
-    float pan = 0.5f;
-    float buffer_out_channel_zero_value = 0.0f;
+    unsigned long int size_buffer_out = (
+      audio_buffer_current.mDataByteSize /
+      sizeof(
+        float
+      )
+    );
+    
+    unsigned long int count_channel_out = (
+      audio_buffer_current.mNumberChannels
+    );
+
+    float pan = (
+      0.5f
+    );
+
+    float buffer_out_channel_zero_value = (
+      0x00
+    );
 
     for (
-      unsigned long int index_buffer_out = 0;
-      index_buffer_out < size_buffer_out;
+      unsigned long int index_buffer_out = (
+        0x00
+      );
+      (
+        index_buffer_out <
+        size_buffer_out
+      );
       ++index_buffer_out
     ) {
-      unsigned long int channel = index_buffer_out % count_channel_out;
+      unsigned long int channel = (
+        index_buffer_out %
+        count_channel_out
+      );
 
       if (
-        channel == 0
+        channel ==
+        0x00
       ) {
         z_io_proc_frame_get(
           z_io_proc_data,
@@ -171,11 +210,12 @@ int z_io_proc(
         );
 
         pan = (
-          0.5f + (
+          0.5f +
+          (
             buffer_out_channel_zero_value +
-            1.0f
+            0x01
           ) /
-          4.0f
+          0x04
         );
 
         buffer_out[
@@ -184,11 +224,13 @@ int z_io_proc(
           buffer_out_channel_zero_value *
           math_c_minimum_float(
             (
-              1.0f -
-              pan
-            ) *
-            2.0f,
-            1.0f
+              (
+                0x01 -
+                pan
+              ) *
+              0x02
+            ),
+            0x01
           )
         );
       } else {
@@ -197,9 +239,11 @@ int z_io_proc(
         ] = (
           buffer_out_channel_zero_value *
           math_c_minimum_float(
-            pan *
-            2.0f,
-            1.0f
+            (
+              pan *
+              0x02
+            ),
+            0x01
           )
         );
       }
@@ -215,7 +259,9 @@ int z_io_proc(
     &z_io_proc_data->mutex_playing
   );
 
-  return 0;
+  return (
+    0x00
+  );
 }
 #endif
 
@@ -227,18 +273,27 @@ void z_io_proc_frame_get(
   unsigned long int channel
 ) {
   if (
-    channel == 0
+    channel ==
+    0x00
   ) {
     z_io_proc_data->frame = (
-      z_io_proc_data->frame + 1
+      z_io_proc_data->frame +
+      0x01
     );
   }
 
-  float value = 0.0f;
+  float value = (
+    0x00
+  );
 
   for (
-    unsigned int index_lane = 0;
-    index_lane < z_queue->track_current->length_lanes;
+    unsigned int index_lane = (
+      0x00
+    );
+    (
+      index_lane <
+      z_queue->track_current->length_lanes
+    );
     ++index_lane
   ) {
     struct z_track_lane* track_lane = &(
@@ -260,13 +315,16 @@ void z_io_proc_frame_get(
     unsigned long int note_life_end = (
       (
         *z_io_proc_data->rate_sample /
-        600.0f
+        0x0258
       ) *
       note->time
     );
 
     unsigned long int note_life = (
-      (z_io_proc_data->frame + 1) %
+      (
+        z_io_proc_data->frame +
+        0x01
+      ) %
       note_life_end
     );
 
@@ -299,7 +357,7 @@ void z_io_proc_frame_get(
       track_lane->synthesizer.length_attack_sustain_decay_release = (
         (
           *z_io_proc_data->rate_sample /
-          600.0f
+          0x0258
         ) *
         note->time -
         z_io_proc_data->frame
@@ -340,16 +398,19 @@ void z_io_proc_frame_get(
     0x00
   ) {
     z_queue->track_current->progress = (
-      (float) z_io_proc_data->frame / (
-        ((float) z_queue->track_current->length) *
-        100.0f
+      (float)
+      z_io_proc_data->frame /
+      (float)
+      (        z_queue->track_current->length *
+        0x64
       )
     );
 
     if (
-      z_io_proc_data->frame >= (
+      z_io_proc_data->frame >=
+      (
         z_queue->track_current->length *
-        100
+        0x64
       )
     ) {
       z_io_proc_data ->frame = (

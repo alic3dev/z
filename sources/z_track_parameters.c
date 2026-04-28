@@ -7,8 +7,6 @@
 
 #include <clic3_memory.h>
 
-#include <rand_source_type.h>
-
 const unsigned char* z_track_scales_defaults[
   z_track_parameters_length_scales_default
 ] = {
@@ -30,31 +28,59 @@ unsigned char z_track_scales_lengths_defaults[
 };
 
 const struct z_track_parameters z_track_parameters_defaults = {
-  .scales = z_track_scales_defaults,
-  .scales_length = z_track_scales_lengths_defaults,
-  .length_scales = z_track_parameters_length_scales_default,
-  .track_length_lanes_minimum = 0x02,
-  .track_length_lanes_maximum = 0xff,
-  .frequency_root = cer0_frequency_root_magic,
-  .octave_minimum = 0x00,
-  .octave_maximum = 0x0a,
+  .scales = (
+    0x00
+  ),
+  .scales_length = (
+    z_track_scales_lengths_defaults
+  ),
+  .length_scales = (
+    z_track_parameters_length_scales_default
+  ),
+  .track_length_lanes_minimum = (
+    0x06
+  ),
+  .track_length_lanes_maximum = (
+    0x0a
+  ),
+  .frequency_root = (
+    cer0_frequency_root_scientific
+  ),
+  .octave_minimum = (
+    0x01
+  ),
+  .octave_maximum = (
+    0x0a
+  ),
   .signals = {
+    sine,
     square,
-    square,
-    square,
-    square,
-    square,
-    square
+    triangle,
+    sawtooth_up,
+    sawtooth_down,
+    sine
   },
-  .track_length_multiplier = 8.15f,
-  .track_bpm_minimum = 20.0f,
-  .track_bpm_maximum = 200.0f,
-  .oscillator_amplitude_minimum = 0.825f,
-  .oscillator_amplitude_maximum = 0.9f,
-  .note_amplitude_minimum = 0.125f,
-  .note_amplitude_maximum = 0.9f,
-  .rand_source_type = rand_source_type_divisive,
-  .allocated_scales = 0x01
+  .track_length_multiplier = (
+    8.15f
+  ),
+  .track_bpm_minimum = (
+    0x14
+  ),
+  .track_bpm_maximum = (
+    0xc8
+  ),
+  .oscillator_amplitude_minimum = (
+    0.825f
+  ),
+  .oscillator_amplitude_maximum = (
+    0.9f
+  ),
+  .note_amplitude_minimum = (
+    0.125f
+  ),
+  .note_amplitude_maximum = (
+    0.9f
+  )
 };
 
 void z_track_parameters_initialize(
@@ -65,11 +91,12 @@ void z_track_parameters_initialize(
   );
 
   z_track_parameters->length_scales = (
-    0
+    0x00
   );
 
-  z_track_parameters->scales = (
-    clic3_memory_allocate_raw(
+  clic3_memory_reallocate_raw(
+    &z_track_parameters->scales,
+    (
       sizeof(
         void*
       ) *
@@ -77,14 +104,9 @@ void z_track_parameters_initialize(
     )
   );
 
-  z_track_parameters->scales_length = (
-    clic3_memory_allocate_raw(
-      z_track_parameters->length_scales
-    )
-  );
-
-  z_track_parameters->allocated_scales = (
-    1
+  clic3_memory_reallocate_raw(
+    &z_track_parameters->scales_length,
+    z_track_parameters->length_scales
   );
 }
 
@@ -158,8 +180,13 @@ void z_track_parameters_initialize_defaults(
   );
 
   for (
-    unsigned char index_signal = 0;
-    index_signal < z_track_parameters_length_signals_default;
+    unsigned char index_signal = (
+      0x00
+    );
+    (
+      index_signal <
+      z_track_parameters_length_signals_default
+    );
     ++index_signal
   ) {
     z_track_parameters->signals[
@@ -206,28 +233,16 @@ void z_track_parameters_initialize_defaults(
   cer0_attack_sustain_decay_release_parameters_initialize(
     &z_track_parameters->attack_sustain_decay_release_parameters_maximum
   );
-
-  z_track_parameters->rand_source_type = (
-    z_track_parameters_defaults.rand_source_type
-  );
-
-  z_track_parameters->allocated_scales = (
-    z_track_parameters_defaults.allocated_scales
-  );
 }
 
 void z_track_parameters_destroy(
   struct z_track_parameters* z_track_parameters
 ) {
-  if (
-    z_track_parameters->allocated_scales != 0
-  ) {
-    clic3_memory_free_raw(
-      z_track_parameters->scales
-    );
+  clic3_memory_free_raw(
+    z_track_parameters->scales
+  );
 
-    clic3_memory_free_raw(
-      z_track_parameters->scales_length
-    );
-  }
+  clic3_memory_free_raw(
+    z_track_parameters->scales_length
+  );
 }
