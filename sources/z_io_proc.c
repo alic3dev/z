@@ -163,7 +163,7 @@ int z_io_proc(
         float
       )
     );
-    
+
     unsigned long int count_channel_out = (
       audio_buffer_current.mNumberChannels
     );
@@ -373,7 +373,7 @@ void z_io_proc_frame_get(
       value +
       cer0_synthesizer_poll(
         &track_lane->synthesizer
-      ) * 
+      ) *
       note->amplitude
     );
   }

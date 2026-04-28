@@ -527,7 +527,7 @@ void z_track_generate(
     cer0_effect_delay_initialize(
       effect_delay_second
     );
-  
+
     cer0_effect_distortion_initialize(
       effect_distortion
     );
@@ -544,7 +544,7 @@ void z_track_generate(
       effect_delay_second,
       0xff
     );
-    
+
     struct cer0_effect_delay_data* effect_delay_data = (
       effect_delay->data
     );
@@ -556,7 +556,7 @@ void z_track_generate(
     effect_delay_data_second->decay = (
       0.0125f
     );
-  
+
     struct cer0_effect_distortion_data* effect_distortion_data = (
       effect_distortion->data
     );
@@ -573,7 +573,7 @@ void z_track_generate(
     effect_distortion_data->gain = (
       2.345f
     );
-    
+
     effect_distortion_data->noise = (
       0x00
     );
@@ -710,7 +710,7 @@ void z_track_generate(
 
     unsigned char speed = (
       (
-        index_lane == 
+        index_lane ==
         0x00
       )
       ? 0x00
@@ -870,7 +870,7 @@ void z_track_generate(
         ) +
         z_track_parameters->attack_sustain_decay_release_parameters_minimum.amplitude_sustain
       );
-      
+
       note->attack_sustain_decay_release_parameters.amplitude_decay = (
         (
           (float)
@@ -885,7 +885,7 @@ void z_track_generate(
         ) +
         z_track_parameters->attack_sustain_decay_release_parameters_minimum.amplitude_decay
       );
-      
+
       note->attack_sustain_decay_release_parameters.amplitude_release = (
         (
           (float)

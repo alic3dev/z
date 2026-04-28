@@ -14,7 +14,7 @@ void z_io_proc_data_initialize(
   z_io_proc_data->frame = (
     0x00
   );
-  
+
   z_io_proc_data->initialized = (
     0x00
   );
