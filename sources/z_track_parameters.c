@@ -1,5 +1,6 @@
 #include <z_track_parameters.h>
 
+#include <cer0_attack_sustain_decay_release.h>
 #include <cer0_frequency_root.h>
 #include <cer0_scale.h>
 #include <cer0_signal.h>
@@ -12,50 +13,46 @@ const unsigned char* z_track_scales_defaults[
   z_track_parameters_length_scales_default
 ] = {
   cer0_scale_notes_major_pentatonic,
-  cer0_scale_notes_harmonic_minor,
-  cer0_scale_notes_major_pentatonic,
-  cer0_scale_notes_harmonic_minor,
-  cer0_scale_notes_neapolitan_major
+  cer0_scale_notes_harmonic_major,
+  cer0_scale_notes_harmonic_major,
+  cer0_scale_notes_harmonic_major,
+  cer0_scale_notes_major_pentatonic
 };
 
 unsigned char z_track_scales_lengths_defaults[
   z_track_parameters_length_scales_default
 ] = {
   cer0_scale_length_major_pentatonic,
-  cer0_scale_length_harmonic_minor,
-  cer0_scale_length_major_pentatonic,
-  cer0_scale_length_harmonic_minor,
-  cer0_scale_length_neapolitan_major
+  cer0_scale_length_harmonic_major,
+  cer0_scale_length_harmonic_major,
+  cer0_scale_length_harmonic_major,
+  cer0_scale_length_major_pentatonic
 };
 
 const struct z_track_parameters z_track_parameters_defaults = {
   .scales = z_track_scales_defaults,
   .scales_length = z_track_scales_lengths_defaults,
   .length_scales = z_track_parameters_length_scales_default,
-  .track_length_lanes_minimum = 6,
-  .track_length_lanes_maximum = 8,
-  .frequency_root = cer0_frequency_root_standard,
-  .octave_minimum = 0,
-  .octave_maximum = 10,
+  .track_length_lanes_minimum = 0x02,
+  .track_length_lanes_maximum = 0x03,
+  .frequency_root = cer0_frequency_root_magic,
+  .octave_minimum = 0x03,
+  .octave_maximum = 0x06,
   .signals = {
     square,
-    sine,
-    triangle,
-    sine,
     square,
-    sawtooth_down
+    square,
+    square,
+    square,
+    square
   },
-  .track_length_multiplier = 3.15f,
-  .track_bpm_minimum = 50.0f,
-  .track_bpm_maximum = 60.0f,
+  .track_length_multiplier = 8.15f,
+  .track_bpm_minimum = 20.0f,
+  .track_bpm_maximum = 30.0f,
   .oscillator_amplitude_minimum = 0.825f,
   .oscillator_amplitude_maximum = 0.9f,
   .note_amplitude_minimum = 0.125f,
   .note_amplitude_maximum = 0.9f,
-  .note_attack_minimum = 0.0f,
-  .note_attack_maximum = 0.0f,
-  .note_release_minimum = 0.0f,
-  .note_release_maximum = 0.0f,
   .rand_source_type = rand_source_type_divisive,
   .allocated_scales = 0
 };
@@ -172,20 +169,12 @@ void z_track_parameters_initialize_defaults(
     z_track_parameters_defaults.note_amplitude_maximum
   );
 
-  z_track_parameters->note_attack_minimum = (
-    z_track_parameters_defaults.note_attack_minimum
+  cer0_attack_sustain_decay_release_parameters_initialize(
+    &z_track_parameters->attack_sustain_decay_release_parameters_minimum
   );
 
-  z_track_parameters->note_attack_maximum = (
-    z_track_parameters_defaults.note_attack_maximum
-  );
-
-  z_track_parameters->note_release_minimum = (
-    z_track_parameters_defaults.note_release_minimum
-  );
-
-  z_track_parameters->note_release_maximum = (
-    z_track_parameters_defaults.note_release_maximum
+  cer0_attack_sustain_decay_release_parameters_initialize(
+    &z_track_parameters->attack_sustain_decay_release_parameters_maximum
   );
 
   z_track_parameters->rand_source_type = (

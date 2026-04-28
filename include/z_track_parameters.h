@@ -1,6 +1,7 @@
 #ifndef __z_track_parameters_h
 #define __z_track_parameters_h
 
+#include <cer0_attack_sustain_decay_release.h>
 #include <cer0_signal.h>
 
 #include <rand_source_type.h>
@@ -35,11 +36,8 @@ struct z_track_parameters {
   float note_amplitude_minimum;
   float note_amplitude_maximum;
 
-  float note_attack_minimum;
-  float note_attack_maximum;
-
-  float note_release_minimum;
-  float note_release_maximum;
+  struct cer0_attack_sustain_decay_release_parameters attack_sustain_decay_release_parameters_minimum;
+  struct cer0_attack_sustain_decay_release_parameters attack_sustain_decay_release_parameters_maximum;
 
   enum rand_source_type rand_source_type;
 

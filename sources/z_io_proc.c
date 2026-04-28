@@ -6,6 +6,7 @@
 #include <z_settings.h>
 #include <z_track.h>
 
+#include <clic3_bytes.h>
 #include <clic3_memory.h>
 
 #include <cer0_synthesizer.h>
@@ -13,7 +14,6 @@
 #include <math_c_minimum.h>
 
 #include <pthread.h>
-#include <stdio.h>
 
 #if !target_os_ios
 #include <CoreAudio/CoreAudio.h>
@@ -216,24 +216,22 @@ void z_io_proc_frame_get(
       ]
     );
 
-    unsigned int note_life_end = (
-      (unsigned long long int) (
-        (
-
-          *z_io_proc_data->rate_sample /
-          600.0f
-        ) *
-        note->time
-      )
+    unsigned long int note_life_end = (
+      (
+        *z_io_proc_data->rate_sample /
+        600.0f
+      ) *
+      note->time
     );
 
-    unsigned int note_life = (
+    unsigned long int note_life = (
       (z_io_proc_data->frame + 1) %
       note_life_end
     );
 
     if (
-      note_life == 0
+      note_life ==
+      0x00
     ) {
       track_lane->index_note = (
         (
@@ -248,7 +246,24 @@ void z_io_proc_frame_get(
         ]
       );
 
-      cer0_synthesizer_frequency_set(
+      clic3_bytes_copy(
+        &track_lane->synthesizer.attack_sustain_decay_release_parameters,
+        &note->attack_sustain_decay_release_parameters,
+        sizeof(
+          struct cer0_attack_sustain_decay_release_parameters
+        )
+      );
+
+      track_lane->synthesizer.length_attack_sustain_decay_release = (
+        (
+          *z_io_proc_data->rate_sample /
+          600.0f
+        ) *
+        note->time -
+        z_io_proc_data->frame
+      );
+
+      cer0_synthesizer_frequency_play(
         &track_lane->synthesizer,
         note->value
       );
@@ -258,33 +273,7 @@ void z_io_proc_frame_get(
       value + (
         cer0_synthesizer_poll(
           &track_lane->synthesizer
-        ) * (
-          (note_life > (note_life_end / 2))
-          ? (
-            1.0f - (
-              (float) (
-                note_life > note_life_end
-                ? note_life_end
-                : note_life
-              ) /
-              (float) (
-                note_life_end
-              )
-            )
-          ) *
-          note->release +
-          (1.0f - note->release)
-          : (
-            (float) (
-              note_life
-            ) /
-            (float) (
-              note_life_end
-            )
-          ) *
-          note->attack +
-          (1.0f - note->attack)
-        ) *
+        ) * 
         note->amplitude
       )
     );
