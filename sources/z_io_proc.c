@@ -18,6 +18,32 @@
 #if !target_os_ios
 #include <CoreAudio/CoreAudio.h>
 
+void* z_io_proc_initializer(
+  void* data
+) {
+  struct z_io_proc_data* z_io_proc_data = (
+    data
+  );
+
+  z_queue_initialize(
+    &z_io_proc_data->queue,
+    z_io_proc_data->track_parameters,
+    z_io_proc_data->rate_sample
+  );
+
+  z_io_proc_data->z_close_exit_data->initializing = (
+    0x00
+  );
+
+  z_io_proc_data->initialized = (
+    0x01
+  );
+
+  return (
+    0x00
+  );
+}
+
 int z_io_proc(
   AudioObjectID id_audio_object,
   const AudioTimeStamp* timestamp_audio,
@@ -54,23 +80,38 @@ int z_io_proc(
       &z_io_proc_data->mutex_playing
     );
 
-    return 0;
+    return (
+      0x00
+    );
   }
 
   if (
-    z_io_proc_data->initialized == 0
+    z_io_proc_data->initialized ==
+    0x00
   ) {
-    z_queue_initialize(
-      &z_io_proc_data->queue,
-      z_io_proc_data->track_parameters,
-      z_io_proc_data->rate_sample
+    z_io_proc_data->initialized = (
+      0x02
     );
 
-    z_io_proc_data->z_close_exit_data->initializing = (
-      0
+    pthread_t z_pthread_initializer;
+
+    pthread_create(
+      &z_pthread_initializer,
+      0x00,
+      z_io_proc_initializer,
+      z_io_proc_data
     );
 
-    z_io_proc_data->initialized = 1;
+    return (
+      0x00
+    );
+  } else if (
+    z_io_proc_data->initialized ==
+    0x02
+  ) {
+    return (
+      0x00
+    );
   }
 
   pthread_mutex_lock(
@@ -196,7 +237,7 @@ void z_io_proc_frame_get(
   float value = 0.0f;
 
   for (
-    unsigned char index_lane = 0;
+    unsigned int index_lane = 0;
     index_lane < z_queue->track_current->length_lanes;
     ++index_lane
   ) {
@@ -235,7 +276,8 @@ void z_io_proc_frame_get(
     ) {
       track_lane->index_note = (
         (
-          track_lane->index_note + 1
+          track_lane->index_note +
+          0x01
         ) %
         track_lane->length_notes
       );
@@ -270,12 +312,11 @@ void z_io_proc_frame_get(
     }
 
     value = (
-      value + (
-        cer0_synthesizer_poll(
-          &track_lane->synthesizer
-        ) * 
-        note->amplitude
-      )
+      value +
+      cer0_synthesizer_poll(
+        &track_lane->synthesizer
+      ) * 
+      note->amplitude
     );
   }
 
@@ -288,14 +329,15 @@ void z_io_proc_frame_get(
           (float) z_queue->track_current->length_lanes
         ) *
         z_io_proc_data->settings.volume,
-        -1.0f
+        -0x01
       ),
-      1.0f
+      0x01
     )
   );
 
   if (
-    channel == 0
+    channel ==
+    0x00
   ) {
     z_queue->track_current->progress = (
       (float) z_io_proc_data->frame / (
@@ -310,7 +352,9 @@ void z_io_proc_frame_get(
         100
       )
     ) {
-      z_io_proc_data ->frame = 0;
+      z_io_proc_data ->frame = (
+        0x00
+      );
 
       z_queue_track_next(
         z_queue

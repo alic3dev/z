@@ -151,7 +151,9 @@ void* z_display_render_thread(
     );
   }
 
-  return 0;
+  return (
+    0x00
+  );
 }
 
 void z_display_thread_initialize(
@@ -171,7 +173,9 @@ void z_display_thread_initialize(
     &z_display_thread_data->display_data
   );
 
-  z_display_thread_data->index_track = 10100101;
+  z_display_thread_data->index_track = (
+    10100101
+  );
 
   z_display_thread_data->destroying = (
     0
