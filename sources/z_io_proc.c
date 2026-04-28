@@ -384,7 +384,8 @@ void z_io_proc_frame_get(
     math_c_minimum_float(
       math_c_maximum_float((
           value /
-          (float) z_queue->track_current->length_lanes
+          (float)
+          z_queue->track_current->length_lanes
         ) *
         z_io_proc_data->settings.volume,
         -0x01
@@ -401,7 +402,8 @@ void z_io_proc_frame_get(
       (float)
       z_io_proc_data->frame /
       (float)
-      (        z_queue->track_current->length *
+      (
+        z_queue->track_current->length *
         0x64
       )
     );
@@ -413,7 +415,7 @@ void z_io_proc_frame_get(
         0x64
       )
     ) {
-      z_io_proc_data ->frame = (
+      z_io_proc_data->frame = (
         0x00
       );
 
