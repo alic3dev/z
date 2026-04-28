@@ -9,6 +9,10 @@
 #include <CoreAudio/CoreAudio.h>
 #endif
 
+void* z_io_proc_initializer(
+  void*
+);
+
 #if target_os_ios
 #else
 int z_io_proc(
