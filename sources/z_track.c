@@ -6,8 +6,10 @@
 #include <z_words.h>
 
 #include <clic3_base_hexadecimal.h>
+#include <clic3_bytes.h>
 #include <clic3_memory.h>
 
+#include <cer0_attack_sustain_decay_release.h>
 #include <cer0_effect.h>
 #include <cer0_effects/cer0_effect_delay.h>
 #include <cer0_effects/cer0_effect_distortion.h>
@@ -25,10 +27,21 @@ void z_track_generate(
   struct z_track_parameters* z_track_parameters,
   float sample_rate
 ) {
-  track->rand_parameters.length = 10;
-  track->rand_parameters.mode = rand_mode_bytes;
-  track->rand_parameters.error = 0;
-  track->rand_parameters.help = 0;
+  track->rand_parameters.length = (
+    0x0f
+  );
+
+  track->rand_parameters.mode = (
+    rand_mode_bytes
+  );
+
+  track->rand_parameters.error = (
+    0x00
+  );
+
+  track->rand_parameters.help = (
+    0x00
+  );
 
   track->rand_parameters.type_source = (
     z_track_parameters->rand_source_type
@@ -410,7 +423,7 @@ void z_track_generate(
   track->length_lanes = (
     (
       track->rand_result.bytes[
-        4
+        0x04
       ] %
       (
         z_track_parameters->track_length_lanes_maximum -
@@ -511,7 +524,7 @@ void z_track_generate(
 
     cer0_effect_delay_length_frames_buffer_set(
       effect_delay_second,
-      0xff
+      0xffff
     );
     
     struct cer0_effect_delay_data* effect_delay_data = (
@@ -523,20 +536,20 @@ void z_track_generate(
     );
 
     effect_delay_data_second->decay = (
-      0.99f
+      0.125f
     );
   
     struct cer0_effect_distortion_data* effect_distortion_data = (
       effect_distortion->data
     );
 
-  cer0_effect_delay_length_frames_buffer_set(
+    cer0_effect_delay_length_frames_buffer_set(
       effect_delay,
-      0xffff
-  );
+      0xfffff
+    );
 
     effect_delay_data->decay = (
-      0.99f
+      0.125f
     );
 
     effect_distortion_data->gain = (
@@ -544,11 +557,11 @@ void z_track_generate(
     );
     
     effect_distortion_data->noise = (
-      0.025f
+      0.00f
     );
 
     effect_distortion->mix = (
-      0.01f
+      0.0f
     );
 
     cer0_synthesizer_effect_add(
@@ -698,8 +711,11 @@ void z_track_generate(
       );
 
       note->amplitude = (
-        (float) track->rand_result.bytes[7] /
-        255.0f *
+        (float)
+        track->rand_result.bytes[
+          0x05
+        ] /
+        0xff *
         (
           z_track_parameters->note_amplitude_maximum -
           z_track_parameters->note_amplitude_minimum
@@ -707,27 +723,144 @@ void z_track_generate(
         z_track_parameters->note_amplitude_minimum
       );
 
-      note->attack = (
-        (
-          (float) track->rand_result.bytes[5] /
-          255.0f
-        ) *
-        (
-          z_track_parameters->note_attack_maximum -
-          z_track_parameters->note_attack_minimum
-        ) +
-        z_track_parameters->note_attack_minimum
+      cer0_attack_sustain_decay_release_parameters_initialize(
+        &note->attack_sustain_decay_release_parameters
       );
 
-      note->release = (
+      note->attack_sustain_decay_release_parameters.attack = (
         (
-          (float) track->rand_result.bytes[6] /
-          255.0f
-        ) * (
-          z_track_parameters->note_release_maximum -
-          z_track_parameters->note_release_minimum
+          (float)
+          track->rand_result.bytes[
+            0x06
+          ] /
+          0xff
+        ) *
+        (
+          z_track_parameters->attack_sustain_decay_release_parameters_maximum.attack -
+          z_track_parameters->attack_sustain_decay_release_parameters_minimum.attack
         ) +
-        z_track_parameters->note_release_minimum
+        z_track_parameters->attack_sustain_decay_release_parameters_minimum.attack
+      );
+
+      note->attack_sustain_decay_release_parameters.sustain = (
+        (
+          (float)
+          track->rand_result.bytes[
+            0x07
+          ] /
+          0xff
+        ) *
+        (
+          z_track_parameters->attack_sustain_decay_release_parameters_maximum.sustain -
+          z_track_parameters->attack_sustain_decay_release_parameters_minimum.sustain
+        ) +
+        z_track_parameters->attack_sustain_decay_release_parameters_minimum.sustain
+      );
+
+      note->attack_sustain_decay_release_parameters.decay = (
+        (
+          (float)
+          track->rand_result.bytes[
+            0x08
+          ] /
+          0xff
+        ) *
+        (
+          z_track_parameters->attack_sustain_decay_release_parameters_maximum.decay -
+          z_track_parameters->attack_sustain_decay_release_parameters_minimum.decay
+        ) +
+        z_track_parameters->attack_sustain_decay_release_parameters_minimum.decay
+      );
+
+      note->attack_sustain_decay_release_parameters.release = (
+        (
+          (float)
+          track->rand_result.bytes[
+            0x09
+          ] /
+          0xff
+        ) *
+        (
+          z_track_parameters->attack_sustain_decay_release_parameters_maximum.release -
+          z_track_parameters->attack_sustain_decay_release_parameters_minimum.release
+        ) +
+        z_track_parameters->attack_sustain_decay_release_parameters_minimum.release
+      );
+
+      note->attack_sustain_decay_release_parameters.amplitude_initial = (
+        (
+          (float)
+          track->rand_result.bytes[
+            0x0a
+          ] /
+          0xff
+        ) *
+        (
+          z_track_parameters->attack_sustain_decay_release_parameters_maximum.amplitude_initial -
+          z_track_parameters->attack_sustain_decay_release_parameters_minimum.amplitude_initial
+        ) +
+        z_track_parameters->attack_sustain_decay_release_parameters_minimum.amplitude_initial
+      );
+
+      note->attack_sustain_decay_release_parameters.amplitude_attack = (
+        (
+          (float)
+          track->rand_result.bytes[
+            0x0b
+          ] /
+          0xff
+        ) *
+        (
+          z_track_parameters->attack_sustain_decay_release_parameters_maximum.amplitude_attack -
+          z_track_parameters->attack_sustain_decay_release_parameters_minimum.amplitude_attack
+        ) +
+        z_track_parameters->attack_sustain_decay_release_parameters_minimum.amplitude_attack
+      );
+
+      note->attack_sustain_decay_release_parameters.amplitude_sustain = (
+        (
+          (float)
+          track->rand_result.bytes[
+            0x0c
+          ] /
+          0xff
+        ) *
+        (
+          z_track_parameters->attack_sustain_decay_release_parameters_maximum.amplitude_sustain -
+          z_track_parameters->attack_sustain_decay_release_parameters_minimum.amplitude_sustain
+        ) +
+        z_track_parameters->attack_sustain_decay_release_parameters_minimum.amplitude_sustain
+      );
+      
+      note->attack_sustain_decay_release_parameters.amplitude_decay = (
+
+        (
+          (float)
+          track->rand_result.bytes[
+            0x0d
+          ] /
+          0xff
+        ) *
+        (
+          z_track_parameters->attack_sustain_decay_release_parameters_maximum.amplitude_decay -
+          z_track_parameters->attack_sustain_decay_release_parameters_minimum.amplitude_decay
+        ) +
+        z_track_parameters->attack_sustain_decay_release_parameters_minimum.amplitude_decay
+      );
+      
+      note->attack_sustain_decay_release_parameters.amplitude_release = (
+        (
+          (float)
+          track->rand_result.bytes[
+            0x0e
+          ] /
+          0xff
+        ) *
+        (
+          z_track_parameters->attack_sustain_decay_release_parameters_maximum.amplitude_release -
+          z_track_parameters->attack_sustain_decay_release_parameters_minimum.amplitude_release
+        ) +
+        z_track_parameters->attack_sustain_decay_release_parameters_minimum.amplitude_release
       );
 
       float length_note;
@@ -800,6 +933,11 @@ void z_track_generate(
           break;
         }
       }
+
+      length_note = (
+        length_note *
+        (index_lane > 6 ? 0.2f : 1.0f)
+      );
 
       if (
         index_note > 0
@@ -920,10 +1058,28 @@ void z_track_generate(
       );
     }
 
-    cer0_synthesizer_frequency_set(
+    clic3_bytes_copy(
+      &track_lane->synthesizer.attack_sustain_decay_release_parameters,
+      &notes[
+        0x00
+      ].attack_sustain_decay_release_parameters,
+      sizeof(
+        struct cer0_attack_sustain_decay_release_parameters
+      )
+    );
+
+    track_lane->synthesizer.length_attack_sustain_decay_release = (
+      0xffff/*notes[
+        0x00
+      ].time *
+      sample_rate /
+      600.0f*/
+    );
+
+    cer0_synthesizer_frequency_play(
       &track_lane->synthesizer,
       notes[
-        0
+        0x00
       ].value
     );
   }
