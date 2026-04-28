@@ -13,8 +13,8 @@ struct z_track_parameters {
   unsigned char* scales_length;
   unsigned char length_scales;
 
-  unsigned char track_length_lanes_minimum;
-  unsigned char track_length_lanes_maximum;
+  unsigned int track_length_lanes_minimum;
+  unsigned int track_length_lanes_maximum;
 
   float frequency_root;
 

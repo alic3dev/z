@@ -34,10 +34,10 @@ const struct z_track_parameters z_track_parameters_defaults = {
   .scales_length = z_track_scales_lengths_defaults,
   .length_scales = z_track_parameters_length_scales_default,
   .track_length_lanes_minimum = 0x02,
-  .track_length_lanes_maximum = 0x03,
+  .track_length_lanes_maximum = 0xff,
   .frequency_root = cer0_frequency_root_magic,
-  .octave_minimum = 0x03,
-  .octave_maximum = 0x06,
+  .octave_minimum = 0x00,
+  .octave_maximum = 0x0a,
   .signals = {
     square,
     square,
@@ -48,13 +48,13 @@ const struct z_track_parameters z_track_parameters_defaults = {
   },
   .track_length_multiplier = 8.15f,
   .track_bpm_minimum = 20.0f,
-  .track_bpm_maximum = 30.0f,
+  .track_bpm_maximum = 200.0f,
   .oscillator_amplitude_minimum = 0.825f,
   .oscillator_amplitude_maximum = 0.9f,
   .note_amplitude_minimum = 0.125f,
   .note_amplitude_maximum = 0.9f,
   .rand_source_type = rand_source_type_divisive,
-  .allocated_scales = 0
+  .allocated_scales = 0x01
 };
 
 void z_track_parameters_initialize(
@@ -96,16 +96,46 @@ void z_track_parameters_initialize_defaults(
   );
 
   z_track_parameters->scales = (
-    z_track_parameters_defaults.scales
+    clic3_memory_allocate_raw(
+      sizeof(
+        void*
+      ) *
+      z_track_parameters->length_scales
+    )
   );
 
   z_track_parameters->scales_length = (
-    z_track_parameters_defaults.scales_length
+    clic3_memory_allocate_raw(
+      z_track_parameters->length_scales
+    )
   );
 
-  z_track_parameters->length_scales = (
-    z_track_parameters_defaults.length_scales
-  );
+  for (
+    unsigned char index_scale = (
+      0x00
+    );
+    (
+      index_scale <
+      z_track_parameters->length_scales
+    );
+    ++index_scale
+  ) {
+    z_track_parameters->scales[
+      index_scale
+    ] = (
+      z_track_scales_defaults[
+        index_scale
+      ]
+    );
+
+    z_track_parameters->scales_length[
+      index_scale
+    ] = (
+      z_track_scales_lengths_defaults[
+        index_scale
+      ]
+    );
+  }
 
   z_track_parameters->track_length_lanes_minimum = (
     z_track_parameters_defaults.track_length_lanes_minimum

@@ -25,7 +25,7 @@ void* z_initializer_thread_display(
   struct timespec timespec_sleep_remaining;
 
   while (
-    *initializing == 1
+    *initializing == 0
   ) {
     printf(
       "\e[H\e[2J\e[3J"

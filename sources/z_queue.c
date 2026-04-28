@@ -13,7 +13,7 @@ void z_queue_initialize(
   float* rate_sample
 ) {
   z_queue->index_track = (
-    0
+    0x00
   );
 
   z_queue->rate_sample = (
@@ -56,16 +56,20 @@ void z_queue_initialize(
 void z_queue_track_next(
   struct z_queue* z_queue
 ) {
-  z_track_destroy(
-    z_queue->track_current
-  );
-
-  clic3_memory_free_raw(
+  struct z_track* track_previous = (
     z_queue->track_current
   );
 
   z_queue->track_current = (
     z_queue->track_upcoming
+  );
+
+  z_track_destroy(
+    track_previous
+  );
+
+  clic3_memory_free_raw(
+    track_previous
   );
 
   z_queue->track_upcoming = (
@@ -101,7 +105,9 @@ void z_queue_track_next(
 void z_queue_destroy(
   struct z_queue* z_queue
 ) {
-  z_queue->status = z_queue_status_exiting;
+  z_queue->status = (
+    z_queue_status_exiting
+  );
 
   z_track_destroy(
     z_queue->track_current

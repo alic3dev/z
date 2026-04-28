@@ -35,7 +35,6 @@ struct z_track {
   struct rand_parameters rand_parameters;
   struct rand_result rand_result;
   struct rand_source rand_source;
-  struct rand_source_parameters rand_source_parameters;
 };
 
 void z_track_generate(

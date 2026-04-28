@@ -360,10 +360,10 @@ int main(
     &z_close_exit_data.mutex_initializer
   );
 
-  struct cer0_audio_output audio_output;
-  struct z_display_thread_data z_display_thread_data;
-  struct z_io_proc_data z_io_proc_data;
-  struct z_track_parameters z_track_parameters;
+  static struct cer0_audio_output audio_output;
+  static struct z_display_thread_data z_display_thread_data;
+  static struct z_io_proc_data z_io_proc_data;
+  static struct z_track_parameters z_track_parameters;
 
   interrupt_handler_initialize();
 
