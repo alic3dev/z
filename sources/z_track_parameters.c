@@ -50,7 +50,7 @@ const struct z_track_parameters z_track_parameters_defaults = {
     0x01
   ),
   .octave_maximum = (
-    0x0a
+    0x04
   ),
   .signals = {
     sine,
@@ -61,13 +61,13 @@ const struct z_track_parameters z_track_parameters_defaults = {
     sine
   },
   .track_length_multiplier = (
-    8.15f
+    14.15f
   ),
   .track_bpm_minimum = (
-    0x14
+    0x0f
   ),
   .track_bpm_maximum = (
-    0xc8
+    0x1f
   ),
   .oscillator_amplitude_minimum = (
     0.825f
