@@ -22,7 +22,8 @@ unsigned int z_export_length_samples_get(
   return (
     bytes_sample *
     length_channels *
-    length *    0x64
+    length *
+    0x64
   );
 }
 
@@ -135,6 +136,10 @@ unsigned char z_export_with_parameters(
     );
   }
 
+  unsigned long int value = (
+    0x00
+  );
+
   for (
     unsigned long long int frame = (
       0x00
@@ -149,10 +154,6 @@ unsigned char z_export_with_parameters(
     unsigned long int index_data = (
       frame *
       wave_parameters->bytes_sample
-    );
-
-    unsigned long int value = (
-      0x00
     );
 
     unsigned long int index = (
@@ -171,36 +172,24 @@ unsigned char z_export_with_parameters(
         z_io_proc_data->frame +
         0x01
       );
-    
+
       float value_frame = (
         z_io_proc_frame_value_get(
           z_io_proc_data,
           &z_io_proc_data->queue
         )
       );
+
       value = (
         (
           value_frame +
           0x01
         ) /
         0x02 *
-        maximum_bytes
-      );
-    } else {
-      value = (
-        (
-          value +
-          0x01
-        ) /
-        0x02 *
-        maximum_bytes
+        maximum_bytes /
+        0x02
       );
     }
-
-    value = (
-      value /
-      0x02
-    );
 
     for (
       unsigned int index_byte = (
