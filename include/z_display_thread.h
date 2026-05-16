@@ -31,8 +31,8 @@ void z_display_thread_initialize(
 );
 
 void z_display_thread_data_set(
-  struct z_display_thread_data* z_display_thread_data,
-  struct z_queue* z_queue
+  struct z_display_thread_data*,
+  struct z_queue*
 );
 
 void z_display_thread_render_event(

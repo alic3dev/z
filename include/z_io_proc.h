@@ -5,8 +5,7 @@
 #include <z_queue.h>
 #include <z_track.h>
 
-#if target_os_ios
-#else
+#if !target_os_ios
 #include <CoreAudio/CoreAudio.h>
 #endif
 
@@ -14,8 +13,7 @@ void* z_io_proc_initializer(
   void*
 );
 
-#if target_os_ios
-#else
+#if !target_os_ios
 int z_io_proc(
   AudioObjectID,
   const AudioTimeStamp*,
@@ -25,13 +23,13 @@ int z_io_proc(
   const AudioTimeStamp*,
   void*
 );
-
 #endif
 
 float z_io_proc_frame_value_get(
   struct z_track*,
   unsigned long long int,
-  float);
+  float
+);
 
 float z_io_proc_frame_volume_apply(
   float,

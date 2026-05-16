@@ -16,6 +16,7 @@ unsigned int z_export_length_samples_get(
   unsigned int,
   unsigned int
 );
+
 unsigned char z_export(
   char*,
   struct z_track*
@@ -26,4 +27,5 @@ unsigned char z_export_with_parameters(
   struct z_track*,
   struct wave_parameters*
 );
+
 #endif

@@ -3,12 +3,12 @@
 
 enum z_event_type {
   z_event_type_track_pregeneration = 0x00,
-  z_event_type_track_update = 0xff
+  z_event_type_track_update        = 0xff
 };
 
 enum z_event_function_type {
   z_event_function_type_without_data = 0x00,
-  z_event_function_type_with_data = 0xff
+  z_event_function_type_with_data    = 0xff
 };
 
 typedef void (*z_event_function_without_data)(
