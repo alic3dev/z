@@ -271,8 +271,9 @@ int z_io_proc(
 #endif
 
 float z_io_proc_frame_value_get(
-  struct z_io_proc_data* z_io_proc_data,
-  struct z_queue* z_queue
+  struct z_track* z_track,
+  unsigned long long int index_frame,
+  float rate_sample
 ) {
   float value = (
     0x00
@@ -284,12 +285,12 @@ float z_io_proc_frame_value_get(
     );
     (
       index_lane <
-      z_queue->track_current->length_lanes
+      z_track->length_lanes
     );
     ++index_lane
   ) {
     struct z_track_lane* track_lane = &(
-      z_queue->track_current->lanes[
+      z_track->lanes[
         index_lane
       ]
     );
@@ -306,7 +307,7 @@ float z_io_proc_frame_value_get(
 
     unsigned long int note_life_end = (
       (
-        *z_io_proc_data->rate_sample /
+        rate_sample /
         0x0258
       ) *
       note->time
@@ -314,7 +315,7 @@ float z_io_proc_frame_value_get(
 
     unsigned long int note_life = (
       (
-        z_io_proc_data->frame +
+        index_frame +
         0x01
       ) %
       note_life_end
@@ -348,11 +349,11 @@ float z_io_proc_frame_value_get(
 
       track_lane->synthesizer.length_attack_sustain_decay_release = (
         (
-          *z_io_proc_data->rate_sample /
+          rate_sample /
           0x0258
         ) *
         note->time -
-        z_io_proc_data->frame
+        index_frame
       );
 
       cer0_synthesizer_frequency_play(
@@ -371,18 +372,19 @@ float z_io_proc_frame_value_get(
   }
 
   return (
-    math_c_minimum_float(
-      math_c_maximum_float(
-        (
-          value /
-          (float)
-          z_queue->track_current->length_lanes
-        ) *
-        z_io_proc_data->settings.volume,
-        -0x01
-      ),
-      0x01
-    )
+    value /
+    (float)
+    z_track->length_lanes
+  );
+}
+
+float z_io_proc_frame_volume_apply(
+  float frame_value,
+  float volume
+) {
+  return (
+    frame_value *
+    volume
   );
 }
 
@@ -406,9 +408,13 @@ void z_io_proc_frame_get(
   buffer_out[
     index_buffer_out
   ] = (
-    z_io_proc_frame_value_get(
-      z_io_proc_data,
-      z_queue
+    z_io_proc_frame_volume_apply(
+      z_io_proc_frame_value_get(
+        z_queue->track_current,
+        z_io_proc_data->frame,
+        *z_queue->rate_sample
+      ),
+      z_io_proc_data->settings.volume
     )
   );
 

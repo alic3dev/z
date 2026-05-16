@@ -3,6 +3,7 @@
 
 #include <z_io_proc_data.h>
 #include <z_queue.h>
+#include <z_track.h>
 
 #if target_os_ios
 #else
@@ -28,8 +29,13 @@ int z_io_proc(
 #endif
 
 float z_io_proc_frame_value_get(
-  struct z_io_proc_data*,
-  struct z_queue*
+  struct z_track*,
+  unsigned long long int,
+  float);
+
+float z_io_proc_frame_volume_apply(
+  float,
+  float
 );
 
 void z_io_proc_frame_get(

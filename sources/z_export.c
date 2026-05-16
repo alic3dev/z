@@ -175,8 +175,9 @@ unsigned char z_export_with_parameters(
 
       float value_frame = (
         z_io_proc_frame_value_get(
-          z_io_proc_data,
-          &z_io_proc_data->queue
+          z_io_proc_data->queue.track_current,
+          z_io_proc_data->frame,
+          rate_samples
         )
       );
 
