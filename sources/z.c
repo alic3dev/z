@@ -60,7 +60,7 @@ int main(
         &z_io_proc_data
       )
     );
-    
+
     if (
       status_export !=
       0x00
@@ -73,7 +73,7 @@ int main(
         ]
       );
     }
-    
+
     z_queue_destroy(
       &z_io_proc_data.queue
     );
