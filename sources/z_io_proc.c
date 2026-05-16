@@ -270,23 +270,10 @@ int z_io_proc(
 }
 #endif
 
-void z_io_proc_frame_get(
+float z_io_proc_frame_value_get(
   struct z_io_proc_data* z_io_proc_data,
-  struct z_queue* z_queue,
-  float* buffer_out,
-  unsigned long int index_buffer_out,
-  unsigned long int channel
+  struct z_queue* z_queue
 ) {
-  if (
-    channel ==
-    0x00
-  ) {
-    z_io_proc_data->frame = (
-      z_io_proc_data->frame +
-      0x01
-    );
-  }
-
   float value = (
     0x00
   );
@@ -383,11 +370,10 @@ void z_io_proc_frame_get(
     );
   }
 
-  buffer_out[
-    index_buffer_out
-  ] = (
+  return (
     math_c_minimum_float(
-      math_c_maximum_float((
+      math_c_maximum_float(
+        (
           value /
           (float)
           z_queue->track_current->length_lanes
@@ -396,6 +382,33 @@ void z_io_proc_frame_get(
         -0x01
       ),
       0x01
+    )
+  );
+}
+
+void z_io_proc_frame_get(
+  struct z_io_proc_data* z_io_proc_data,
+  struct z_queue* z_queue,
+  float* buffer_out,
+  unsigned long int index_buffer_out,
+  unsigned long int channel
+) {
+  if (
+    channel ==
+    0x00
+  ) {
+    z_io_proc_data->frame = (
+      z_io_proc_data->frame +
+      0x01
+    );
+  }
+
+  buffer_out[
+    index_buffer_out
+  ] = (
+    z_io_proc_frame_value_get(
+      z_io_proc_data,
+      z_queue
     )
   );
 
