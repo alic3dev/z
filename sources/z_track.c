@@ -564,7 +564,7 @@ void z_track_generate(
     effect_delay_data_third->decay = (
       0.4f
     );
-  
+
     effect_delay_third->mix = (
       0.5f
     );
