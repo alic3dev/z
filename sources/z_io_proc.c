@@ -10,6 +10,8 @@
 #include <clic3_memory.h>
 
 #include <cer0_synthesizer.h>
+
+#include <math_c_bound.h>
 #include <math_c_maximum.h>
 #include <math_c_minimum.h>
 
@@ -211,11 +213,14 @@ int z_io_proc(
 
         pan = (
           0.5f +
-          (
-            buffer_out_channel_zero_value +
-            0x01
-          ) /
-          0x04
+          math_c_bound_float(
+            (
+              buffer_out_channel_zero_value /
+              0x08
+            ),
+            0.125f,
+            -0.125f
+          )
         );
 
         buffer_out[
