@@ -47,7 +47,7 @@ const struct z_track_parameters z_track_parameters_defaults = {
     cer0_frequency_root_scientific
   ),
   .octave_minimum = (
-    0x01
+    0x02
   ),
   .octave_maximum = (
     0x06
