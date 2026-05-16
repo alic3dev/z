@@ -28,28 +28,17 @@ int main(
     length_parameters ==
     0x02
   ) {
-    static struct z_track_parameters z_track_parameters;
-    static struct z_io_proc_data z_io_proc_data;
+    struct z_track_parameters z_track_parameters;
+    struct z_track z_track;
 
     z_track_parameters_initialize_defaults(
       &z_track_parameters
     );
 
-    float rate_samples = (
-      z_export_default_rate_samples *
-      0x02
-    );
-
-    z_io_proc_data_initialize(
-      &z_io_proc_data,
+    z_track_generate(
+      &z_track,
       &z_track_parameters,
-      &rate_samples
-    );
-
-    z_queue_initialize(
-      &z_io_proc_data.queue,
-      z_io_proc_data.track_parameters,
-      z_io_proc_data.rate_sample
+      z_export_default_rate_samples
     );
 
     unsigned char status_export = (
@@ -57,7 +46,7 @@ int main(
         parameters[
           0x01
         ],
-        &z_io_proc_data
+        &z_track
       )
     );
 
@@ -73,10 +62,6 @@ int main(
         ]
       );
     }
-
-    z_queue_destroy(
-      &z_io_proc_data.queue
-    );
 
     z_track_parameters_destroy(
       &z_track_parameters

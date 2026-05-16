@@ -29,7 +29,7 @@ unsigned int z_export_length_samples_get(
 
 unsigned char z_export(
   char* path_file_export,
-  struct z_io_proc_data* z_io_proc_data
+  struct z_track* z_track
 ) {
   struct wave_parameters wave_parameters = {
     .wave_format = (
@@ -48,7 +48,7 @@ unsigned char z_export(
       z_export_length_samples_get(
         z_export_default_bytes_sample,
         z_export_default_length_channels,
-        z_io_proc_data->queue.track_current->length
+        z_track->length
       )
     )
   };
@@ -56,7 +56,7 @@ unsigned char z_export(
   return (
     z_export_with_parameters(
       path_file_export,
-      z_io_proc_data,
+      z_track,
       &wave_parameters
     )
   );
@@ -64,7 +64,7 @@ unsigned char z_export(
 
 unsigned char z_export_with_parameters(
   char* path_file_export,
-  struct z_io_proc_data* z_io_proc_data,
+  struct z_track* z_track,
   struct wave_parameters* wave_parameters
 ) {
   FILE* output = (
@@ -168,15 +168,13 @@ unsigned char z_export_with_parameters(
       ) ==
       0x00
     ){
-      z_io_proc_data->frame = (
-        z_io_proc_data->frame +
-        0x01
-      );
-
       float value_frame = (
         z_io_proc_frame_value_get(
-          z_io_proc_data->queue.track_current,
-          z_io_proc_data->frame,
+          z_track,
+          (
+            frame /
+            wave_parameters->length_channels
+          ),
           rate_samples
         )
       );
