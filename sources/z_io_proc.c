@@ -14,6 +14,7 @@
 #include <math_c_bound.h>
 #include <math_c_maximum.h>
 #include <math_c_minimum.h>
+#include <math_c_modulus.h>
 
 #include <pthread.h>
 
@@ -206,9 +207,12 @@ int z_io_proc(
         );
 
         buffer_out_channel_zero_value = (
-          buffer_out[
-            index_buffer_out
-          ]
+          math_c_modulus_mirror_float(
+            (buffer_out[
+              index_buffer_out
+            ] + 0x01) * 0x02,
+            0x02
+          ) - 0x01
         );
 
         pan = (
@@ -218,8 +222,8 @@ int z_io_proc(
               buffer_out_channel_zero_value /
               0x08
             ),
-            0.125f,
-            -0.125f
+            0.5f,
+            -0.5f
           )
         );
 

@@ -509,6 +509,18 @@ void z_track_generate(
         &track_lane->synthesizer
       )
     );
+    
+    struct cer0_effect* effect_delay_fourth = (
+      cer0_synthesizer_effect_add(
+        &track_lane->synthesizer
+      )
+    );
+    
+    struct cer0_effect* effect_distortion = (
+      cer0_synthesizer_effect_add(
+        &track_lane->synthesizer
+      )
+    );
 
     cer0_effect_delay_initialize(
       effect_delay
@@ -520,6 +532,14 @@ void z_track_generate(
 
     cer0_effect_delay_initialize(
       effect_delay_third
+    );
+    
+    cer0_effect_delay_initialize(
+      effect_delay_fourth
+    );
+    
+    cer0_effect_distortion_initialize(
+      effect_distortion
     );
 
     effect_delay->mix = (
@@ -550,6 +570,10 @@ void z_track_generate(
     effect_delay_data_second->decay = (
       0.9f
     );
+    
+    ((struct cer0_effect_distortion_data*) effect_distortion->data)->noise = (
+      0.015f
+    );
 
     cer0_effect_delay_length_frames_buffer_set(
       effect_delay,
@@ -559,6 +583,11 @@ void z_track_generate(
     cer0_effect_delay_length_frames_buffer_set(
       effect_delay_third,
       0x2fff
+    );
+    
+    cer0_effect_delay_length_frames_buffer_set(
+      effect_delay_fourth,
+      0xfffff
     );
 
     effect_delay_data_third->decay = (
@@ -754,7 +783,12 @@ void z_track_generate(
           z_track_parameters->attack_sustain_decay_release_parameters_maximum.attack -
           z_track_parameters->attack_sustain_decay_release_parameters_minimum.attack
         ) +
-        z_track_parameters->attack_sustain_decay_release_parameters_minimum.attack
+        z_track_parameters->attack_sustain_decay_release_parameters_minimum.attack *
+        (
+          (
+            index_lane > 0x5
+          ) ? 0x00 : 0x01
+        )
       );
 
       note->attack_sustain_decay_release_parameters.sustain = (
