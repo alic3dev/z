@@ -205,16 +205,7 @@ int z_io_proc(
           index_buffer_out,
           channel
         );
-
-        buffer_out_channel_zero_value = (
-          math_c_modulus_mirror_float(
-            (buffer_out[
-              index_buffer_out
-            ] + 0x01) * 0x02,
-            0x02
-          ) - 0x01
-        );
-
+        
         pan = (
           0.5f +
           math_c_bound_float(
@@ -227,19 +218,29 @@ int z_io_proc(
           )
         );
 
+        buffer_out_channel_zero_value = (
+          math_c_modulus_mirror_float(
+            (
+              (
+                buffer_out[
+                  index_buffer_out
+                ] +
+                0x01
+              ) *
+              0x02
+            ),
+            0x02
+          ) -
+          0x01
+        );
+
         buffer_out[
           index_buffer_out
         ] = (
           buffer_out_channel_zero_value *
-          math_c_minimum_float(
-            (
-              (
-                0x01 -
-                pan
-              ) *
-              0x02
-            ),
-            0x01
+          (
+            0x01 -
+            pan
           )
         );
       } else {
@@ -247,13 +248,7 @@ int z_io_proc(
           index_buffer_out
         ] = (
           buffer_out_channel_zero_value *
-          math_c_minimum_float(
-            (
-              pan *
-              0x02
-            ),
-            0x01
-          )
+          pan
         );
       }
     }
