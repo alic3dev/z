@@ -38,26 +38,26 @@ const struct z_track_parameters z_track_parameters_defaults = {
     z_track_parameters_length_scales_default
   ),
   .track_length_lanes_minimum = (
-    0x06
+    0x0f
   ),
   .track_length_lanes_maximum = (
-    0x0a
+    0x1f
   ),
   .frequency_root = (
-    cer0_frequency_root_magic
+    cer0_frequency_root_scientific
   ),
   .octave_minimum = (
     0x00
   ),
   .octave_maximum = (
-    0x04
+    0x09
   ),
   .signals = {
     square,
     square,
-    square,
-    square,
-    square,
+    sawtooth_down,
+    triangle,
+    sine,
     square
   },
   .track_length_multiplier = (
@@ -67,7 +67,7 @@ const struct z_track_parameters z_track_parameters_defaults = {
     0x04
   ),
   .track_bpm_maximum = (
-    0x06
+    0xff
   ),
   .oscillator_amplitude_minimum = (
     0.825f
@@ -235,7 +235,7 @@ void z_track_parameters_initialize_defaults(
   );
 
   z_track_parameters->attack_sustain_decay_release_parameters_minimum.attack = (
-    0.7f
+    0.1f
   );
 
   z_track_parameters->attack_sustain_decay_release_parameters_maximum.attack = (
