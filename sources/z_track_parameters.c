@@ -10,9 +10,9 @@
 const unsigned char* z_track_scales_defaults[
   z_track_parameters_length_scales_default
 ] = {
-  cer0_scale_notes_minor_pentatonic,
+  cer0_scale_notes_major_pentatonic,
   cer0_scale_notes_harmonic_major,
-  cer0_scale_notes_harmonic_minor,
+  cer0_scale_notes_harmonic_major,
   cer0_scale_notes_harmonic_major,
   cer0_scale_notes_major_pentatonic
 };
@@ -20,9 +20,9 @@ const unsigned char* z_track_scales_defaults[
 unsigned char z_track_scales_lengths_defaults[
   z_track_parameters_length_scales_default
 ] = {
-  cer0_scale_length_minor_pentatonic,
+  cer0_scale_length_major_pentatonic,
   cer0_scale_length_harmonic_major,
-  cer0_scale_length_harmonic_minor,
+  cer0_scale_length_harmonic_major,
   cer0_scale_length_harmonic_major,
   cer0_scale_length_major_pentatonic
 };
@@ -38,36 +38,36 @@ const struct z_track_parameters z_track_parameters_defaults = {
     z_track_parameters_length_scales_default
   ),
   .track_length_lanes_minimum = (
-    0x0f
-  ),
-  .track_length_lanes_maximum = (
-    0x1f
-  ),
-  .frequency_root = (
-    cer0_frequency_root_scientific
-  ),
-  .octave_minimum = (
-    0x00
-  ),
-  .octave_maximum = (
-    0x09
-  ),
-  .signals = {
-    square,
-    square,
-    sawtooth_down,
-    triangle,
-    sine,
-    square
-  },
-  .track_length_multiplier = (
-    8.15f
-  ),
-  .track_bpm_minimum = (
     0x04
   ),
+  .track_length_lanes_maximum = (
+    0x04
+  ),
+  .frequency_root = (
+    cer0_frequency_root_standard
+  ),
+  .octave_minimum = (
+    0x01
+  ),
+  .octave_maximum = (
+    0x06
+  ),
+  .signals = {
+    sine,
+    sine,
+    sine,
+    sine,
+    sine,
+    sine
+  },
+  .track_length_multiplier = (
+    8.0f
+  ),
+  .track_bpm_minimum = (
+    0x4a
+  ),
   .track_bpm_maximum = (
-    0xff
+    0x7a
   ),
   .oscillator_amplitude_minimum = (
     0.825f
@@ -235,11 +235,11 @@ void z_track_parameters_initialize_defaults(
   );
 
   z_track_parameters->attack_sustain_decay_release_parameters_minimum.attack = (
-    0.1f
+    0.0f
   );
 
   z_track_parameters->attack_sustain_decay_release_parameters_maximum.attack = (
-    0x01
+    0.0f
   );
 }
 

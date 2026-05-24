@@ -11,6 +11,7 @@
 
 #include <cer0_attack_sustain_decay_release.h>
 #include <cer0_effect.h>
+#include <cer0_effects/cer0_effect_bit_crush.h>
 #include <cer0_effects/cer0_effect_delay.h>
 #include <cer0_effects/cer0_effect_distortion.h>
 #include <cer0_octave_range.h>
@@ -491,8 +492,26 @@ void z_track_generate(
       &track_lane->synthesizer,
       sample_rate
     );
+    
+    struct cer0_effect* effect_bit_crush = (
+      cer0_synthesizer_effect_add(
+        &track_lane->synthesizer
+      )
+    );
+    
+    cer0_effect_bit_crush_initialize(
+      effect_bit_crush,
+      0x04
+    );
+    
+    cer0_effect_bit_crush_mode_set(
+      effect_bit_crush,
+      cer0_effect_bit_crush_mode_value
+    );
+    
+    effect_bit_crush->mix = 1;
 
-    struct cer0_effect* effect_delay = (
+    /*struct cer0_effect* effect_delay = (
       cer0_synthesizer_effect_add(
         &track_lane->synthesizer
       )
@@ -520,9 +539,9 @@ void z_track_generate(
       cer0_synthesizer_effect_add(
         &track_lane->synthesizer
       )
-    );
+    );*/
 
-    cer0_effect_delay_initialize(
+    /*cer0_effect_delay_initialize(
       effect_delay
     );
 
@@ -600,7 +619,7 @@ void z_track_generate(
 
     effect_delay_data->decay = (
       0.9f
-    );
+    );*/
 
     unsigned char count_oscillators = (
       track->rand_result.bytes[
