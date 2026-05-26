@@ -3,6 +3,7 @@
 #include <z_queue.h>
 #include <z_track_note.h>
 #include <z_track_lane.h>
+#include <z_track_lane_type.h>
 #include <z_words.h>
 
 #include <clic3_base_hexadecimal.h>
@@ -481,13 +482,34 @@ void z_track_generate(
         index_lane
       ]
     );
-
+    
     rand_get(
       &track->rand_source,
       &track->rand_result,
       &track->rand_parameters
     );
-
+    
+    if (
+      index_lane ==
+      0x00
+    ) {
+      track_lane->type = (
+        z_track_lane_type_bass
+      );
+    } else {
+      track_lane->type = (
+       (
+         track->rand_result.bytes[
+           0x00
+         ] %
+         (
+           z_track_lane_type_length -
+           0x01
+         )
+       ) +
+       0x01
+     );
+   }
     cer0_synthesizer_initialize(
       &track_lane->synthesizer,
       sample_rate
@@ -508,118 +530,6 @@ void z_track_generate(
       effect_bit_crush,
       cer0_effect_bit_crush_mode_value
     );
-    
-    effect_bit_crush->mix = 1;
-
-    /*struct cer0_effect* effect_delay = (
-      cer0_synthesizer_effect_add(
-        &track_lane->synthesizer
-      )
-    );
-
-    struct cer0_effect* effect_delay_second = (
-      cer0_synthesizer_effect_add(
-        &track_lane->synthesizer
-      )
-    );
-
-    struct cer0_effect* effect_delay_third = (
-      cer0_synthesizer_effect_add(
-        &track_lane->synthesizer
-      )
-    );
-    
-    struct cer0_effect* effect_delay_fourth = (
-      cer0_synthesizer_effect_add(
-        &track_lane->synthesizer
-      )
-    );
-    
-    struct cer0_effect* effect_distortion = (
-      cer0_synthesizer_effect_add(
-        &track_lane->synthesizer
-      )
-    );*/
-
-    /*cer0_effect_delay_initialize(
-      effect_delay
-    );
-
-    cer0_effect_delay_initialize(
-      effect_delay_second
-    );
-
-    cer0_effect_delay_initialize(
-      effect_delay_third
-    );
-    
-    cer0_effect_delay_initialize(
-      effect_delay_fourth
-    );
-    
-    cer0_effect_distortion_initialize(
-      effect_distortion
-    );
-
-    effect_delay->mix = (
-      0.0f
-    );
-
-    effect_delay_second->mix = (
-      0.0f
-    );
-
-    cer0_effect_delay_length_frames_buffer_set(
-      effect_delay_second,
-      0xfff
-    );
-
-    struct cer0_effect_delay_data* effect_delay_data = (
-      effect_delay->data
-    );
-
-    struct cer0_effect_delay_data* effect_delay_data_second = (
-      effect_delay_second->data
-    );
-
-    struct cer0_effect_delay_data* effect_delay_data_third = (
-      effect_delay_third->data
-    );
-
-    effect_delay_data_second->decay = (
-      0.9f
-    );
-    
-    ((struct cer0_effect_distortion_data*) effect_distortion->data)->noise = (
-      0.015f
-    );
-
-    cer0_effect_delay_length_frames_buffer_set(
-      effect_delay,
-      0xffff
-    );
-
-    cer0_effect_delay_length_frames_buffer_set(
-      effect_delay_third,
-      0x2fff
-    );
-    
-    cer0_effect_delay_length_frames_buffer_set(
-      effect_delay_fourth,
-      0xfffff
-    );
-
-    effect_delay_data_third->decay = (
-      0.4f
-    );
-
-    effect_delay_third->mix = (
-      0.5f
-    );
-
-    effect_delay_data->decay = (
-      0.9f
-    );*/
 
     unsigned char count_oscillators = (
       track->rand_result.bytes[
@@ -630,15 +540,20 @@ void z_track_generate(
     );
 
     for (
-      unsigned char index_oscillator = 0;
-      index_oscillator < count_oscillators;
+      unsigned char index_oscillator = (
+        0x00
+      );
+      (
+        index_oscillator <
+        count_oscillators
+      );
       ++index_oscillator
     ) {
       enum cer0_signal signal;
 
       if (
-        index_lane ==
-        0x00
+        track_lane->type ==
+        z_track_lane_type_bass
       ) {
         signal = (
           (
@@ -734,8 +649,8 @@ void z_track_generate(
 
     unsigned char speed = (
       (
-        index_lane ==
-        0x00
+        track_lane->type ==
+        z_track_lane_type_bass
       )
       ? 0x00
       : (
@@ -805,8 +720,17 @@ void z_track_generate(
         z_track_parameters->attack_sustain_decay_release_parameters_minimum.attack *
         (
           (
-            index_lane > 0x5
-          ) ? 0x00 : 0x01
+            (
+              track_lane->type ==
+              z_track_lane_type_rhythm_chords
+            ) ||
+            (
+              track_lane->type ==
+              z_track_lane_type_rhythm_notes
+            )
+          )
+          ? 0x00
+          : 0x01
         )
       );
 
@@ -1009,11 +933,11 @@ void z_track_generate(
         length_note *
         (
           (
-            index_lane >
-            0x06
+            track_lane->type ==
+            z_track_lane_type_notes
           )
-        ? 0.2f
-        : 0x01
+          ? 0.2f
+          : 0x01
         )
       );
 
@@ -1052,8 +976,14 @@ void z_track_generate(
 
       if (
         (
-          index_lane >
-          0x01
+          (
+            track_lane->type ==
+            z_track_lane_type_notes
+          ) ||
+          (
+            track_lane->type ==
+            z_track_lane_type_chords
+          )
         ) &&
         (
           index_note >=
@@ -1074,8 +1004,8 @@ void z_track_generate(
         unsigned int octave_range;
 
         if (
-          index_lane ==
-          0x00
+          track_lane->type ==
+          z_track_lane_type_bass
         ) {
           octave_range_minimum = (
             range_octave_lower_minimum
@@ -1086,10 +1016,12 @@ void z_track_generate(
           );
         } else if (
           (
-            index_lane %
-            0x02
-          ) ==
-          0x00
+            track_lane->type ==            z_track_lane_type_rhythm_chords
+          ) ||
+          (
+            track_lane->type ==
+            z_track_lane_type_rhythm_notes
+          )
         ) {
           octave_range_minimum = (
             range_octave_mid_minimum
@@ -1203,7 +1135,8 @@ void z_track_destroy(
       track->length_lanes
     );
     ++index_lane
-  ) {    cer0_synthesizer_destroy(
+  ) {
+    cer0_synthesizer_destroy(
       &track->lanes[
         index_lane
       ].synthesizer
