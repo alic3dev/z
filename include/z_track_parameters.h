@@ -27,10 +27,10 @@ struct z_track_parameters {
 
   char* signals;
   unsigned char length_signals;
-  
+
   unsigned char* types;
   unsigned char length_types;
-  
+
   float track_bpm_minimum;
   float track_bpm_maximum;
 
@@ -60,7 +60,7 @@ extern const unsigned char z_track_parameters_signals_defaults[
 
 extern const unsigned char z_track_parameters_types_defaults[
   z_track_parameters_length_types_default
-]; 
+];
 
 extern const struct z_track_parameters z_track_parameters_defaults;
 

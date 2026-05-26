@@ -143,9 +143,9 @@ unsigned char z_export_with_parameters(
   unsigned long int value = (
     0x00
   );
-  
+
   float value_frame;
-  
+
   float pan = (
     0.5f
   );
@@ -188,7 +188,7 @@ unsigned char z_export_with_parameters(
           rate_samples
         )
       );
-      
+
       /*if (
         wave_parameters->length_channels >
         0x01
@@ -205,7 +205,7 @@ unsigned char z_export_with_parameters(
           )
         );
       }
-      
+
       value_frame = (
         math_c_modulus_mirror_float(
           (
@@ -219,14 +219,14 @@ unsigned char z_export_with_parameters(
         ) -
         0x01
       );*/
-      
+
       value = (
         (
           value_frame *
           (
             0x01 -
             pan
-          ) + 
+          ) +
           0x01
         ) /
         0x02 *
@@ -245,7 +245,7 @@ unsigned char z_export_with_parameters(
         0x02
       );
     }
-    
+
     for (
       unsigned int index_byte = (
         0x00

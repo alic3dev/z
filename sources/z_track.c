@@ -281,11 +281,11 @@ void z_track_generate(
     &track->rand_result,
     &track->rand_parameters
   );
-  
+
   track->length_effects = (
     0x01
   );
-  
+
   track->effects = (
     clic3_memory_allocate_raw(
       sizeof(
@@ -294,7 +294,7 @@ void z_track_generate(
       track->length_effects
     )
   );
-  
+
   cer0_effect_bit_crush_initialize(
     &track->effects[
       0x00
@@ -501,13 +501,13 @@ void z_track_generate(
         index_lane
       ]
     );
-    
+
     rand_get(
       &track->rand_source,
       &track->rand_result,
       &track->rand_parameters
     );
-    
+
     if (
       index_lane ==
       0x00
@@ -545,12 +545,12 @@ void z_track_generate(
        ]
      );
     }
-   
+
     cer0_synthesizer_initialize(
       &track_lane->synthesizer,
       sample_rate
     );
-    
+
     if (
       (
         track_lane->type ==
@@ -572,11 +572,11 @@ void z_track_generate(
             &track_lane->synthesizer
           )
         );
-        
+
         cer0_effect_delay_initialize(
           effect_delay
         );
-        
+
         cer0_effect_delay_length_frames_buffer_set(
           effect_delay,
           (
@@ -594,14 +594,14 @@ void z_track_generate(
             (
               sample_rate /
               0x0258
-            ) 
+            )
           )
         );
-        
+
         struct cer0_effect_delay_data* effect_delay_data = (
           effect_delay->data
         );
-        
+
         effect_delay_data->decay = (
           (float)
           track->rand_result.bytes[
@@ -611,12 +611,12 @@ void z_track_generate(
           0x02 +
           0.5f
         );
-        
+
         effect_delay->mix = (
           0.25f
         );
       }
-      
+
       if (
         track->rand_result.bytes[
           0x12
@@ -628,11 +628,11 @@ void z_track_generate(
             &track_lane->synthesizer
           )
         );
-        
+
         cer0_effect_delay_initialize(
           effect_delay
         );
-        
+
         cer0_effect_delay_length_frames_buffer_set(
           effect_delay,
           (
@@ -650,14 +650,14 @@ void z_track_generate(
             (
               sample_rate /
               0x0258
-            ) 
+            )
           )
         );
-        
+
         struct cer0_effect_delay_data* effect_delay_data = (
           effect_delay->data
         );
-        
+
         effect_delay_data->decay = (
           (float)
           track->rand_result.bytes[
@@ -669,7 +669,7 @@ void z_track_generate(
         );
       }
     }
-    
+
     unsigned char count_oscillators = (
       track->rand_result.bytes[
         0x00
@@ -734,7 +734,7 @@ void z_track_generate(
             z_track_parameters_length_signals_default
           ]
         );
-        
+
         if (
           (
             track_lane->type ==
@@ -747,7 +747,7 @@ void z_track_generate(
         ) {
           track_lane->synthesizer.amplitude = (
             0.25f
-          );  
+          );
         }
       }
 
@@ -802,7 +802,7 @@ void z_track_generate(
     );
 
     unsigned char speed;
-    
+
     struct z_track_note* notes = (
       track_lane->notes
     );
@@ -822,7 +822,7 @@ void z_track_generate(
         &track->rand_result,
         &track->rand_parameters
       );
-      
+
       switch (
         track_lane->type
       ) {
@@ -830,7 +830,7 @@ void z_track_generate(
           speed = (
             0x00
           );
-        
+
           break;
         }
         case z_track_lane_type_rhythm_chords:
@@ -845,7 +845,7 @@ void z_track_generate(
               )
             ) %
             0x03
-          );        
+          );
           break;
         }
         default: {
@@ -869,7 +869,7 @@ void z_track_generate(
             ) +
             0x02
           );
-          
+
           break;
         }
       }
@@ -1347,7 +1347,7 @@ void z_track_destroy(
       ].notes
     );
   }
-  
+
   for (
     unsigned char index_effect = (
       0x00
@@ -1364,7 +1364,7 @@ void z_track_destroy(
       ]
     );
   }
-  
+
   clic3_memory_free_raw(
     track->effects
   );

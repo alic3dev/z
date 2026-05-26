@@ -12,4 +12,3 @@ enum z_track_lane_type {
 };
 
 #endif
-

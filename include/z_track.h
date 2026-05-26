@@ -37,7 +37,7 @@ struct z_track {
   struct rand_parameters rand_parameters;
   struct rand_result rand_result;
   struct rand_source rand_source;
-  
+
   struct cer0_effect* effects;
   unsigned char length_effects;
 };

@@ -205,13 +205,13 @@ int z_io_proc(
           index_buffer_out,
           channel
         );
-        
+
         buffer_out_channel_zero_value = (
           buffer_out[
             index_buffer_out
           ]
         );
-        
+
         pan = (
           0.5f +
           math_c_bound_float(
@@ -223,8 +223,7 @@ int z_io_proc(
             -0.5f
           )
         );
-        
-        
+
         /*buffer_out_channel_zero_value = (
           math_c_modulus_mirror_float(
             (
@@ -359,7 +358,7 @@ float z_io_proc_frame_value_get(
         note->time -
         index_frame
       );
-      
+
       switch (
         track_lane->type
       ) {
@@ -368,7 +367,7 @@ float z_io_proc_frame_value_get(
           track_lane->synthesizer.index_attack_sustain_decay_release = (
             0x00
           );
-        
+
           for (
             unsigned char index_oscillator = (
               0x00
@@ -402,7 +401,7 @@ float z_io_proc_frame_value_get(
               ]
             );
           }
-          
+
           break;
         }
         default: {
@@ -412,7 +411,7 @@ float z_io_proc_frame_value_get(
               note->value
             ]
           );
-          
+
           break;
         }
       }
@@ -426,13 +425,13 @@ float z_io_proc_frame_value_get(
       note->amplitude
     );
   }
-  
+
   value = (
     value /
     (float)
     z_track->length_lanes
   );
-  
+
   for (
     unsigned char index_effect = (
       0x00

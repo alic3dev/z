@@ -12,7 +12,7 @@ struct z_track_lane {
   struct z_track_note* notes;
 
   struct cer0_synthesizer synthesizer;
-  
+
   unsigned char type;
 };
 

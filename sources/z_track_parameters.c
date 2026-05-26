@@ -145,13 +145,13 @@ void z_track_parameters_initialize_defaults(
       z_track_parameters->length_scales
     )
   );
-  
+
   z_track_parameters->signals = (
     clic3_memory_allocate_raw(
       z_track_parameters->length_signals
     )
   );
-  
+
   z_track_parameters->types = (
     clic3_memory_allocate_raw(
       z_track_parameters->length_types
@@ -206,7 +206,7 @@ void z_track_parameters_initialize_defaults(
       ]
     );
   }
-  
+
   for (
     unsigned char index_type = (
       0x00
@@ -254,11 +254,11 @@ void z_track_parameters_destroy(
   clic3_memory_free_raw(
     z_track_parameters->scales_length
   );
-  
+
   clic3_memory_free_raw(
     z_track_parameters->signals
   );
-  
+
   clic3_memory_free_raw(
     z_track_parameters->types
   );
