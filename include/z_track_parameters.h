@@ -1,6 +1,8 @@
 #ifndef __z_track_parameters_h
 #define __z_track_parameters_h
 
+#include <z_track_lane_type.h>
+
 #include <cer0_attack_sustain_decay_release.h>
 #include <cer0_signal.h>
 
@@ -8,6 +10,7 @@
 
 #define z_track_parameters_length_scales_default 0x05
 #define z_track_parameters_length_signals_default cer0_length_signals
+#define z_track_parameters_length_types_default z_track_lane_types_length
 
 struct z_track_parameters {
   const unsigned char** scales;
@@ -22,10 +25,12 @@ struct z_track_parameters {
   char octave_minimum;
   char octave_maximum;
 
-  enum cer0_signal signals[
-    z_track_parameters_length_signals_default
-  ];
-
+  int* signals;
+  unsigned char length_signals;
+  
+  unsigned char* types;
+  unsigned char length_types;
+  
   float track_bpm_minimum;
   float track_bpm_maximum;
 
@@ -41,13 +46,21 @@ struct z_track_parameters {
   struct cer0_attack_sustain_decay_release_parameters attack_sustain_decay_release_parameters_maximum;
 };
 
-extern const unsigned char* z_track_scales_defaults[
+extern const unsigned char* z_track_parameters_scales_defaults[
   z_track_parameters_length_scales_default
 ];
 
-extern unsigned char z_track_lengths_scales_defaults[
+extern unsigned char z_track_parameters_lengths_scales_defaults[
   z_track_parameters_length_scales_default
 ];
+
+extern const unsigned char z_track_parameters_signals_defaults[
+  z_track_parameters_length_signals_default
+];
+
+extern const unsigned char z_track_parameters_types_defaults[
+  z_track_parameters_length_types_default
+]; 
 
 extern const struct z_track_parameters z_track_parameters_defaults;
 

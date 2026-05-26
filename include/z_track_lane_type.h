@@ -1,7 +1,7 @@
 #ifndef __z_z_track_lane_type_h
 #define __z_z_track_lane_type_h
 
-#define z_track_lane_type_length 0x05
+#define z_track_lane_types_length 0x05
 
 enum z_track_lane_type {
   z_track_lane_type_bass          = 0x00,

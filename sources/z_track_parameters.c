@@ -5,9 +5,10 @@
 #include <cer0_scale.h>
 #include <cer0_signal.h>
 
+#include <clic3_bytes.h>
 #include <clic3_memory.h>
 
-const unsigned char* z_track_scales_defaults[
+const unsigned char* z_track_parameters_scales_defaults[
   z_track_parameters_length_scales_default
 ] = {
   cer0_scale_notes_major_pentatonic,
@@ -17,7 +18,7 @@ const unsigned char* z_track_scales_defaults[
   cer0_scale_notes_major_pentatonic
 };
 
-unsigned char z_track_scales_lengths_defaults[
+unsigned char z_track_parameters_scales_lengths_defaults[
   z_track_parameters_length_scales_default
 ] = {
   cer0_scale_length_major_pentatonic,
@@ -27,12 +28,32 @@ unsigned char z_track_scales_lengths_defaults[
   cer0_scale_length_major_pentatonic
 };
 
+const unsigned char z_track_parameters_signals_defaults[
+  z_track_parameters_length_signals_default
+] = {
+  sine,
+  sine,
+  sine,
+  sine,
+  sine,
+  sine
+};
+const unsigned char z_track_parameters_types_defaults[
+  z_track_parameters_length_types_default
+] = {
+  z_track_lane_type_bass,
+  z_track_lane_type_rhythm_chords,
+  z_track_lane_type_rhythm_notes,
+  z_track_lane_type_chords,
+  z_track_lane_type_notes
+};
+
 const struct z_track_parameters z_track_parameters_defaults = {
   .scales = (
     0x00
   ),
   .scales_length = (
-    z_track_scales_lengths_defaults
+    0x00
   ),
   .length_scales = (
     z_track_parameters_length_scales_default
@@ -52,14 +73,18 @@ const struct z_track_parameters z_track_parameters_defaults = {
   .octave_maximum = (
     0x06
   ),
-  .signals = {
-    sine,
-    sine,
-    sine,
-    sine,
-    sine,
-    sine
-  },
+  .signals = (
+    0x00
+  ),
+  .length_signals = (
+    z_track_parameters_length_signals_default
+  ),
+  .types = (
+    0x00
+  ),
+  .length_types = (
+    z_track_parameters_length_types_default
+  ),
   .track_length_multiplier = (
     8.0f
   ),
@@ -89,32 +114,20 @@ void z_track_parameters_initialize(
   z_track_parameters_initialize_defaults(
     z_track_parameters
   );
-
-  z_track_parameters->length_scales = (
-    0x00
-  );
-
-  clic3_memory_reallocate_raw(
-    &z_track_parameters->scales,
-    (
-      sizeof(
-        void*
-      ) *
-      z_track_parameters->length_scales
-    )
-  );
-
-  clic3_memory_reallocate_raw(
-    &z_track_parameters->scales_length,
-    z_track_parameters->length_scales
-  );
 }
 
 void z_track_parameters_initialize_defaults(
   struct z_track_parameters* z_track_parameters
 ) {
-  z_track_parameters->length_scales = (
-    z_track_parameters_defaults.length_scales
+  clic3_bytes_copy(
+    z_track_parameters,
+    (
+      (void*)
+      &z_track_parameters_defaults
+    ),
+    sizeof(
+      struct z_track_parameters
+    )
   );
 
   z_track_parameters->scales = (
@@ -131,6 +144,18 @@ void z_track_parameters_initialize_defaults(
       z_track_parameters->length_scales
     )
   );
+  
+  z_track_parameters->signals = (
+    clic3_memory_allocate_raw(
+      z_track_parameters->length_signals
+    )
+  );
+  
+  z_track_parameters->types = (
+    clic3_memory_allocate_raw(
+      z_track_parameters->length_types
+    )
+  );
 
   for (
     unsigned char index_scale = (
@@ -145,39 +170,21 @@ void z_track_parameters_initialize_defaults(
     z_track_parameters->scales[
       index_scale
     ] = (
-      z_track_scales_defaults[
-        index_scale
+      z_track_parameters_scales_defaults[
+        index_scale %
+        z_track_parameters_length_scales_default
       ]
     );
 
     z_track_parameters->scales_length[
       index_scale
     ] = (
-      z_track_scales_lengths_defaults[
-        index_scale
+      z_track_parameters_scales_lengths_defaults[
+        index_scale %
+        z_track_parameters_length_scales_default
       ]
     );
   }
-
-  z_track_parameters->track_length_lanes_minimum = (
-    z_track_parameters_defaults.track_length_lanes_minimum
-  );
-
-  z_track_parameters->track_length_lanes_maximum = (
-    z_track_parameters_defaults.track_length_lanes_maximum
-  );
-
-  z_track_parameters->frequency_root = (
-    z_track_parameters_defaults.frequency_root
-  );
-
-  z_track_parameters->octave_minimum = (
-    z_track_parameters_defaults.octave_minimum
-  );
-
-  z_track_parameters->octave_maximum = (
-    z_track_parameters_defaults.octave_maximum
-  );
 
   for (
     unsigned char index_signal = (
@@ -185,46 +192,38 @@ void z_track_parameters_initialize_defaults(
     );
     (
       index_signal <
-      z_track_parameters_length_signals_default
+      z_track_parameters->length_signals
     );
     ++index_signal
   ) {
     z_track_parameters->signals[
       index_signal
     ] = (
-      z_track_parameters_defaults.signals[
-        index_signal
+      z_track_parameters_signals_defaults[
+        index_signal %
+        z_track_parameters_length_signals_default
       ]
     );
   }
-
-  z_track_parameters->track_length_multiplier = (
-    z_track_parameters_defaults.track_length_multiplier
-  );
-
-  z_track_parameters->track_bpm_minimum = (
-    z_track_parameters_defaults.track_bpm_minimum
-  );
-
-  z_track_parameters->track_bpm_maximum = (
-    z_track_parameters_defaults.track_bpm_maximum
-  );
-
-  z_track_parameters->oscillator_amplitude_minimum = (
-    z_track_parameters_defaults.oscillator_amplitude_minimum
-  );
-
-  z_track_parameters->oscillator_amplitude_maximum = (
-    z_track_parameters_defaults.oscillator_amplitude_maximum
-  );
-
-  z_track_parameters->note_amplitude_minimum = (
-    z_track_parameters_defaults.note_amplitude_minimum
-  );
-
-  z_track_parameters->note_amplitude_maximum = (
-    z_track_parameters_defaults.note_amplitude_maximum
-  );
+    for (
+    unsigned char index_type = (
+      0x00
+    );
+    (
+      index_type <
+      z_track_parameters->length_types
+    );
+    ++index_type
+  ) {
+    z_track_parameters->types[
+      index_type
+    ] = (
+      z_track_parameters_types_defaults[
+        index_type %
+        z_track_lane_types_length
+      ]
+    );
+  }
 
   cer0_attack_sustain_decay_release_parameters_initialize(
     &z_track_parameters->attack_sustain_decay_release_parameters_minimum
@@ -252,5 +251,13 @@ void z_track_parameters_destroy(
 
   clic3_memory_free_raw(
     z_track_parameters->scales_length
+  );
+  
+  clic3_memory_free_raw(
+    z_track_parameters->signals
+  );
+  
+  clic3_memory_free_raw(
+    z_track_parameters->types
   );
 }

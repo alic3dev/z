@@ -494,20 +494,27 @@ void z_track_generate(
       0x00
     ) {
       track_lane->type = (
-        z_track_lane_type_bass
+        z_track_parameters->types[
+          0x00
+        ]
       );
     } else {
       track_lane->type = (
-       (
-         track->rand_result.bytes[
-           0x00
-         ] %
+        z_track_parameters->types[
          (
-           z_track_lane_type_length -
+           (
+             track->rand_result.bytes[
+               0x00
+             ] %
+             (
+               z_track_parameters->length_types -
+               0x01
+             )
+           ) +
            0x01
-         )
-       ) +
-       0x01
+         ) %
+         z_track_parameters->length_types
+       ]
      );
    }
     cer0_synthesizer_initialize(
