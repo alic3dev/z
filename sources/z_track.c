@@ -302,6 +302,13 @@ void z_track_generate(
     0x01
   );
 
+  cer0_effect_bit_crush_mode_set(
+    &track->effects[
+      0x00
+    ],
+    cer0_effect_bit_crush_mode_value
+  );
+
   for (
     unsigned char index_track_name = (
       0x00
