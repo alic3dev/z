@@ -189,7 +189,7 @@ unsigned char z_export_with_parameters(
         )
       );
       
-      if (
+      /*if (
         wave_parameters->length_channels >
         0x01
       ) {
@@ -218,7 +218,7 @@ unsigned char z_export_with_parameters(
           0x02
         ) -
         0x01
-      );
+      );*/
       
       value = (
         (

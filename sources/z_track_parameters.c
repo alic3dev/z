@@ -44,8 +44,8 @@ const unsigned char z_track_parameters_types_defaults[
 ] = {
   z_track_lane_type_bass,
   z_track_lane_type_rhythm_chords,
-  z_track_lane_type_rhythm_notes,
-  z_track_lane_type_chords,
+  z_track_lane_type_notes,
+  z_track_lane_type_notes,
   z_track_lane_type_notes
 };
 
@@ -60,7 +60,7 @@ const struct z_track_parameters z_track_parameters_defaults = {
     z_track_parameters_length_scales_default
   ),
   .track_length_lanes_minimum = (
-    0x04
+    0x03
   ),
   .track_length_lanes_maximum = (
     0x04
@@ -90,10 +90,10 @@ const struct z_track_parameters z_track_parameters_defaults = {
     8.0f
   ),
   .track_bpm_minimum = (
-    0x4a
+    0x1e
   ),
   .track_bpm_maximum = (
-    0x7a
+    0x3c
   ),
   .oscillator_amplitude_minimum = (
     0.825f
@@ -240,7 +240,7 @@ void z_track_parameters_initialize_defaults(
   );
 
   z_track_parameters->attack_sustain_decay_release_parameters_maximum.attack = (
-    0.0f
+    0.1f
   );
 }
 

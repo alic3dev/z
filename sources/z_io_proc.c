@@ -212,7 +212,7 @@ int z_io_proc(
           ]
         );
         
-        /*pan = (
+        pan = (
           0.5f +
           math_c_bound_float(
             (
@@ -223,12 +223,14 @@ int z_io_proc(
             -0.5f
           )
         );
-
-        buffer_out_channel_zero_value = (
+        
+        
+        /*buffer_out_channel_zero_value = (
           math_c_modulus_mirror_float(
             (
               (
-                buffer_out_channel_zero_value +                0x01
+                buffer_out_channel_zero_value +
+                0x01
               ) *
               0x02
             ),
@@ -357,11 +359,63 @@ float z_io_proc_frame_value_get(
         note->time -
         index_frame
       );
-
-      cer0_synthesizer_frequency_play(
-        &track_lane->synthesizer,
-        note->value
-      );
+      
+      switch (
+        track_lane->type
+      ) {
+        case z_track_lane_type_chords:
+        case z_track_lane_type_rhythm_chords: {
+          track_lane->synthesizer.index_attack_sustain_decay_release = (
+            0x00
+          );
+        
+          for (
+            unsigned char index_oscillator = (
+              0x00
+            );
+            (
+              index_oscillator <
+              track_lane->synthesizer.length_oscillators
+            );
+            ++index_oscillator
+          ) {
+            cer0_synthesizer_oscillator_frequency_set(
+              &track_lane->synthesizer,
+              index_oscillator,
+              z_track->note_table[
+                (
+                  note->value +
+                  (
+                    (
+                      index_oscillator +
+                      (
+                        track_lane->index_note +
+                        0x01
+                      )
+                    ) %
+                    0x04 +
+                    0x01
+                  ) *
+                  0x02
+                ) %
+                z_track->length_note_table
+              ]
+            );
+          }
+          
+          break;
+        }
+        default: {
+          cer0_synthesizer_frequency_play(
+            &track_lane->synthesizer,
+            z_track->note_table[
+              note->value
+            ]
+          );
+          
+          break;
+        }
+      }
     }
 
     value = (
@@ -372,11 +426,34 @@ float z_io_proc_frame_value_get(
       note->amplitude
     );
   }
-
-  return (
+  
+  value = (
     value /
     (float)
     z_track->length_lanes
+  );
+  
+  for (
+    unsigned char index_effect = (
+      0x00
+    );
+    (
+      index_effect <
+      z_track->length_effects
+    );
+    ++index_effect
+  ) {
+    cer0_effect_poll(
+      &z_track->effects[
+        index_effect
+      ],
+      0x00,
+      value
+    );
+  }
+
+  return (
+    value
   );
 }
 

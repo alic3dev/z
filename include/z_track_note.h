@@ -6,7 +6,7 @@
 struct z_track_note {
   float amplitude;
   float time;
-  float value;
+  unsigned int value;
 
   struct cer0_attack_sustain_decay_release_parameters attack_sustain_decay_release_parameters;
 };

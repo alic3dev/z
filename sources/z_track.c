@@ -281,6 +281,26 @@ void z_track_generate(
     &track->rand_result,
     &track->rand_parameters
   );
+  
+  track->length_effects = (
+    0x01
+  );
+  
+  track->effects = (
+    clic3_memory_allocate_raw(
+      sizeof(
+        struct cer0_effect
+      ) *
+      track->length_effects
+    )
+  );
+  
+  cer0_effect_bit_crush_initialize(
+    &track->effects[
+      0x00
+    ],
+    0x01
+  );
 
   for (
     unsigned char index_track_name = (
@@ -497,6 +517,15 @@ void z_track_generate(
           0x00
         ]
       );
+    } else if (
+      index_lane ==
+      0x01
+    ) {
+      track_lane->type = (
+        z_track_parameters->types[
+          0x01
+        ]
+      );
     } else {
       track_lane->type = (
         z_track_parameters->types[
@@ -507,10 +536,10 @@ void z_track_generate(
              ] %
              (
                z_track_parameters->length_types -
-               0x01
+               0x02
              )
            ) +
-           0x01
+           0x02
          ) %
          z_track_parameters->length_types
        ]
@@ -522,27 +551,130 @@ void z_track_generate(
       sample_rate
     );
     
-    struct cer0_effect* effect_bit_crush = (
-      cer0_synthesizer_effect_add(
-        &track_lane->synthesizer
+    if (
+      (
+        track_lane->type ==
+        z_track_lane_type_notes
+      ) ||
+      (
+        track_lane->type ==
+        z_track_lane_type_rhythm_notes
       )
-    );
+    ) {
+      if (
+        track->rand_result.bytes[
+          0x10
+        ] >
+        0x80
+      ) {
+        struct cer0_effect* effect_delay = (
+          cer0_synthesizer_effect_add(
+            &track_lane->synthesizer
+          )
+        );
+        
+        cer0_effect_delay_initialize(
+          effect_delay
+        );
+        
+        cer0_effect_delay_length_frames_buffer_set(
+          effect_delay,
+          (
+            sixtenth_beat *
+            (
+              (
+                track->rand_result.bytes[
+                  0x13
+                ] %
+                0x05
+              ) *
+              0x02 +
+              0x01
+            ) *
+            (
+              sample_rate /
+              0x0258
+            ) 
+          )
+        );
+        
+        struct cer0_effect_delay_data* effect_delay_data = (
+          effect_delay->data
+        );
+        
+        effect_delay_data->decay = (
+          (float)
+          track->rand_result.bytes[
+            0x15
+          ] /
+          0xff /
+          0x02 +
+          0.5f
+        );
+        
+        effect_delay->mix = (
+          0.25f
+        );
+      }
+      
+      if (
+        track->rand_result.bytes[
+          0x12
+        ] >
+        0x20
+      ) {
+        struct cer0_effect* effect_delay = (
+          cer0_synthesizer_effect_add(
+            &track_lane->synthesizer
+          )
+        );
+        
+        cer0_effect_delay_initialize(
+          effect_delay
+        );
+        
+        cer0_effect_delay_length_frames_buffer_set(
+          effect_delay,
+          (
+            sixtenth_beat *
+            (
+              (
+                track->rand_result.bytes[
+                  0x13
+                ] %
+                0x05
+              ) +
+              0x01
+            ) *
+            0x02 *
+            (
+              sample_rate /
+              0x0258
+            ) 
+          )
+        );
+        
+        struct cer0_effect_delay_data* effect_delay_data = (
+          effect_delay->data
+        );
+        
+        effect_delay_data->decay = (
+          (float)
+          track->rand_result.bytes[
+            0x15
+          ] /
+          0xff /
+          0x04 +
+          0.25f
+        );
+      }
+    }
     
-    cer0_effect_bit_crush_initialize(
-      effect_bit_crush,
-      0x04
-    );
-    
-    cer0_effect_bit_crush_mode_set(
-      effect_bit_crush,
-      cer0_effect_bit_crush_mode_value
-    );
-
     unsigned char count_oscillators = (
       track->rand_result.bytes[
         0x00
       ] %
-      0x04 +
+      0x06 +
       0x01
     );
 
@@ -602,6 +734,21 @@ void z_track_generate(
             z_track_parameters_length_signals_default
           ]
         );
+        
+        if (
+          (
+            track_lane->type ==
+            z_track_lane_type_notes
+          )||
+          (
+            track_lane->type ==
+            z_track_lane_type_rhythm_notes
+          )
+        ) {
+          track_lane->synthesizer.amplitude = (
+            0.25f
+          );  
+        }
       }
 
       cer0_synthesizer_oscillator_add(
@@ -654,21 +801,8 @@ void z_track_generate(
       &track->rand_parameters
     );
 
-    unsigned char speed = (
-      (
-        track_lane->type ==
-        z_track_lane_type_bass
-      )
-      ? 0x00
-      : (
-        (
-          index_lane
-        ) %
-        0x03 +
-        0x01
-      )
-    );
-
+    unsigned char speed;
+    
     struct z_track_note* notes = (
       track_lane->notes
     );
@@ -688,6 +822,57 @@ void z_track_generate(
         &track->rand_result,
         &track->rand_parameters
       );
+      
+      switch (
+        track_lane->type
+      ) {
+        case z_track_lane_type_bass: {
+          speed = (
+            0x00
+          );
+        
+          break;
+        }
+        case z_track_lane_type_rhythm_chords:
+        case z_track_lane_type_rhythm_notes: {
+          speed = (
+            (
+              index_lane *
+              (
+                index_note +
+                index_lane +
+                0x01
+              )
+            ) %
+            0x03
+          );        
+          break;
+        }
+        default: {
+          speed = (
+            (
+              0x02 -
+              (
+                (
+                  index_lane +
+                  index_note +
+                  track->rand_result.bytes[
+                    (
+                      index_lane +
+                      index_note
+                    ) %
+                    0x10
+                  ]
+                ) %
+                0x03
+              )
+            ) +
+            0x02
+          );
+          
+          break;
+        }
+      }
 
       struct z_track_note* note = &(
         notes[
@@ -874,11 +1059,11 @@ void z_track_generate(
                 track->rand_result.bytes[
                   0x03
                 ] %
-                0x05
+                0x02
               ) +
-              0x04
+              0x01
             ) *
-            half_beat
+            whole_beat
           );
 
           break;
@@ -891,11 +1076,11 @@ void z_track_generate(
                 track->rand_result.bytes[
                   0x03
                 ] %
-                0x09
+                0x05
               ) +
-              0x02
+              0x01
             ) *
-            quarter_beat
+            half_beat
           );
 
           break;
@@ -906,18 +1091,18 @@ void z_track_generate(
             (
               (
                 track->rand_result.bytes[
-                  0x03
+                  0x09
                 ] %
-                0x0f
+                0x05
               ) +
-              0x02
+              0x01
             ) *
-            eigth_beat
+            quarter_beat
           );
 
           break;
         }
-        case 3: {
+        case 0x03: {
           length_note = (
             (float)
             (
@@ -925,9 +1110,27 @@ void z_track_generate(
                 track->rand_result.bytes[
                   0x03
                 ] %
-                0x20
+                0x05
               ) +
-              0x03
+              0x01
+            ) *
+            eigth_beat
+          );
+
+          break;
+        }
+        case 0x04:
+        default: {
+          length_note = (
+            (float)
+            (
+              (
+                track->rand_result.bytes[
+                  0x03
+                ] %
+                0x05
+              ) +
+              0x01
             ) *
             sixtenth_beat
           );
@@ -935,18 +1138,6 @@ void z_track_generate(
           break;
         }
       }
-
-      length_note = (
-        length_note *
-        (
-          (
-            track_lane->type ==
-            z_track_lane_type_notes
-          )
-          ? 0.2f
-          : 0x01
-        )
-      );
 
       if (
         index_note >
@@ -1075,10 +1266,8 @@ void z_track_generate(
         );
 
         value_note = (
-          track->note_table[
-            position_note_table %
-            track->length_note_table
-          ]
+          position_note_table %
+          track->length_note_table
         );
       }
 
@@ -1107,9 +1296,11 @@ void z_track_generate(
 
     cer0_synthesizer_frequency_play(
       &track_lane->synthesizer,
-      notes[
-        0x00
-      ].value
+      track->note_table[
+        notes[
+          0x00
+        ].value
+      ]
     );
   }
 }
@@ -1156,6 +1347,27 @@ void z_track_destroy(
       ].notes
     );
   }
+  
+  for (
+    unsigned char index_effect = (
+      0x00
+    );
+    (
+      index_effect <
+      track->length_effects
+    );
+    ++index_effect
+  ) {
+    cer0_effect_destroy(
+      &track->effects[
+        index_effect
+      ]
+    );
+  }
+  
+  clic3_memory_free_raw(
+    track->effects
+  );
 
   clic3_memory_free_raw(
     track->lanes

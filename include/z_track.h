@@ -4,6 +4,8 @@
 #include <z_track_lane.h>
 #include <z_track_parameters.h>
 
+#include <cer0_effect.h>
+
 #include <rand_result.h>
 #include <rand_source.h>
 #include <rand_source_divisive_data.h>
@@ -35,6 +37,9 @@ struct z_track {
   struct rand_parameters rand_parameters;
   struct rand_result rand_result;
   struct rand_source rand_source;
+  
+  struct cer0_effect* effects;
+  unsigned char length_effects;
 };
 
 void z_track_generate(
