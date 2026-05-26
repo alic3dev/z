@@ -516,7 +516,8 @@ void z_track_generate(
          z_track_parameters->length_types
        ]
      );
-   }
+    }
+   
     cer0_synthesizer_initialize(
       &track_lane->synthesizer,
       sample_rate

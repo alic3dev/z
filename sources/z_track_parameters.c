@@ -38,6 +38,7 @@ const unsigned char z_track_parameters_signals_defaults[
   sine,
   sine
 };
+
 const unsigned char z_track_parameters_types_defaults[
   z_track_parameters_length_types_default
 ] = {
@@ -205,7 +206,8 @@ void z_track_parameters_initialize_defaults(
       ]
     );
   }
-    for (
+  
+  for (
     unsigned char index_type = (
       0x00
     );
@@ -220,7 +222,7 @@ void z_track_parameters_initialize_defaults(
     ] = (
       z_track_parameters_types_defaults[
         index_type %
-        z_track_lane_types_length
+        z_track_parameters_length_types_default
       ]
     );
   }
