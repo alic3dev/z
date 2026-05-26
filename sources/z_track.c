@@ -35,7 +35,7 @@ void z_track_generate(
     &track->rand_parameters,
     &track->rand_result,
     &track->rand_source,
-    0xff,
+    0x1f,
     rand_mode_bytes,
     rand_source_type_divisive
   );
@@ -81,10 +81,9 @@ void z_track_generate(
   );
 
   track->length_char_array_seed = (
-    rand_source_divisive_data->length_seed +
-    rand_source_divisive_data->length_seed
+    rand_source_divisive_data->length_seed *
+    0x02
   );
-
   track->char_array_seed = (
     clic3_memory_allocate_raw(
       track->length_char_array_seed +
@@ -1024,7 +1023,8 @@ void z_track_generate(
           );
         } else if (
           (
-            track_lane->type ==            z_track_lane_type_rhythm_chords
+            track_lane->type ==
+            z_track_lane_type_rhythm_chords
           ) ||
           (
             track_lane->type ==

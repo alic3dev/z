@@ -25,7 +25,7 @@ struct z_track_parameters {
   char octave_minimum;
   char octave_maximum;
 
-  int* signals;
+  char* signals;
   unsigned char length_signals;
   
   unsigned char* types;
