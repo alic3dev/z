@@ -84,6 +84,7 @@ void z_track_generate(
     rand_source_divisive_data->length_seed *
     0x02
   );
+  
   track->char_array_seed = (
     clic3_memory_allocate_raw(
       track->length_char_array_seed +
@@ -283,7 +284,7 @@ void z_track_generate(
   );
 
   track->length_effects = (
-    0x01
+    0x02
   );
 
   track->effects = (
@@ -308,6 +309,23 @@ void z_track_generate(
     ],
     cer0_effect_bit_crush_mode_value
   );
+  
+  cer0_effect_delay_initialize(&track->effects[      0x01
+    ]
+  );
+  
+  cer0_effect_delay_length_frames_buffer_set(&track->effects[      0x01
+    ],
+        0x10
+        );
+
+        struct cer0_effect_delay_data* effect_delay_data = (
+          track->effects[0x01].data
+        );
+
+        effect_delay_data->decay = (
+          0.99f
+        );
 
   for (
     unsigned char index_track_name = (

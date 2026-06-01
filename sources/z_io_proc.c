@@ -217,26 +217,26 @@ int z_io_proc(
           math_c_bound_float(
             (
               buffer_out_channel_zero_value /
-              0x08
+              0x10
             ),
             0.5f,
             -0.5f
           )
         );
 
-        /*buffer_out_channel_zero_value = (
+        buffer_out_channel_zero_value = (
           math_c_modulus_mirror_float(
             (
               (
                 buffer_out_channel_zero_value +
                 0x01
               ) *
-              0x02
+              1.25f
             ),
             0x02
           ) -
           0x01
-        );*/
+        );
 
         buffer_out[
           index_buffer_out
