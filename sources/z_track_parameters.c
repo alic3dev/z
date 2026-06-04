@@ -11,9 +11,9 @@
 const unsigned char* z_track_parameters_scales_defaults[
   z_track_parameters_length_scales_default
 ] = {
-  cer0_scale_notes_major_pentatonic,
-  cer0_scale_notes_harmonic_major,
-  cer0_scale_notes_harmonic_major,
+  cer0_scale_notes_minor_pentatonic,
+  cer0_scale_notes_minor_pentatonic,
+  cer0_scale_notes_harmonic_minor,
   cer0_scale_notes_harmonic_major,
   cer0_scale_notes_major_pentatonic
 };
@@ -21,9 +21,9 @@ const unsigned char* z_track_parameters_scales_defaults[
 unsigned char z_track_parameters_scales_lengths_defaults[
   z_track_parameters_length_scales_default
 ] = {
-  cer0_scale_length_major_pentatonic,
-  cer0_scale_length_harmonic_major,
-  cer0_scale_length_harmonic_major,
+  cer0_scale_length_minor_pentatonic,
+  cer0_scale_length_minor_pentatonic,
+  cer0_scale_length_harmonic_minor,
   cer0_scale_length_harmonic_major,
   cer0_scale_length_major_pentatonic
 };
@@ -31,19 +31,19 @@ unsigned char z_track_parameters_scales_lengths_defaults[
 const unsigned char z_track_parameters_signals_defaults[
   z_track_parameters_length_signals_default
 ] = {
-  square,
-  square,
-  square,
-  square,
-  square,
-  square
+  sine,
+  sine,
+  sine_alice,
+  sine,
+  sine_alice,
+  sine_alice
 };
 
 const unsigned char z_track_parameters_types_defaults[
   z_track_parameters_length_types_default
 ] = {
   z_track_lane_type_bass,
-  z_track_lane_type_notes,
+  z_track_lane_type_bass,
   z_track_lane_type_notes,
   z_track_lane_type_notes,
   z_track_lane_type_notes
@@ -57,22 +57,22 @@ const struct z_track_parameters z_track_parameters_defaults = {
     0x00
   ),
   .length_scales = (
-    z_track_parameters_length_scales_default
+    0x01//z_track_parameters_length_scales_default
   ),
   .track_length_lanes_minimum = (
-    0x40
+    0x05
   ),
   .track_length_lanes_maximum = (
-    0x40
+    0x05
   ),
   .frequency_root = (
-    cer0_frequency_root_standard
+    cer0_frequency_root_scientific
   ),
   .octave_minimum = (
-    0x00
+    0x01
   ),
   .octave_maximum = (
-    0x0a
+    0x05
   ),
   .signals = (
     0x00
@@ -90,7 +90,7 @@ const struct z_track_parameters z_track_parameters_defaults = {
     8.0f
   ),
   .track_bpm_minimum = (
-    0x10
+    0x08
   ),
   .track_bpm_maximum = (
     0x10
@@ -236,10 +236,18 @@ void z_track_parameters_initialize_defaults(
   );
 
   z_track_parameters->attack_sustain_decay_release_parameters_minimum.attack = (
-    0.0f
+    0.05f
   );
 
   z_track_parameters->attack_sustain_decay_release_parameters_maximum.attack = (
+    0.1f
+  );
+
+  z_track_parameters->attack_sustain_decay_release_parameters_minimum.release = (
+    0.05f
+  );
+
+  z_track_parameters->attack_sustain_decay_release_parameters_maximum.release = (
     0.1f
   );
 }
