@@ -442,12 +442,14 @@ float z_io_proc_frame_value_get(
     );
     ++index_effect
   ) {
-    cer0_effect_poll(
-      &z_track->effects[
-        index_effect
-      ],
-      0x00,
-      value
+    value = (
+      cer0_effect_poll(
+        &z_track->effects[
+          index_effect
+        ],
+        0x00,
+        value
+      )
     );
   }
 
