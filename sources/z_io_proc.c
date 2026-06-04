@@ -212,7 +212,7 @@ int z_io_proc(
           ]
         );
 
-        pan = (
+        /*pan = (
           0.5f +
           math_c_bound_float(
             (
@@ -222,21 +222,21 @@ int z_io_proc(
             0.5f,
             -0.5f
           )
-        );
+        );*/
 
-        buffer_out_channel_zero_value = (
+        /*buffer_out_channel_zero_value = (
           math_c_modulus_mirror_float(
             (
               (
                 buffer_out_channel_zero_value +
                 0x01
               ) *
-              1.25f
+              1.0f
             ),
             0x02
           ) -
           0x01
-        );
+        );*/
 
         buffer_out[
           index_buffer_out
