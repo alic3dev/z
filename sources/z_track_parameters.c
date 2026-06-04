@@ -11,7 +11,7 @@
 const unsigned char* z_track_parameters_scales_defaults[
   z_track_parameters_length_scales_default
 ] = {
-  cer0_scale_notes_minor_pentatonic,
+  cer0_scale_notes_major_pentatonic,
   cer0_scale_notes_minor_pentatonic,
   cer0_scale_notes_harmonic_minor,
   cer0_scale_notes_harmonic_major,
@@ -21,7 +21,7 @@ const unsigned char* z_track_parameters_scales_defaults[
 unsigned char z_track_parameters_scales_lengths_defaults[
   z_track_parameters_length_scales_default
 ] = {
-  cer0_scale_length_minor_pentatonic,
+  cer0_scale_length_major_pentatonic,
   cer0_scale_length_minor_pentatonic,
   cer0_scale_length_harmonic_minor,
   cer0_scale_length_harmonic_major,
@@ -31,22 +31,22 @@ unsigned char z_track_parameters_scales_lengths_defaults[
 const unsigned char z_track_parameters_signals_defaults[
   z_track_parameters_length_signals_default
 ] = {
-  sine,
-  sine,
-  sine_alice,
-  sine,
-  sine_alice,
-  sine_alice
+  square,
+  square,
+  square,
+  square,
+  square,
+  square
 };
 
 const unsigned char z_track_parameters_types_defaults[
   z_track_parameters_length_types_default
 ] = {
   z_track_lane_type_bass,
-  z_track_lane_type_bass,
   z_track_lane_type_notes,
   z_track_lane_type_notes,
-  z_track_lane_type_notes
+  z_track_lane_type_notes,
+  z_track_lane_type_chords
 };
 
 const struct z_track_parameters z_track_parameters_defaults = {
@@ -57,13 +57,13 @@ const struct z_track_parameters z_track_parameters_defaults = {
     0x00
   ),
   .length_scales = (
-    0x01//z_track_parameters_length_scales_default
+    0x01
   ),
   .track_length_lanes_minimum = (
-    0x05
+    0x0a
   ),
   .track_length_lanes_maximum = (
-    0x05
+    0x40
   ),
   .frequency_root = (
     cer0_frequency_root_scientific
@@ -72,7 +72,7 @@ const struct z_track_parameters z_track_parameters_defaults = {
     0x01
   ),
   .octave_maximum = (
-    0x05
+    0x01
   ),
   .signals = (
     0x00
@@ -87,13 +87,13 @@ const struct z_track_parameters z_track_parameters_defaults = {
     z_track_parameters_length_types_default
   ),
   .track_length_multiplier = (
-    8.0f
+    16.0f
   ),
   .track_bpm_minimum = (
-    0x08
+    0x02
   ),
   .track_bpm_maximum = (
-    0x10
+    0xff
   ),
   .oscillator_amplitude_minimum = (
     0.825f

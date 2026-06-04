@@ -284,7 +284,7 @@ void z_track_generate(
   );
 
   track->length_effects = (
-    0x03
+    0x07
   );
 
   track->effects = (
@@ -298,51 +298,43 @@ void z_track_generate(
 
   cer0_effect_bit_crush_initialize(
     &track->effects[
-      0x01
+      0x02
     ],
-    0x01
+    0x08
   );
   
   track->effects[
-      0x01
-    ].mix = (
-      0.0f
-    );
-
-  cer0_effect_bit_crush_mode_set(
-    &track->effects[
-      0x01
-    ],
-    cer0_effect_bit_crush_mode_value
-  );
-  
-  cer0_effect_delay_initialize(
-    &track->effects[
       0x02
+    ].mix = (
+      0.25f
+    );
+        cer0_effect_delay_initialize(
+    &track->effects[
+      0x01
     ]
   );
   
   track->effects[
-    0x02
+    0x01
   ].mix = (
-    0.75f
+    0.25f
   );
   
   cer0_effect_delay_length_frames_buffer_set(
     &track->effects[
-      0x02
+      0x01
     ],
-    0x10
+    0x1010
   );
 
   struct cer0_effect_delay_data* effect_delay_data = (
     track->effects[
-      0x02
+      0x01
     ].data
   );
 
   effect_delay_data->decay = (
-    0.75f
+    0.6969f
   );
   
   cer0_effect_distortion_initialize(
@@ -359,8 +351,69 @@ void z_track_generate(
     0.006f
   );
   
-  track->effects[0x00].mix = (0.0125f);
+  track->effects[0x00].mix = (0.125f);
+  
+  cer0_effect_delay_initialize(
+    &track->effects[
+      0x03
+    ]
+  );
+ 
+  for (
+    unsigned char u = 0;
+    u < 0x03;
+    ++u
+  ) {
+  cer0_effect_delay_initialize(
+    &track->effects[
+      0x03 + u
+    ]
+  );
+  
+  track->effects[
+    0x03 + u
+  ].mix = (
+    0.25f + (u * 0.25f)
+  );
+  
+  cer0_effect_delay_length_frames_buffer_set(
+    &track->effects[
+      0x03 + u
+    ],
+    0xff10 * (u + 1)
+  );
 
+  struct cer0_effect_delay_data* effect_delay_da3ta = (
+    track->effects[
+      0x03 + u
+    ].data
+  );
+
+  effect_delay_da3ta->decay = (
+    0.3f * ( u + 1)
+  );
+  }
+  
+  cer0_effect_bit_crush_initialize(
+    &track->effects[
+      0x06
+    ],
+    0x08
+  );
+  
+  track->effects[
+      0x06
+    ].mix = (
+      1.0f
+    );
+
+  cer0_effect_bit_crush_mode_set(
+    &track->effects[
+      0x06
+    ],
+    cer0_effect_bit_crush_mode_bits
+  );
+  
   for (
     unsigned char index_track_name = (
       0x00
@@ -425,9 +478,8 @@ void z_track_generate(
       }
     }
   }
-
-  track->name[
-    length_track_name -
+  
+  track->name[    length_track_name -
     0x01
   ] = (
     '\0'

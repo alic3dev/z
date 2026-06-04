@@ -11,10 +11,13 @@
 
 #include <cer0_synthesizer.h>
 
+#include <math_c_absolute.h>
 #include <math_c_bound.h>
 #include <math_c_maximum.h>
 #include <math_c_minimum.h>
 #include <math_c_modulus.h>
+#include <math_c_pi.h>
+#include <math_c_sine.h>
 
 #include <pthread.h>
 
@@ -217,26 +220,21 @@ int z_io_proc(
           math_c_bound_float(
             (
               buffer_out_channel_zero_value /
-              0x10
+              0x04
             ),
             0.5f,
             -0.5f
           )
         );*/
 
-        /*buffer_out_channel_zero_value = (
-          math_c_modulus_mirror_float(
-            (
-              (
-                buffer_out_channel_zero_value +
-                0x01
-              ) *
-              1.0f
-            ),
-            0x02
-          ) -
-          0x01
-        );*/
+        buffer_out_channel_zero_value = (
+          buffer_out_channel_zero_value *
+          (            math_c_absolute_float(math_c_sine((float) z_io_proc_data->frame / (((0x3c / 0x01) / z_queue->track_current->bpm * 0x03e8) * (        *z_io_proc_data->rate_sample /
+        0x0258
+      ) * 0x20)  * math_c_pi, math_c_pi)) *
+          0.75f +
+          0.25f)
+        );
 
         buffer_out[
           index_buffer_out
@@ -451,6 +449,14 @@ float z_io_proc_frame_value_get(
         value
       )
     );
+    
+    /*value = (
+      math_c_bound_float(
+        value,
+        0x01,
+        -0x01
+      )    );*/
+        
   }
 
   return (
