@@ -229,11 +229,29 @@ int z_io_proc(
 
         buffer_out_channel_zero_value = (
           buffer_out_channel_zero_value *
-          (            math_c_absolute_float(math_c_sine((float) z_io_proc_data->frame / (((0x3c / 0x01) / z_queue->track_current->bpm * 0x03e8) * (        *z_io_proc_data->rate_sample /
-        0x0258
-      ) * 0x20)  * math_c_pi, math_c_pi)) *
-          0.75f +
-          0.25f)
+          (
+            math_c_absolute_float(
+              math_c_sine(
+                (float) z_io_proc_data->frame /
+                (
+                  (
+                    0x3c /
+                    z_queue->track_current->bpm *
+                    0x03e8
+                  ) *
+                  (
+                    *z_io_proc_data->rate_sample /
+                    0x0258
+                  ) *
+                  0x20
+                )  *
+                math_c_pi,
+                math_c_pi
+              )
+            ) *
+            0.75f +
+            0.25f
+          )
         );
 
         buffer_out[
@@ -277,6 +295,10 @@ float z_io_proc_frame_value_get(
   float rate_sample
 ) {
   float value = (
+    0x00
+  );
+
+  float value_last = (
     0x00
   );
 
@@ -415,17 +437,39 @@ float z_io_proc_frame_value_get(
       }
     }
 
-    value = (
-      value +
-      cer0_synthesizer_poll(
-        &track_lane->synthesizer
-      ) *
-      note->amplitude
-    );
+    if (
+      index_lane ==
+      (
+        z_track->length_lanes -
+        0x01
+      )
+    ) {
+      value_last = (
+        value_last +
+        cer0_synthesizer_poll(
+          &track_lane->synthesizer
+        ) *
+        note->amplitude
+      );
+    } else {
+      value = (
+        value +
+        cer0_synthesizer_poll(
+          &track_lane->synthesizer
+        ) *
+        note->amplitude
+      );
+    }
   }
 
   value = (
     value /
+    (float)
+    z_track->length_lanes
+  );
+
+  value_last = (
+    value_last /
     (float)
     z_track->length_lanes
   );
@@ -449,18 +493,11 @@ float z_io_proc_frame_value_get(
         value
       )
     );
-    
-    /*value = (
-      math_c_bound_float(
-        value,
-        0x01,
-        -0x01
-      )    );*/
-        
   }
 
   return (
-    value
+    value +
+    value_last
   );
 }
 

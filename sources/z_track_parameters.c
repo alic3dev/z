@@ -63,7 +63,7 @@ const struct z_track_parameters z_track_parameters_defaults = {
     0x0a
   ),
   .track_length_lanes_maximum = (
-    0x40
+    0x0a
   ),
   .frequency_root = (
     cer0_frequency_root_scientific
@@ -87,7 +87,7 @@ const struct z_track_parameters z_track_parameters_defaults = {
     z_track_parameters_length_types_default
   ),
   .track_length_multiplier = (
-    16.0f
+    0x10
   ),
   .track_bpm_minimum = (
     0x02
@@ -99,13 +99,13 @@ const struct z_track_parameters z_track_parameters_defaults = {
     0.825f
   ),
   .oscillator_amplitude_maximum = (
-    1.0f
+    0x01
   ),
   .note_amplitude_minimum = (
     0.125f
   ),
   .note_amplitude_maximum = (
-    1.0f
+    0x01
   )
 };
 
