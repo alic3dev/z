@@ -306,7 +306,7 @@ void z_track_generate(
   track->effects[
       0x02
     ].mix = (
-      0.25f
+      1.0f
     );
         cer0_effect_delay_initialize(
     &track->effects[
@@ -317,7 +317,7 @@ void z_track_generate(
   track->effects[
     0x01
   ].mix = (
-    0.25f
+    0.125f
   );
 
   cer0_effect_delay_length_frames_buffer_set(
@@ -351,7 +351,7 @@ void z_track_generate(
     0.006f
   );
 
-  track->effects[0x00].mix = (0.125f);
+  track->effects[0x00].mix = (0.0f);
 
   cer0_effect_delay_initialize(
     &track->effects[
@@ -373,7 +373,7 @@ void z_track_generate(
   track->effects[
     0x03 + u
   ].mix = (
-    0.25f + (u * 0.25f)
+    0.0f + (u * 0.0125f)
   );
 
   cer0_effect_delay_length_frames_buffer_set(
