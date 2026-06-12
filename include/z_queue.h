@@ -1,6 +1,7 @@
 #ifndef __z_queue_h
 #define __z_queue_h
 
+#include <z_event.h>
 #include <z_track.h>
 #include <z_track_parameters.h>
 #include <z_queue_status.h>
@@ -14,6 +15,8 @@ struct z_queue {
   struct z_track* track_upcoming;
 
   struct z_track_parameters* track_parameters;
+  
+  struct z_event_store event_store;
 
   enum z_queue_status status;
 

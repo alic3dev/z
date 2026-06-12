@@ -19,7 +19,7 @@ struct z_io_proc_data {
 
   struct z_queue queue;
 
-  struct z_track_parameters* track_parameters;
+  struct z_track_parameters track_parameters;
 
   pthread_mutex_t mutex_exited;
   pthread_mutex_t mutex_playing;
@@ -31,8 +31,11 @@ struct z_io_proc_data {
 
 void z_io_proc_data_initialize(
   struct z_io_proc_data*,
-  struct z_track_parameters*,
   float*
+);
+
+void z_io_proc_data_destroy(
+  struct z_io_proc_data*
 );
 
 #endif

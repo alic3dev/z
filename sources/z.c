@@ -125,10 +125,9 @@ int main(
     &z_close_exit_data.mutex_initializer
   );
 
-  static struct cer0_audio_output audio_output;
-  static struct z_display_thread_data z_display_thread_data;
-  static struct z_io_proc_data z_io_proc_data;
-  static struct z_track_parameters z_track_parameters;
+  struct cer0_audio_output audio_output;
+  struct z_display_thread_data z_display_thread_data;
+  struct z_io_proc_data z_io_proc_data;
 
   interrupt_handler_initialize();
 
@@ -137,17 +136,10 @@ int main(
     &z_close_exit_data
   );
 
-  z_track_parameters_initialize_defaults(
-    &z_track_parameters
-  );
-
   z_io_proc_data_initialize(
     &z_io_proc_data,
-    &z_track_parameters,
     &audio_output.sample_rate
   );
-
-  z_event_initialize();
 
   z_display_thread_initialize(
     &z_display_thread_data,
@@ -205,8 +197,6 @@ int main(
     &z_io_proc_data.mutex_playing
   );
 
-  z_event_destroy();
-
   z_display_thread_destroy(
     &z_display_thread_data
   );
@@ -219,9 +209,9 @@ int main(
       &z_io_proc_data.queue
     );
   }
-
-  z_track_parameters_destroy(
-    &z_track_parameters
+  
+  z_io_proc_data_destroy(
+    &z_io_proc_data
   );
 
   return (

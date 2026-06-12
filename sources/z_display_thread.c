@@ -208,6 +208,10 @@ void z_display_thread_initialize(
   z_display_thread_data->destroying = (
     0x00
   );
+  
+  z_display_thread_data->queue = (
+    z_queue
+  );
 
   pthread_create(
     &z_display_thread_data->thread,
@@ -217,6 +221,7 @@ void z_display_thread_initialize(
   );
 
   z_event_on_with_data(
+    &z_display_thread_data->queue->event_store,
     z_display_thread_render_event,
     z_event_type_track_update,
     z_display_thread_data

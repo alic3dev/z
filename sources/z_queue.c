@@ -86,6 +86,7 @@ void z_queue_track_next(
   );
 
   z_event_trigger(
+    &z_queue->event_store,
     z_event_type_track_pregeneration,
     z_queue
   );
@@ -97,6 +98,7 @@ void z_queue_track_next(
   );
 
   z_event_trigger(
+    &z_queue->event_store,
     z_event_type_track_update,
     z_queue
   );
@@ -123,5 +125,9 @@ void z_queue_destroy(
 
   clic3_memory_free_raw(
     z_queue->track_upcoming
+  );
+  
+  z_event_destroy(
+    &z_queue->event_store
   );
 }

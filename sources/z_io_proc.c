@@ -33,7 +33,7 @@ void* z_io_proc_initializer(
 
   z_queue_initialize(
     &z_io_proc_data->queue,
-    z_io_proc_data->track_parameters,
+    &z_io_proc_data->track_parameters,
     z_io_proc_data->rate_sample
   );
 
@@ -275,6 +275,7 @@ int z_io_proc(
   }
 
   z_event_trigger(
+    &z_queue->event_store,
     z_event_type_track_update,
     z_queue
   );
@@ -475,7 +476,7 @@ float z_io_proc_frame_value_get(
   );
 
   for (
-    unsigned char index_effect = (
+    unsigned int index_effect = (
       0x00
     );
     (
