@@ -101,6 +101,9 @@ const struct z_track_parameters z_track_parameters_defaults = {
   .oscillator_amplitude_maximum = (
     0x01
   ),
+  .length_notes_multiplier = (
+    0x40
+  ),
   .note_amplitude_minimum = (
     0.125f
   ),

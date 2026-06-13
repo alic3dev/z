@@ -18,7 +18,7 @@ struct z_track {
 
   float progress;
 
-  unsigned char length_lanes;
+  unsigned int length_lanes;
   struct z_track_lane* lanes;
 
   float* note_table;

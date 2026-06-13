@@ -479,7 +479,8 @@ void z_track_generate(
     }
   }
 
-  track->name[    length_track_name -
+  track->name[
+    length_track_name -
     0x01
   ] = (
     '\0'
@@ -760,7 +761,8 @@ void z_track_generate(
                   0x13
                 ] %
                 0x05
-              ) /              0x05
+              ) /
+              0x05
             ) *
             0x01 +
             0x01
@@ -886,7 +888,7 @@ void z_track_generate(
         ) +
         0x08
       ) *
-      0x40
+      z_track_parameters->length_notes_multiplier
     );
 
     track_lane->notes = (
