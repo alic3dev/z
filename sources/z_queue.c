@@ -126,7 +126,7 @@ void z_queue_destroy(
   clic3_memory_free_raw(
     z_queue->track_upcoming
   );
-  
+
   z_event_destroy(
     &z_queue->event_store
   );

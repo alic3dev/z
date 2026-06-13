@@ -1399,6 +1399,10 @@ void z_track_generate(
       0x0258
     );
 
+    track_lane->index_note = (
+      0x00
+    );
+
     cer0_synthesizer_frequency_play(
       &track_lane->synthesizer,
       track->note_table[

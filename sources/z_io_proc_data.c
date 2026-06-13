@@ -41,11 +41,11 @@ void z_io_proc_data_initialize(
   pthread_mutex_lock(
     &z_io_proc_data->mutex_exited
   );
-  
+
   z_track_parameters_initialize_defaults(
     &z_io_proc_data->track_parameters
   );
-  
+
   z_event_initialize(
     &z_io_proc_data->queue.event_store
   );

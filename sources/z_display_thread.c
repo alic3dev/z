@@ -208,7 +208,7 @@ void z_display_thread_initialize(
   z_display_thread_data->destroying = (
     0x00
   );
-  
+
   z_display_thread_data->queue = (
     z_queue
   );

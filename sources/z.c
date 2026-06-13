@@ -209,7 +209,7 @@ int main(
       &z_io_proc_data.queue
     );
   }
-  
+
   z_io_proc_data_destroy(
     &z_io_proc_data
   );

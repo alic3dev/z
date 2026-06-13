@@ -15,7 +15,7 @@ struct z_queue {
   struct z_track* track_upcoming;
 
   struct z_track_parameters* track_parameters;
-  
+
   struct z_event_store event_store;
 
   enum z_queue_status status;
