@@ -55,7 +55,7 @@ make libraries
 
 - `debug=1`:adds->{`debugging_symbols`}:disables->{`optimizations`};
 - `target_device`:sets_the_target_device_platform->{values::[`mac`|`iphone`]}
-- `target_device_version`:sets_the_target_version.for->{`macos`|`metal`};
+- `target_device_version`:sets_the_target_device_version;
 
 ### clean
 
