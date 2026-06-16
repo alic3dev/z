@@ -126,46 +126,40 @@ jobs:
         if: ${{ env.enabled_caching == '1' && env.enabled_caching_cer0 == '1' && steps.cache_restore_cer0.outputs.cache-hit != 'true' }}
         uses: actions/cache/save@v5
         with:
-          path: |
-            cer0
+          path: cer0
           key: ${{ env.key_cache_cer0 }}
       - name: cache_save_clic3
         id: cache_save_clic3
         if: ${{ env.enabled_caching == '1' && env.enabled_caching_clic3 == '1' && steps.cache_restore_clic3.outputs.cache-hit != 'true' }}
         uses: actions/cache/save@v5
         with:
-          path: |
-            clic3
+          path: clic3
           key: ${{ env.key_cache_clic3 }}
       - name: cache_save_interrupt_handler
         id: cache_save_interrupt_handler
         if: ${{ env.enabled_caching == '1' && env.enabled_caching_interrupt_handler == '1' && steps.cache_restore_interrupt_handler.outputs.cache-hit != 'true' }}
         uses: actions/cache/save@v5
         with:
-          path: |
-            interrupt_handler
+          path: interrupt_handler
           key: ${{ env.key_cache_interrupt_handler }}
       - name: cache_save_math_c
         id: cache_save_math_c
         if: ${{ env.enabled_caching == '1' && env.enabled_caching_math_c == '1' && steps.cache_restore_math_c.outputs.cache-hit != 'true' }}
         uses: actions/cache/save@v5
         with:
-          path: |
-            math_c
+          path: math_c
           key: ${{ env.key_cache_math_c }}
       - name: cache_save_rand
         id: cache_save_rand
         if: ${{ env.enabled_caching == '1' && env.enabled_caching_rand == '1' && steps.cache_restore_rand.outputs.cache-hit != 'true' }}
         uses: actions/cache/save@v5
         with:
-          path: |
-            rand
+          path: rand
           key: ${{ env.key_cache_rand }}
       - name: cache_save_wave
         id: cache_save_wave
         if: ${{ env.enabled_caching == '1' && env.enabled_caching_wave == '1' && steps.cache_restore_wave.outputs.cache-hit != 'true' }}
         uses: actions/cache/save@v5
         with:
-          path: |
-            wave
+          path: wave
           key: ${{ env.key_cache_wave }}
