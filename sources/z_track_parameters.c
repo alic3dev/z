@@ -31,11 +31,11 @@ unsigned char z_track_parameters_scales_lengths_defaults[
 const unsigned char z_track_parameters_signals_defaults[
   z_track_parameters_length_signals_default
 ] = {
-  sine,
-  sine,
+  square,
   triangle,
-  sine,
-  sine,
+  triangle,
+  square,
+  sawtooth_down,
   triangle
 };
 
@@ -63,16 +63,16 @@ const struct z_track_parameters z_track_parameters_defaults = {
     0x03
   ),
   .track_length_lanes_maximum = (
-    0x04
+    0x07
   ),
   .frequency_root = (
-    cer0_frequency_root_magic
+    cer0_frequency_root_scientific
   ),
   .octave_minimum = (
     0x01
   ),
   .octave_maximum = (
-    0x05
+    0x09
   ),
   .signals = (
     0x00
@@ -90,10 +90,10 @@ const struct z_track_parameters z_track_parameters_defaults = {
     0x06
   ),
   .track_bpm_minimum = (
-    0x20
+    0x10
   ),
   .track_bpm_maximum = (
-    0x40
+    0x50
   ),
   .oscillator_amplitude_minimum = (
     0.825f

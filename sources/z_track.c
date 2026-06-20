@@ -351,7 +351,7 @@ void z_track_generate(
     0.006f
   );
 
-  track->effects[0x00].mix = (0.0f);
+  track->effects[0x00].mix = (0.01f);
 
   cer0_effect_delay_initialize(
     &track->effects[
@@ -373,7 +373,7 @@ void z_track_generate(
   track->effects[
     0x03 + u
   ].mix = (
-    0.0f + (u * 0.0125f)
+    0.1f + (u * 0.125f)
   );
 
   cer0_effect_delay_length_frames_buffer_set(
@@ -404,7 +404,7 @@ void z_track_generate(
   track->effects[
       0x06
     ].mix = (
-      1.0f
+      0.6f
     );
 
   cer0_effect_bit_crush_mode_set(
@@ -692,7 +692,7 @@ void z_track_generate(
         cer0_effect_delay_length_frames_buffer_set(
           effect_delay,
           (
-            sixtenth_beat *
+            sixtenth_beat /
             /*(float)
             (
 
@@ -725,7 +725,7 @@ void z_track_generate(
           ] /
           0xff *
           0.2f +
-          0.3f
+          0.7f
         );
 
         effect_delay->mix = (
@@ -767,7 +767,7 @@ void z_track_generate(
             0x01 +
             0x01
             )*/
-            0x09 *
+            0x03 *
             (
               sample_rate /
               0x0258
@@ -785,7 +785,7 @@ void z_track_generate(
             0x15
           ] /
           0xff *
-          0.2f +
+          0.5f +
           0.3f
         );      }
     }
