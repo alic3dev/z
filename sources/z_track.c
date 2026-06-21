@@ -833,13 +833,13 @@ void z_track_generate(
             )
             ? (
               z_track_parameters->signals[
-                z_track_parameters_length_signals_default -
+                z_track_parameters->length_signals -
                 0x02
               ]
             )
             : (
               z_track_parameters->signals[
-                z_track_parameters_length_signals_default -
+                z_track_parameters->length_signals -
                 0x01
               ]
             )
@@ -851,7 +851,7 @@ void z_track_generate(
             track->rand_result.bytes[
               0x01
             ] %
-            z_track_parameters_length_signals_default
+            z_track_parameters->length_signals
           ]
         );
       }
