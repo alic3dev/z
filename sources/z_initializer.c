@@ -82,10 +82,6 @@ void* z_initializer_thread(
     data
   );
 
-  cer0_signal_sine_alice(
-    333.333f
-  );
-
   pthread_mutex_unlock(
     mutex_initializer
   );

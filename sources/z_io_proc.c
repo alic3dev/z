@@ -215,18 +215,6 @@ int z_io_proc(
           ]
         );
 
-        /*pan = (
-          0.5f +
-          math_c_bound_float(
-            (
-              buffer_out_channel_zero_value /
-              0x04
-            ),
-            0.5f,
-            -0.5f
-          )
-        );*/
-
         buffer_out_channel_zero_value = (
           buffer_out_channel_zero_value *
           (
@@ -426,11 +414,30 @@ float z_io_proc_frame_value_get(
           break;
         }
         default: {
-          cer0_synthesizer_frequency_play(
-            &track_lane->synthesizer,
+          float frequency = (
             z_track->note_table[
               note->value
             ]
+          );
+        
+          for (
+            unsigned int i = 0;
+            i < track_lane->synthesizer.length_oscillators;
+            ++i
+          ) {
+            track_lane->synthesizer.oscillators[
+              i
+            ].offset_frequency = (
+              frequency /
+              0x64 /
+              0x04 *
+              i
+            );  
+          }
+        
+          cer0_synthesizer_frequency_play(
+            &track_lane->synthesizer,
+            frequency
           );
 
           break;

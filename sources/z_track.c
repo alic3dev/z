@@ -283,137 +283,6 @@ void z_track_generate(
     &track->rand_parameters
   );
 
-  track->length_effects = (
-    0x07
-  );
-
-  track->effects = (
-    clic3_memory_allocate_raw(
-      sizeof(
-        struct cer0_effect
-      ) *
-      track->length_effects
-    )
-  );
-
-  cer0_effect_bit_crush_initialize(
-    &track->effects[
-      0x02
-    ],
-    0x08
-  );
-
-  track->effects[
-      0x02
-    ].mix = (
-      1.0f
-    );
-        cer0_effect_delay_initialize(
-    &track->effects[
-      0x01
-    ]
-  );
-
-  track->effects[
-    0x01
-  ].mix = (
-    0.125f
-  );
-
-  cer0_effect_delay_length_frames_buffer_set(
-    &track->effects[
-      0x01
-    ],
-    0x1010
-  );
-
-  struct cer0_effect_delay_data* effect_delay_data = (
-    track->effects[
-      0x01
-    ].data
-  );
-
-  effect_delay_data->decay = (
-    0.6969f
-  );
-
-  cer0_effect_distortion_initialize(
-    &track->effects[
-      0x00
-    ]
-  );
-
-  struct cer0_effect_distortion_data* j = (
-    track->effects[0x00].data
-  );
-
-  j->noise = (
-    0.006f
-  );
-
-  track->effects[0x00].mix = (0.01f);
-
-  cer0_effect_delay_initialize(
-    &track->effects[
-      0x03
-    ]
-  );
-
-  for (
-    unsigned char u = 0;
-    u < 0x03;
-    ++u
-  ) {
-  cer0_effect_delay_initialize(
-    &track->effects[
-      0x03 + u
-    ]
-  );
-
-  track->effects[
-    0x03 + u
-  ].mix = (
-    0.1f + (u * 0.125f)
-  );
-
-  cer0_effect_delay_length_frames_buffer_set(
-    &track->effects[
-      0x03 + u
-    ],
-    0xff10 * (u + 1)
-  );
-
-  struct cer0_effect_delay_data* effect_delay_da3ta = (
-    track->effects[
-      0x03 + u
-    ].data
-  );
-
-  effect_delay_da3ta->decay = (
-    0.3f * ( u + 1)
-  );
-  }
-
-  cer0_effect_bit_crush_initialize(
-    &track->effects[
-      0x06
-    ],
-    0x08
-  );
-
-  track->effects[
-      0x06
-    ].mix = (
-      0.6f
-    );
-
-  cer0_effect_bit_crush_mode_set(
-    &track->effects[
-      0x06
-    ],
-    cer0_effect_bit_crush_mode_bits
-  );
-
   for (
     unsigned char index_track_name = (
       0x00
@@ -559,6 +428,67 @@ void z_track_generate(
     whole_beat /
     0x10
   );
+  
+  track->length_effects = (
+    0x03
+  );
+
+  track->effects = (
+    clic3_memory_allocate_raw(
+      sizeof(
+        struct cer0_effect
+      ) *
+      track->length_effects
+    )
+  );
+  
+  for (
+    unsigned char u = 0;
+    u < 0x03;
+    ++u
+  ) {
+    cer0_effect_delay_initialize(
+      &track->effects[
+         u
+      ]
+    );
+  
+    track->effects[
+       u
+    ].mix = (
+      0.3f + ((float) (0x02 - u) * 0.05f)
+    );
+  
+    cer0_effect_delay_length_frames_buffer_set(
+      &track->effects[
+        u
+      ],
+      (
+        sample_rate /
+        0x0258
+      ) * quarter_beat *
+      (float)
+      (
+        u +
+        0x01
+      )
+    );
+  
+    struct cer0_effect_delay_data* effect_delay_data = (
+      track->effects[
+         u
+      ].data
+    );
+  
+    effect_delay_data->decay = (
+      0.4f /
+      (float)
+      (
+        u +
+        0x01
+      )
+    );
+  }
 
   track->length = (
     (float)
@@ -692,21 +622,8 @@ void z_track_generate(
         cer0_effect_delay_length_frames_buffer_set(
           effect_delay,
           (
-            sixtenth_beat /
-            /*(float)
-            (
-
-              (float)              (
-                track->rand_result.bytes[
-                  0x13
-                ] %
-                0x05
-              ) /
-              0x05 *
-              0x04 +
-              0x01
-            )*/
-            0x02 *
+            sixtenth_beat *
+            0.4f *
             (
               sample_rate /
               0x0258
@@ -725,7 +642,7 @@ void z_track_generate(
           ] /
           0xff *
           0.2f +
-          0.7f
+          0.1f
         );
 
         effect_delay->mix = (
@@ -753,21 +670,7 @@ void z_track_generate(
           effect_delay,
           (
             sixtenth_beat *
-            /*((float)
-            (
-              (float)
-              (
-                track->rand_result.bytes[
-                  0x13
-                ] %
-                0x05
-              ) /
-              0x05
-            ) *
-            0x01 +
-            0x01
-            )*/
-            0x03 *
+            2.9f *
             (
               sample_rate /
               0x0258
@@ -785,9 +688,10 @@ void z_track_generate(
             0x15
           ] /
           0xff *
-          0.5f +
-          0.3f
-        );      }
+          0.2f +
+          0.1f
+        );
+      }
     }
 
     unsigned char count_oscillators = (
