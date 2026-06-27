@@ -31,6 +31,18 @@ void* z_io_proc_initializer(
     data
   );
 
+  z_io_proc_data->stereo[
+    0x00
+  ] = (
+    0x00
+  );
+
+  z_io_proc_data->stereo[
+    0x01
+  ] = (
+    0x00
+  );
+
   z_queue_initialize(
     &z_io_proc_data->queue,
     &z_io_proc_data->track_parameters,
