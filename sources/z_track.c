@@ -719,6 +719,19 @@ void z_track_generate(
       0x01
     );
 
+    if (
+      (
+        count_oscillators %
+        0x02
+      ) ==
+      0x00
+    ) {
+      count_oscillators = (
+        count_oscillators +
+        0x01
+      );
+    }
+
     for (
       unsigned char index_oscillator = (
         0x00
@@ -781,6 +794,32 @@ void z_track_generate(
         &track_lane->synthesizer,
         signal
       );
+
+      if (
+        track_lane->synthesizer.length_oscillators >
+        0x01
+      ) {
+        track_lane->synthesizer.oscillators[
+          index_oscillator
+        ].pan = (
+          (
+            index_oscillator ==
+            0x00
+          )
+          ? 0x00
+          : (
+            (
+              (
+                index_oscillator %
+                0x02
+              ) ==
+              0x00
+            )
+            ? -1.0f
+            : 1.0f
+          )
+        );
+      }
 
       track_lane->synthesizer.oscillators[
         index_oscillator
