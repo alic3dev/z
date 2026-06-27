@@ -25,10 +25,15 @@ int z_io_proc(
 );
 #endif
 
-float z_io_proc_frame_value_get(
+void z_io_proc_frame_value_get(
   struct z_track*,
   unsigned long long int,
-  float
+  float,
+  float,
+  float[
+    0x02
+  ],
+  unsigned char
 );
 
 float z_io_proc_frame_volume_apply(
@@ -41,7 +46,8 @@ void z_io_proc_frame_get(
   struct z_queue*,
   float*,
   unsigned long int,
-  unsigned long int
+  unsigned long int,
+  unsigned char
 );
 
 #endif

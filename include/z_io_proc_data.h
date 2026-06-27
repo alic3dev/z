@@ -25,6 +25,10 @@ struct z_io_proc_data {
   pthread_mutex_t mutex_playing;
 
   float* rate_sample;
+  
+  float stereo[
+    0x02
+  ];
 
   struct z_close_exit_data* z_close_exit_data;
 };

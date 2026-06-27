@@ -174,10 +174,6 @@ int z_io_proc(
       audio_buffer_current.mNumberChannels
     );
 
-    float pan = (
-      0.5f
-    );
-
     float buffer_out_channel_zero_value = (
       0x00
     );
@@ -196,69 +192,15 @@ int z_io_proc(
         index_buffer_out %
         count_channel_out
       );
-
-      if (
-        channel ==
-        0x00
-      ) {
-        z_io_proc_frame_get(
-          z_io_proc_data,
-          z_queue,
-          buffer_out,
-          index_buffer_out,
-          channel
-        );
-
-        buffer_out_channel_zero_value = (
-          buffer_out[
-            index_buffer_out
-          ]
-        );
-
-        buffer_out_channel_zero_value = (
-          buffer_out_channel_zero_value *
-          (
-            math_c_absolute_float(
-              math_c_sine(
-                (float) z_io_proc_data->frame /
-                (
-                  (
-                    0x3c /
-                    z_queue->track_current->bpm *
-                    0x03e8
-                  ) *
-                  (
-                    *z_io_proc_data->rate_sample /
-                    0x0258
-                  ) *
-                  0x20
-                )  *
-                math_c_pi,
-                math_c_pi
-              )
-            ) *
-            0.75f +
-            0.25f
-          )
-        );
-
-        buffer_out[
-          index_buffer_out
-        ] = (
-          buffer_out_channel_zero_value *
-          (
-            0x01 -
-            pan
-          )
-        );
-      } else {
-        buffer_out[
-          index_buffer_out
-        ] = (
-          buffer_out_channel_zero_value *
-          pan
-        );
-      }
+      
+      z_io_proc_frame_get(
+        z_io_proc_data,
+        z_queue,
+        buffer_out,
+        index_buffer_out,
+        channel,
+        count_channel_out
+      );
     }
   }
 
@@ -278,18 +220,36 @@ int z_io_proc(
 }
 #endif
 
-float z_io_proc_frame_value_get(
+void z_io_proc_frame_value_get(
   struct z_track* z_track,
   unsigned long long int index_frame,
-  float rate_sample
+  float rate_sample,
+  float amplitude,
+  float result[
+    0x02
+  ],
+  unsigned char stereo
 ) {
-  float value = (
+  float value[
+    0x02
+  ] = {
+    0x00,
     0x00
-  );
+  };
+  
+  float value_intermediary[
+    0x02
+  ] = {
+    0x00,
+    0x00
+  };
 
-  float value_last = (
+  float value_last[
+    0x02
+  ] = {
+    0x00,
     0x00
-  );
+  };
 
   for (
     unsigned int index_lane = (
@@ -434,6 +394,28 @@ float z_io_proc_frame_value_get(
               i
             );  
           }
+          
+          if (
+            index_lane >
+            0x02
+          ) {
+            track_lane->synthesizer.pan = (
+              (float)
+              (
+                (unsigned int)
+                (
+                  frequency +
+                  note->value +
+                  index_lane +
+                  note->time
+                ) %
+                0x0128
+              ) /
+              0x127 *
+              0x02 -
+              0x01
+            );
+          }
         
           cer0_synthesizer_frequency_play(
             &track_lane->synthesizer,
@@ -452,37 +434,139 @@ float z_io_proc_frame_value_get(
         0x01
       )
     ) {
-      value_last = (
-        value_last +
+      if (
+        stereo ==
+        0x00
+      ) {
+        value_last[
+          0x00
+        ] = (
+          value_last[
+            0x00
+          ] +
+          cer0_synthesizer_poll(
+            &track_lane->synthesizer
+          ) *
+          note->amplitude
+        );
+      } else {
+        cer0_synthesizer_poll_stereo(
+          &track_lane->synthesizer,
+          value_intermediary
+        );
+        
+        value_last[
+          0x00
+        ] = (
+          value_last[
+            0x00
+          ] +
+          value_intermediary[
+            0x00
+          ] *
+          note->amplitude
+        );
+        
+        value_last[
+          0x01
+        ] = (
+          value_last[
+            0x01
+          ] +
+          value_intermediary[
+            0x01
+          ] *
+          note->amplitude
+        );
+      }
+    } else if (
+      stereo ==
+      0x00
+    ) {
+      value[
+        0x00
+      ] = (
+        value[
+          0x00
+        ] +
         cer0_synthesizer_poll(
           &track_lane->synthesizer
         ) *
         note->amplitude
       );
     } else {
-      value = (
-        value +
-        cer0_synthesizer_poll(
-          &track_lane->synthesizer
-        ) *
+      cer0_synthesizer_poll_stereo(
+        &track_lane->synthesizer,
+        value_intermediary
+      );
+    
+      value[
+        0x00
+      ] = (
+        value[
+          0x00
+        ] +
+        value_intermediary[
+          0x00
+        ] *
+        note->amplitude
+      );
+      
+      value[
+        0x01
+      ] = (
+        value[
+          0x01
+        ] +
+        value_intermediary[
+          0x01
+        ] *
         note->amplitude
       );
     }
   }
 
-  value = (
-    value /
+  value[
+    0x00
+  ] = (
+    value[
+      0x00
+    ] /
+    (float)
+    z_track->length_lanes
+  );
+  
+  value[
+    0x01
+  ] = (
+    value[
+      0x01
+    ] /
     (float)
     z_track->length_lanes
   );
 
-  value_last = (
-    value_last /
+  value_last[
+    0x00
+  ] = (
+    value_last[
+      0x00
+    ] /
+    (float)
+    z_track->length_lanes
+  );
+  
+  value_last[
+    0x01
+  ] = (
+    value_last[
+      0x01
+    ] /
     (float)
     z_track->length_lanes
   );
 
-  for (
+  /*for (
     unsigned int index_effect = (
       0x00
     );
@@ -501,11 +585,28 @@ float z_io_proc_frame_value_get(
         value
       )
     );
-  }
-
-  return (
-    value +
-    value_last
+  }*/
+  
+  result[
+    0x00
+  ] = (
+    value[
+      0x00
+    ] +
+    value_last[
+      0x00
+    ]
+  );
+  
+  result[
+    0x01
+  ] = (
+    value[
+      0x01
+    ] +
+    value_last[
+      0x01
+    ]
   );
 }
 
@@ -524,7 +625,8 @@ void z_io_proc_frame_get(
   struct z_queue* z_queue,
   float* buffer_out,
   unsigned long int index_buffer_out,
-  unsigned long int channel
+  unsigned long int channel,
+  unsigned char length_channels
 ) {
   if (
     channel ==
@@ -534,24 +636,51 @@ void z_io_proc_frame_get(
       z_io_proc_data->frame +
       0x01
     );
+
+    z_io_proc_frame_value_get(
+      z_queue->track_current,
+      z_io_proc_data->frame,
+      *z_queue->rate_sample,
+      z_io_proc_data->settings.volume,
+      z_io_proc_data->stereo,
+      (
+        (
+          length_channels ==
+          0x02
+        )
+        ? 0x01
+        : 0x00
+      )
+    );
   }
 
-  buffer_out[
-    index_buffer_out
-  ] = (
-    z_io_proc_frame_volume_apply(
-      z_io_proc_frame_value_get(
-        z_queue->track_current,
-        z_io_proc_data->frame,
-        *z_queue->rate_sample
-      ),
-      z_io_proc_data->settings.volume
-    )
-  );
+  if (
+    length_channels ==
+    0x02
+  ) {
+    buffer_out[
+      index_buffer_out
+    ] = (
+      z_io_proc_data->stereo[
+        channel
+      ]   
+    );
+  } else {
+    buffer_out[
+      index_buffer_out
+    ] = (
+      z_io_proc_data->stereo[
+        0x00
+      ]
+    );
+  }
 
   if (
     channel ==
-    0x00
+    (
+      length_channels -
+      0x01
+    )
   ) {
     z_queue->track_current->progress = (
       (float)
