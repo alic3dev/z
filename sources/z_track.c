@@ -428,7 +428,7 @@ void z_track_generate(
     whole_beat /
     0x10
   );
-  
+
   track->length_effects = (
     0x03
   );
@@ -441,50 +441,65 @@ void z_track_generate(
       track->length_effects
     )
   );
-  
+
   for (
-    unsigned char u = 0;
-    u < 0x03;
-    ++u
+    unsigned char index_delay = (
+      0x00
+    );
+    (
+      index_delay <
+      0x03
+    );
+    ++index_delay
   ) {
     cer0_effect_delay_initialize(
       &track->effects[
-         u
-      ]
+        index_delay
+      ],
+      0x02
     );
-  
+
     track->effects[
-       u
+       index_delay
     ].mix = (
-      0.3f + ((float) (0x02 - u) * 0.05f)
+      0.3f +
+      (
+        (float)
+        (
+          0x02 -
+          index_delay
+        ) *
+        0.05f
+      )
     );
-  
+
     cer0_effect_delay_length_frames_buffer_set(
       &track->effects[
-        u
+        index_delay
       ],
       (
         sample_rate /
         0x0258
-      ) * quarter_beat *
+      ) *
+      quarter_beat *
       (float)
       (
-        u +
+        index_delay +
         0x01
       )
     );
-  
+
     struct cer0_effect_delay_data* effect_delay_data = (
       track->effects[
-         u
+         index_delay
       ].data
     );
-  
+
     effect_delay_data->decay = (
       0.4f /
       (float)
       (
-        u +
+        index_delay +
         0x01
       )
     );
@@ -616,7 +631,8 @@ void z_track_generate(
         );
 
         cer0_effect_delay_initialize(
-          effect_delay
+          effect_delay,
+          0x02
         );
 
         cer0_effect_delay_length_frames_buffer_set(
@@ -663,7 +679,8 @@ void z_track_generate(
         );
 
         cer0_effect_delay_initialize(
-          effect_delay
+          effect_delay,
+          0x02
         );
 
         cer0_effect_delay_length_frames_buffer_set(

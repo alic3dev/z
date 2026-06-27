@@ -192,7 +192,7 @@ int z_io_proc(
         index_buffer_out %
         count_channel_out
       );
-      
+
       z_io_proc_frame_get(
         z_io_proc_data,
         z_queue,
@@ -236,7 +236,7 @@ void z_io_proc_frame_value_get(
     0x00,
     0x00
   };
-  
+
   float value_intermediary[
     0x02
   ] = {
@@ -379,22 +379,27 @@ void z_io_proc_frame_value_get(
               note->value
             ]
           );
-        
+
           for (
-            unsigned int i = 0;
-            i < track_lane->synthesizer.length_oscillators;
-            ++i
+            unsigned int index_oscillator = (
+              0x00
+            );
+            (
+              index_oscillator <
+              track_lane->synthesizer.length_oscillators
+            );
+            ++index_oscillator
           ) {
             track_lane->synthesizer.oscillators[
-              i
+              index_oscillator
             ].offset_frequency = (
               frequency /
               0x64 /
               0x04 *
-              i
-            );  
+              index_oscillator
+            );
           }
-          
+
           if (
             index_lane >
             0x02
@@ -416,7 +421,7 @@ void z_io_proc_frame_value_get(
               0x01
             );
           }
-        
+
           cer0_synthesizer_frequency_play(
             &track_lane->synthesizer,
             frequency
@@ -454,7 +459,7 @@ void z_io_proc_frame_value_get(
           &track_lane->synthesizer,
           value_intermediary
         );
-        
+
         value_last[
           0x00
         ] = (
@@ -466,7 +471,7 @@ void z_io_proc_frame_value_get(
           ] *
           note->amplitude
         );
-        
+
         value_last[
           0x01
         ] = (
@@ -499,7 +504,7 @@ void z_io_proc_frame_value_get(
         &track_lane->synthesizer,
         value_intermediary
       );
-    
+
       value[
         0x00
       ] = (
@@ -511,7 +516,7 @@ void z_io_proc_frame_value_get(
         ] *
         note->amplitude
       );
-      
+
       value[
         0x01
       ] = (
@@ -535,7 +540,7 @@ void z_io_proc_frame_value_get(
     (float)
     z_track->length_lanes
   );
-  
+
   value[
     0x01
   ] = (
@@ -555,7 +560,7 @@ void z_io_proc_frame_value_get(
     (float)
     z_track->length_lanes
   );
-  
+
   value_last[
     0x01
   ] = (
@@ -566,7 +571,7 @@ void z_io_proc_frame_value_get(
     z_track->length_lanes
   );
 
-  /*for (
+  for (
     unsigned int index_effect = (
       0x00
     );
@@ -576,37 +581,61 @@ void z_io_proc_frame_value_get(
     );
     ++index_effect
   ) {
-    value = (
+    result[
+      0x00
+    ] = (
       cer0_effect_poll(
         &z_track->effects[
           index_effect
         ],
         0x00,
-        value
+        value[
+          0x00
+        ]
       )
     );
-  }*/
-  
+
+    result[
+      0x01
+    ] = (
+      cer0_effect_poll(
+        &z_track->effects[
+          index_effect
+        ],
+        0x01,
+        value[
+          0x01
+        ]
+      )
+    );
+  }
+
   result[
     0x00
   ] = (
-    value[
-      0x00
-    ] +
-    value_last[
-      0x00
-    ]
+    (
+      value[
+        0x00
+      ] +
+      value_last[
+        0x00
+      ]
+    ) *
+    amplitude
   );
-  
+
   result[
     0x01
   ] = (
-    value[
-      0x01
-    ] +
-    value_last[
-      0x01
-    ]
+    (
+      value[
+        0x01
+      ] +
+      value_last[
+        0x01
+      ]
+    ) *
+    amplitude
   );
 }
 
@@ -663,7 +692,7 @@ void z_io_proc_frame_get(
     ] = (
       z_io_proc_data->stereo[
         channel
-      ]   
+      ]
     );
   } else {
     buffer_out[
